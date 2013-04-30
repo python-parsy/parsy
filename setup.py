@@ -15,10 +15,10 @@ setup(
     author_email="jay at jayferd dot us (humans only, please)",
     license="MIT",
     classifiers=[
-        "Development Status :: 5 - Production/Stable",
-        "Environment :: Web Environment",
+        "Development Status :: 3 - Alpha",
+        "Environment :: Other Environment",
         "Intended Audience :: Developers",
-        "Topic :: Database :: Front-Ends",
+        "Topic :: Software Development :: Compilers",
         "License :: OSI Approved :: MIT License",
     ],
     keywords="parser parsing monad combinators",
