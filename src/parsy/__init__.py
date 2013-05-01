@@ -139,10 +139,6 @@ class Parser(object):
 
     # haskelley operators, for fun #
 
-    # >>=
-    def __irshift__(self, bind_fn):
-        return self.bind(bind_fn)
-
     # >>
     def __rshift__(self, other):
         return self.then(other)
