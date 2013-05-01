@@ -98,7 +98,7 @@ class Parser(object):
         return self.skip(other)
 
 # combinator syntax
-def combine(fn):
+def chain(fn):
     def genparser():
         iterator = fn()
 

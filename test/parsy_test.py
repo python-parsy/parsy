@@ -1,4 +1,4 @@
-from parsy import string, regex, combine
+from parsy import string, regex, chain
 import re
 import pdb
 import readline
@@ -18,14 +18,14 @@ false  = lexeme(string('#f')).result(False)
 
 atom = true | false | number | symbol
 
-@combine
+@chain
 def form():
     yield lparen
     els = yield expr.many()
     yield rparen
     return els
 
-@combine
+@chain
 def quote():
     yield string("'")
     e = yield expr
