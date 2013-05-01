@@ -114,7 +114,9 @@ def combine(fn):
 
         return send(None)
 
-    return success(None).bind(lambda _: genparser())
+    # this makes sure there is a separate instance of the generator
+    # for each parse
+    return Parser(lambda *args: genparser()(*args))
 
 def success(val):
     @Parser
