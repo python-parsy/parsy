@@ -162,3 +162,10 @@ def regex(exp, flags=0):
     return regex_parser
 
 whitespace = regex(r'\s+')
+
+@Parser
+def eof(stream, index, on_success, on_failure):
+    if index < len(stream):
+        return on_failure(index, 'EOF')
+
+    return on_success(index, None)
