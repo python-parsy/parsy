@@ -43,6 +43,9 @@ Parsy requires python 3.3 or greater.
     Returns a parser that tries `parser` and, if it fails, backtracks and
     tries `other_parser`.  These can be chained together.
 
+    The resulting parser will produce the value produced by the first
+    successful parser.
+
 ``` python
 >>> parser = string('x') | string('y') | string('z')
 >>> parser.parse('x')
@@ -52,9 +55,6 @@ Parsy requires python 3.3 or greater.
 >>> parser.parse('z')
 'z'
 ```
-
-    The resulting parser will produce the value produced by the first
-    successful parser.
 
 * `parser.then(other_parser)` (also `parser >> other_parser`)
 
@@ -140,7 +140,7 @@ Each time a parser is yielded, the produced value is returned from that
 yield expression.  The generator should then return the intended value
 to be produced.  (this feature requires python 3.3 or greater)
 
-```
+``` python
 from parsy import generate
 
 @generate
