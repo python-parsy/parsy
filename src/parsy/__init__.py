@@ -130,7 +130,7 @@ def string(s):
 
     @Parser
     def string_parser(stream, index, on_success, on_failure):
-        if s == stream[index:index+slen] == s:
+        if stream[index:index+slen] == s:
             return on_success(index+slen, s)
         else:
             return on_failure(stream, s)
