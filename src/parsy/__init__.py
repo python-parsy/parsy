@@ -45,7 +45,7 @@ class Parser(object):
         return self.bind(lambda res: other.result(res))
 
     def result(self, res):
-        return self.then(success(res))
+        return self >> success(res)
 
     def many(self):
         @Parser
