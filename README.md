@@ -1,6 +1,9 @@
 # parsy
 
-Parsy is an easy way to combine simple, small parsers into complex, larger parsers.  If it means anything to you, it's a monadic parser combinator library in the spirit of Parsec, Parsnip, and Parsimmon.
+Parsy is an easy way to combine simple, small parsers into complex,
+larger parsers.  If it means anything to you, it's a monadic parser
+combinator library for LL(infinity) grammars in the spirit of Parsec,
+Parsnip, and Parsimmon.
 
 Parsy requires python 3.3 or greater.
 
