@@ -93,6 +93,10 @@ class Parser(object):
     def __rshift__(self, other):
         return self.then(other)
 
+    # <<
+    def __lshift__(self, other):
+        return self.skip(other)
+
 # combinator syntax
 def combine(fn):
     def genparser():
