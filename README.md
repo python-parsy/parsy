@@ -10,19 +10,19 @@ Parsy requires python 3.3 or greater.
 
 * `string(expected_string)`
 
-Returns a parser that expects the `expected_string` and produces that
-string value.
+    Returns a parser that expects the `expected_string` and produces
+    that string value.
 
 * `regex(exp, [flags=0])`
 
-Returns a parser that expects the given `exp`, and produces the matched
-string.  `exp` can be a compiled regular expression, or a string which
-will be compiled with the given `flags`.
+    Returns a parser that expects the given `exp`, and produces the
+    matched string.  `exp` can be a compiled regular expression, or a
+    string which will be compiled with the given `flags`.
 
 * `success(val)`
 
-Returns a parser that does not consume any of the stream, but produces
-`val`.
+    Returns a parser that does not consume any of the stream, but produces
+    `val`.
 
 ### Parser methods
 
@@ -40,8 +40,8 @@ Returns a parser that does not consume any of the stream, but produces
 
 * `parser | other_parser`
 
-Returns a parser that tries `parser` and, if it fails, backtracks and
-tries `other_parser`.  These can be chained together.
+    Returns a parser that tries `parser` and, if it fails, backtracks and
+    tries `other_parser`.  These can be chained together.
 
 ``` python
 >>> parser = string('x') | string('y') | string('z')
@@ -53,13 +53,13 @@ tries `other_parser`.  These can be chained together.
 'z'
 ```
 
-The resulting parser will produce the value produced by the first
-successful parser.
+    The resulting parser will produce the value produced by the first
+    successful parser.
 
 * `parser.then(other_parser)` (also `parser >> other_parser`)
 
-Returns a parser which, if `parser` succeeds, will continue parsing with
-`other_parser`.  This will produce the value produced by `other_parser`
+    Returns a parser which, if `parser` succeeds, will continue parsing with
+    `other_parser`.  This will produce the value produced by `other_parser`
 
 ``` python
 >>> (string('x') >> string('y')).parse('xy')
@@ -68,8 +68,8 @@ Returns a parser which, if `parser` succeeds, will continue parsing with
 
 * `parser.skip(other_parser)` (also `parser << other_parser`)
 
-Similar to `then` (or `>>`), except the resulting parser will use the
-value produced by the first parser.
+    Similar to `then` (or `>>`), except the resulting parser will use the
+    value produced by the first parser.
 
 ``` python
 >>> (string('x') << string('y')).parse('xy')
@@ -78,9 +78,9 @@ value produced by the first parser.
 
 * `parser.many()`
 
-Returns a parser that expects `parser` 0 or more times, and produces a
-list of the results.  Note that this parser can never fail - only produce
-an empty list.
+    Returns a parser that expects `parser` 0 or more times, and produces
+    a list of the results.  Note that this parser can never fail -
+    only produce an empty list.
 
 ``` python
 >>> parser = regex(r'[a-z]').many()
@@ -92,23 +92,25 @@ an empty list.
 
 * `parser.times(min [, max=min])`
 
-Returns a parser that expects `parser` at least `min` times, and at most
-`max` times, and produces a list of the results.  If only one argument
-is given, the parser is expected exactly that number of times.
+    Returns a parser that expects `parser` at least `min` times, and
+    at most `max` times, and produces a list of the results.  If only
+    one argument is given, the parser is expected exactly that number
+    of times.
 
 * `parser.at_most(n)`
 
-Returns a parser that expects `parser` at most `n` times, and produces a
-list of the results.
+    Returns a parser that expects `parser` at most `n` times, and produces
+    a list of the results.
 
 * `parser.at_least(n)`
 
-Returns a parser that expects `parser` at least `n` times, and produces a
-list of the results.
+    Returns a parser that expects `parser` at least `n` times, and
+    produces a list of the results.
 
 * `parser.map(fn)`
 
-Returns a parser that transforms the produced value of `parser` with `fn`.
+    Returns a parser that transforms the produced value of `parser` with
+    `fn`.
 
 ``` python
 >>> regex(r'[0-9]+').map(int).parse('1234')
@@ -117,7 +119,7 @@ Returns a parser that transforms the produced value of `parser` with `fn`.
 
 * `parser.result(val)`
 
-Returns a parser that always produces `val`.
+    Returns a parser that always produces `val`.
 
 ``` python
 >>> string('foo').result(42).parse('foo')
@@ -126,9 +128,9 @@ Returns a parser that always produces `val`.
 
 * `parser.bind(fn)`
 
-Returns a parser which, if `parser` is successful, passes the result
-to `fn`, and continues with the parser returned from `fn`.  This is the
-monadic binding operation.
+    Returns a parser which, if `parser` is successful, passes the result
+    to `fn`, and continues with the parser returned from `fn`.  This is
+    the monadic binding operation.
 
 ### Generating a parser
 
