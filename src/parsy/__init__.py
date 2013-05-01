@@ -115,7 +115,7 @@ class Parser(object):
         return self.times(0, n)
 
     def at_least(self, n):
-        @chain
+        @generate
         def at_least_parser():
             start = yield self.times(n)
             end = yield self.many()
@@ -148,7 +148,7 @@ class Parser(object):
         return self.skip(other)
 
 # combinator syntax
-def chain(fn):
+def generate(fn):
     def genparser():
         iterator = fn()
 
@@ -168,10 +168,10 @@ def chain(fn):
     # for each parse
     @wraps(fn)
     @Parser
-    def chained(*args):
+    def generated(*args):
         return genparser()(*args)
 
-    return chained
+    return generated
 
 def success(val):
     @Parser

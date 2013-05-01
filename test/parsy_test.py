@@ -1,4 +1,4 @@
-from parsy import string, regex, chain, ParseError
+from parsy import string, regex, generate, ParseError
 import pdb
 
 letter = regex(r'[a-zA-Z]')
@@ -46,9 +46,9 @@ def test_bind():
     try: parser.parse('x'); assert False
     except ParseError: pass
 
-def test_chain():
+def test_generate():
     x = y = None
-    @chain
+    @generate
     def parser():
         nonlocal x
         nonlocal y
@@ -60,8 +60,8 @@ def test_chain():
     assert x == 'x'
     assert y == 'y'
 
-def test_chain_backtracking():
-    @chain
+def test_generate_backtracking():
+    @generate
     def xy():
         yield string('x')
         yield string('y')
