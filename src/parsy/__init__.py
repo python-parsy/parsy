@@ -40,9 +40,6 @@ class Parser(object):
     def then(self, other):
         return self.bind(lambda _: other)
 
-    def __and__(self, other):
-        return self.then(other)
-
     def skip(self, other):
         return self.bind(lambda res: other.result(res))
 
