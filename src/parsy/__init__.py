@@ -105,7 +105,7 @@ def combine(fn):
         def send(val):
             try:
                 next_parser = iterator.send(val)
-                return next_parser.bind(lambda result: send(result))
+                return next_parser.bind(send)
             except StopIteration as result:
                 if isinstance(result.value, Parser):
                     return result.value
