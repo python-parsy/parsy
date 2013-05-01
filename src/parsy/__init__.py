@@ -15,9 +15,14 @@ class Parser(object):
         return self.fn(stream, index, on_success, on_failure)
 
     def parse(self, string):
-        # tail-call the identity function so that the
-        # result comes out
-        success = lambda _, result: result
+        (result, _) = (self << eof).parse_partial(string)
+        return result
+
+    def parse_partial(self, string):
+        # this success function will be tail-called, so its
+        # return value will come out of this function
+        def success(index, result):
+            return (result, string[index:])
 
         def failure(index, expected):
             raise ParseError('expected '+repr(expected)+' at '+repr(index))
