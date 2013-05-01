@@ -2,6 +2,7 @@
 
 import re
 from .version import __version__
+from functools import wraps
 
 class ParseError(RuntimeError):
     pass
@@ -116,7 +117,12 @@ def chain(fn):
 
     # this makes sure there is a separate instance of the generator
     # for each parse
-    return Parser(lambda *args: genparser()(*args))
+    @wraps(fn)
+    @Parser
+    def chained(*args):
+        return genparser()(*args)
+
+    return chained
 
 def success(val):
     @Parser
