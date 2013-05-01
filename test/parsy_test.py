@@ -1,7 +1,6 @@
 from parsy import string, regex, chain
 import re
 import pdb
-import readline
 
 whitespace = regex(r'\s+', re.MULTILINE)
 comment = regex(r';.*')
