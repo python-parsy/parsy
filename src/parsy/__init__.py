@@ -72,8 +72,56 @@ class Parser(object):
 
         return many_parser
 
-    def times(self):
-        raise 'TODO'
+    def times(self, min, max=None):
+        if max is None:
+            max = min
+
+        @Parser
+        def times_parser(stream, index, on_success, on_failure):
+            aggregate = []
+            fail_message = None
+
+            def success(new_index, res):
+                nonlocal index
+                index = new_index
+                aggregate.append(res)
+                return True
+
+            def first_failure(new_index, msg):
+                nonlocal index
+                nonlocal fail_message
+                index = new_index
+                fail_message = msg
+                return False
+
+            def second_failure(new_index, msg):
+                return False
+
+            for times in range(0, min):
+                result = self(stream, index, success, first_failure)
+                if not result:
+                    return on_failure(index, fail_message)
+
+            for times in range(min, max):
+                result = self(stream, index, success, second_failure)
+                if not result:
+                    break
+
+            return on_success(index, aggregate)
+
+        return times_parser
+
+    def at_most(self, n):
+        return self.times(0, n)
+
+    def at_least(self, n):
+        @chain
+        def at_least_parser():
+            start = yield self.times(n)
+            end = yield self.many()
+            return start + end
+
+        return at_least_parser
 
     def __or__(self, other):
         if not isinstance(other, Parser):
