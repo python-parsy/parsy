@@ -43,6 +43,10 @@ def test_quote():
     result = program.parse("'foo '(bar baz)")
     assert result == [['quote', 'foo'], ['quote', ['bar', 'baz']]]
 
+def test_double_quote():
+    result = program.parse("''foo")
+    assert result == [['quote', ['quote', 'foo']]]
+
 def test_boolean():
     result = program.parse('#t #f')
     assert result == [True, False]
