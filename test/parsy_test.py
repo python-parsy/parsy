@@ -7,7 +7,7 @@ whitespace = regex(r'\s+', re.MULTILINE)
 comment = regex(r';.*')
 ignore = (whitespace | comment).many()
 
-lexeme = lambda p: p.skip(ignore)
+lexeme = lambda p: p << ignore
 
 lparen = lexeme(string('('))
 rparen = lexeme(string(')'))
@@ -33,7 +33,7 @@ def quote():
 
 expr = form | quote | atom
 
-program = ignore.then(expr.many())
+program = ignore >> expr.many()
 
 def test_form():
     result = program.parse('(1 2 3)')
