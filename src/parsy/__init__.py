@@ -188,7 +188,7 @@ def string(s):
         if stream[index:index+slen] == s:
             return on_success(index+slen, s)
         else:
-            return on_failure(stream, s)
+            return on_failure(index, s)
 
     string_parser.__name__ = 'string_parser<%s>' % s
 
