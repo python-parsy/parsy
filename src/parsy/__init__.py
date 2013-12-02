@@ -3,40 +3,50 @@
 import re
 from .version import __version__
 from functools import wraps
+from collections import namedtuple
 
 class ParseError(RuntimeError):
     pass
 
+Result = namedtuple('Result', ['success', 'index', 'value'])
+
 class Parser(object):
+    """
+    doc
+    """
+
     def __init__(self, fn):
         self.fn = fn
 
-    def __call__(self, stream, index, on_success, on_failure):
-        return self.fn(stream, index, on_success, on_failure)
+    def __call__(self, stream, index):
+        return self.fn(stream, index)
 
     def parse(self, string):
         (result, _) = (self << eof).parse_partial(string)
         return result
 
     def parse_partial(self, string):
-        # this success function will be tail-called, so its
-        # return value will come out of this function
-        def success(index, result):
-            return (result, string[index:])
+        (success, index, value) = self(string, 0)
 
-        def failure(index, expected):
-            raise ParseError('expected '+repr(expected)+' at '+repr(index))
-
-        return self(string, 0, success, failure)
+        if success:
+            return (value, string[index:])
+        else:
+            raise ParseError('expected '+repr(value)+' at '+repr(index))
 
     def bind(self, bind_fn):
         @Parser
-        def bound_parser(stream, index, on_success, on_failure):
+        def bound_parser(stream, index):
             def success(new_index, result):
                 next_parser = bind_fn(result)
-                return next_parser(stream, new_index, on_success, on_failure)
+                return next_parser(stream, new_index)
 
-            return self(stream, index, success, on_failure)
+            (success, new_index, value) = self(stream, index)
+
+            if success:
+                next_parser = bind_fn(value)
+                return next_parser(stream, new_index)
+            else:
+                return (False, index, value)
 
         return bound_parser
 
@@ -54,21 +64,19 @@ class Parser(object):
 
     def many(self):
         @Parser
-        def many_parser(stream, index, on_success, on_failure):
+        def many_parser(stream, index):
             aggregate = []
-            def success(new_index, res):
-                nonlocal index
-                index = new_index
-                aggregate.append(res)
-                return True
+            next_index = index
 
-            def failure(new_index, message):
-                return False
+            while True:
+                (status, next_index, value) = self(stream, index)
+                if status:
+                    aggregate.append(value)
+                    index = next_index
+                else:
+                    break
 
-            while self(stream, index, success, failure):
-                pass
-
-            return on_success(index, aggregate)
+            return (True, index, aggregate)
 
         return many_parser
 
@@ -77,37 +85,27 @@ class Parser(object):
             max = min
 
         @Parser
-        def times_parser(stream, index, on_success, on_failure):
+        def times_parser(stream, index):
             aggregate = []
-            fail_message = None
-
-            def success(new_index, res):
-                nonlocal index
-                index = new_index
-                aggregate.append(res)
-                return True
-
-            def first_failure(new_index, msg):
-                nonlocal index
-                nonlocal fail_message
-                index = new_index
-                fail_message = msg
-                return False
-
-            def second_failure(new_index, msg):
-                return False
+            next_index = index
 
             for times in range(0, min):
-                result = self(stream, index, success, first_failure)
-                if not result:
-                    return on_failure(index, fail_message)
+                (status, next_index, value) = self(stream, index)
+                index = next_index
+                if status:
+                    aggregate.append(value)
+                else:
+                    return (False, index, value)
 
             for times in range(min, max):
-                result = self(stream, index, success, second_failure)
-                if not result:
+                (status, next_index, value) = self(stream, index)
+                if status:
+                    index = next_index
+                    aggregate.append(value)
+                else:
                     break
 
-            return on_success(index, aggregate)
+            return (True, index, aggregate)
 
         return times_parser
 
@@ -128,12 +126,16 @@ class Parser(object):
             raise TypeError('%s is not a parser!' % repr(Parser))
 
         @Parser
-        def or_parser(stream, index, on_success, on_failure):
+        def or_parser(stream, index):
             def failure(new_index, message):
                 # we use the closured index here so it backtracks
-                return other(stream, index, on_success, on_failure)
+                return other(stream, index)
 
-            return self(stream, index, on_success, failure)
+            (status, next_index, value) = self(stream, index)
+            if status:
+                return (True, next_index, value)
+            else:
+                return other(stream, index)
 
         return or_parser
 
@@ -149,34 +151,30 @@ class Parser(object):
 
 # combinator syntax
 def generate(fn):
-    def genparser():
-        iterator = fn()
-
-        def send(val):
-            try:
-                next_parser = iterator.send(val)
-                return next_parser.bind(send)
-            except StopIteration as result:
-                if isinstance(result.value, Parser):
-                    return result.value
-
-                return success(result.value)
-
-        return send(None)
-
-    # this makes sure there is a separate instance of the generator
-    # for each parse
     @wraps(fn)
     @Parser
-    def generated(*args):
-        return genparser()(*args)
+    def generated(stream, index):
+        iterator = fn()
+        value = None
+        try:
+            while True:
+                next_parser = iterator.send(value)
+                (status, index, value) = next_parser(stream, index)
+                if not status:
+                    return (False, index, value)
+        except StopIteration as result:
+            returnVal = result.value
+            if isinstance(returnVal, Parser):
+                return returnVal(stream, index)
+
+            return (True, index, returnVal)
 
     return generated
 
 def success(val):
     @Parser
-    def success_parser(stream, index, on_success, on_failure):
-        return on_success(index, val)
+    def success_parser(stream, index):
+        return (True, index, val)
 
     return success_parser
 
@@ -184,11 +182,11 @@ def string(s):
     slen = len(s)
 
     @Parser
-    def string_parser(stream, index, on_success, on_failure):
+    def string_parser(stream, index):
         if stream[index:index+slen] == s:
-            return on_success(index+slen, s)
+            return (True, index+slen, s)
         else:
-            return on_failure(index, s)
+            return (False, index, s)
 
     string_parser.__name__ = 'string_parser<%s>' % s
 
@@ -199,12 +197,12 @@ def regex(exp, flags=0):
         exp = re.compile(exp, flags)
 
     @Parser
-    def regex_parser(stream, index, on_success, on_failure):
+    def regex_parser(stream, index):
         match = exp.match(stream, index)
         if match:
-            return on_success(match.end(), match.group(0))
+            return (True, match.end(), match.group(0))
         else:
-            return on_failure(index, exp.pattern)
+            return (False, index, exp.pattern)
 
     regex_parser.__name__ = 'regex_parser<%s>' % exp.pattern
 
@@ -213,8 +211,8 @@ def regex(exp, flags=0):
 whitespace = regex(r'\s+')
 
 @Parser
-def eof(stream, index, on_success, on_failure):
+def eof(stream, index):
     if index < len(stream):
-        return on_failure(index, 'EOF')
+        return (False, index, 'EOF')
 
-    return on_success(index, None)
+    return (True, index, None)
