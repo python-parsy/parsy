@@ -12,23 +12,30 @@ Result = namedtuple('Result', ['success', 'index', 'value'])
 
 class Parser(object):
     """
-    doc
+    A Parser is an object that wraps a function whose arguments are
+    a string to be parsed and the index on which to begin parsing.
+    The function returns a 3-tuple 3-tuple of (status, next_index,
+    value), where the status is True if the parse was successful and
+    false otherwise, the next_index is where to begin the next parse
+    (or where to report a failure), and the value is the yielded value
+    (or an error message).
     """
 
-    def __init__(self, fn):
-        self.fn = fn
+    def __init__(self, wrapped_fn):
+        self.wrapped_fn = wrapped_fn
 
     def __call__(self, stream, index):
-        return self.fn(stream, index)
+        return self.wrapped_fn(stream, index)
 
     def parse(self, string):
+        "parses a string and returns the result or raises a ParseError."
         (result, _) = (self << eof).parse_partial(string)
         return result
 
     def parse_partial(self, string):
-        (success, index, value) = self(string, 0)
+        (status, index, value) = self(string, 0)
 
-        if success:
+        if status:
             return (value, string[index:])
         else:
             raise ParseError('expected '+repr(value)+' at '+repr(index))
