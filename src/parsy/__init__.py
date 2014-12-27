@@ -135,7 +135,7 @@ class Parser(object):
 
     def __or__(self, other):
         if not isinstance(other, Parser):
-            raise TypeError('{!r} is not a parser!'.format(Parser))
+            raise TypeError('{!r} is not a parser!'.format(other))
 
         @Parser
         def or_parser(stream, index):
