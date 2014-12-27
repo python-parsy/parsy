@@ -43,7 +43,7 @@ class Parser(object):
         if status:
             return (value, string[index:])
         else:
-            raise ParseError('expected '+repr(value)+' at '+repr(index))
+            raise ParseError('expected {!r} at {!r}'.format(value, index))
 
     def bind(self, bind_fn):
         @Parser
@@ -135,7 +135,7 @@ class Parser(object):
 
     def __or__(self, other):
         if not isinstance(other, Parser):
-            raise TypeError('%s is not a parser!' % repr(Parser))
+            raise TypeError('{!r} is not a parser!'.format(Parser))
 
         @Parser
         def or_parser(stream, index):
