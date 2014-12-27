@@ -28,15 +28,15 @@ class Parser(object):
         return self.wrapped_fn(stream, index)
 
     def parse(self, string):
-        "Parses a string and returns the result or raises a ParseError."
+        """Parse a string and return the result or raise a ParseError."""
         (result, _) = (self << eof).parse_partial(string)
         return result
 
     def parse_partial(self, string):
         """
-        Parses the longest possible prefix of a given string.
-        Returns a tuple of the result and the rest of the string,
-        or raises ParseError.
+        Parse the longest possible prefix of a given string.
+        Return a tuple of the result and the rest of the string,
+        or raise a ParseError.
         """
         (status, index, value) = self(string, 0)
 
