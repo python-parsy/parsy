@@ -33,6 +33,11 @@ class Parser(object):
         return result
 
     def parse_partial(self, string):
+        """
+        Parses the longest possible prefix of a given string.
+        Returns a tuple of the result and the rest of the string,
+        or raises ParseError.
+        """
         (status, index, value) = self(string, 0)
 
         if status:
