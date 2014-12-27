@@ -122,7 +122,7 @@ Parsy requires Python 3.3 or greater.
 
 * `parser.result(val)`
 
-    Returns a parser that always produces `val`.
+    Returns a parser that, if `parser` succeeds, always produces `val`.
 
 ``` python
 >>> string('foo').result(42).parse('foo')
