@@ -5,7 +5,7 @@ larger parsers.  If it means anything to you, it's a monadic parser
 combinator library for LL(infinity) grammars in the spirit of Parsec,
 Parsnip, and Parsimmon.
 
-Parsy requires python 3.3 or greater.
+Parsy requires Python 3.3 or greater.
 
 ## Usage
 
@@ -122,7 +122,7 @@ Parsy requires python 3.3 or greater.
 
 * `parser.result(val)`
 
-    Returns a parser that always produces `val`.
+    Returns a parser that, if `parser` succeeds, always produces `val`.
 
 ``` python
 >>> string('foo').result(42).parse('foo')
@@ -138,21 +138,34 @@ Parsy requires python 3.3 or greater.
 ### Generating a parser
 
 The most powerful way to construct a parser is to use the `generate`
-decorator.  `parsy.generate` decorates a generator that yields parsers.
-Each time a parser is yielded, the produced value is returned from that
-yield expression.  The generator should then return the intended value
-to be produced.  (this feature requires python 3.3 or greater)
-
+decorator.  `parsy.generate` creates a parser from a generator that should
+yield parsers.  These parsers are applied successively and their results
+are sent back to the generator using `.send()` protocol.  The generator
+should return the result or another parser, which is equivalent to
+applying it and returning its result.
 ``` python
 from parsy import generate
 
 @generate
 def form():
-    """parses an s-expression form, like (a b c)"""
+    """
+    Parse an s-expression form, like (a b c).
+    An equivalent to lparen >> expr.many() << rparen
+    """
     yield lparen
     exprs = yield expr.many()
     yield rparen
     return exprs
+
+@generate
+def exact_number():
+    """
+    Parse specified number of expressions, like
+    4: a b c d
+    """
+    num = int(yield regex(r'[0-9]+')) # or .map(int)
+    yield string(':')
+    return expr.times(num)
 ```
 
 Note that there is no guarantee that the entire function is executed:

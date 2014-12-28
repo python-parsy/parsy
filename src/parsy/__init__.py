@@ -14,9 +14,9 @@ class Parser(object):
     """
     A Parser is an object that wraps a function whose arguments are
     a string to be parsed and the index on which to begin parsing.
-    The function returns a 3-tuple 3-tuple of (status, next_index,
-    value), where the status is True if the parse was successful and
-    false otherwise, the next_index is where to begin the next parse
+    The function returns a 3-tuple of (status, next_index, value),
+    where the status is True if the parse was successful and False
+    otherwise, the next_index is where to begin the next parse
     (or where to report a failure), and the value is the yielded value
     (or an error message).
     """
@@ -28,17 +28,22 @@ class Parser(object):
         return self.wrapped_fn(stream, index)
 
     def parse(self, string):
-        "parses a string and returns the result or raises a ParseError."
+        """Parse a string and return the result or raise a ParseError."""
         (result, _) = (self << eof).parse_partial(string)
         return result
 
     def parse_partial(self, string):
+        """
+        Parse the longest possible prefix of a given string.
+        Return a tuple of the result and the rest of the string,
+        or raise a ParseError.
+        """
         (status, index, value) = self(string, 0)
 
         if status:
             return (value, string[index:])
         else:
-            raise ParseError('expected '+repr(value)+' at '+repr(index))
+            raise ParseError('expected {!r} at {!r}'.format(value, index))
 
     def bind(self, bind_fn):
         @Parser
@@ -130,7 +135,7 @@ class Parser(object):
 
     def __or__(self, other):
         if not isinstance(other, Parser):
-            raise TypeError('%s is not a parser!' % repr(Parser))
+            raise TypeError('{!r} is not a parser!'.format(other))
 
         @Parser
         def or_parser(stream, index):
