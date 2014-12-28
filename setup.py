@@ -10,9 +10,9 @@ setup(
     name="parsy",
     version=__version__,
     description="easy-to-use parser combinators",
-    author="Jay Adkisson",
-    url="https://github.com/jayferd/parsy",
-    author_email="jay at jayferd dot us (humans only, please)",
+    author="Jeanine Adkisson",
+    url="https://github.com/jneen/parsy",
+    author_email="jneen at jneen dot net (humans only, please)",
     license="MIT",
     classifiers=[
         "Development Status :: 3 - Alpha",
