@@ -48,10 +48,6 @@ class Parser(object):
     def bind(self, bind_fn):
         @Parser
         def bound_parser(stream, index):
-            def success(new_index, result):
-                next_parser = bind_fn(result)
-                return next_parser(stream, new_index)
-
             (success, new_index, value) = self(stream, index)
 
             if success:
