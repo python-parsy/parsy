@@ -6,29 +6,24 @@ class TestParser(unittest.TestCase):
     
     def test_string(self):
         parser = string('x')
-        assert parser.parse('x') == 'x'
+        self.assertEqual(parser.parse('x'), 'x')
         
-        try: parser.parse('y'); assert False
-        except ParseError: pass
+        self.assertRaises(ParseError, parser.parse, 'y')
     
     def test_regex(self):
         parser = regex(r'[0-9]')
         
-        assert parser.parse('1') == '1'
-        assert parser.parse('4') == '4'
+        self.assertEqual(parser.parse('1'), '1')
+        self.assertEqual(parser.parse('4'), '4')
         
-        try: parser.parse('x'); assert False
-        except ParseError: pass
+        self.assertRaises(ParseError, parser.parse, 'x')
     
     def test_then(self):
         xy_parser = string('x') >> string('y')
-        assert xy_parser.parse('xy') == 'y'
+        self.assertEqual(xy_parser.parse('xy'), 'y')
         
-        try: xy_parser.parse('y'); assert False
-        except ParseError: pass
-        
-        try: xy_parser.parse('z'); assert False
-        except ParseError: pass
+        self.assertRaises(ParseError, xy_parser.parse, 'y')
+        self.assertRaises(ParseError, xy_parser.parse, 'z')
     
     def test_bind(self):
         piped = None
@@ -40,11 +35,10 @@ class TestParser(unittest.TestCase):
         
         parser = string('x').bind(binder)
         
-        assert parser.parse('xy') == 'y'
-        assert piped == 'x'
+        self.assertEqual(parser.parse('xy'), 'y')
+        self.assertEqual(piped, 'x')
         
-        try: parser.parse('x'); assert False
-        except ParseError: pass
+        self.assertRaises(ParseError, parser.parse, 'x')
     
     def test_generate(self):
         x = y = None
@@ -56,9 +50,9 @@ class TestParser(unittest.TestCase):
             y = yield string('y')
             return 3
         
-        assert parser.parse('xy') == 3
-        assert x == 'x'
-        assert y == 'y'
+        self.assertEqual(parser.parse('xy'), 3)
+        self.assertEqual(x, 'x')
+        self.assertEqual(y, 'y')
     
     def test_generate_backtracking(self):
         @generate
@@ -69,98 +63,77 @@ class TestParser(unittest.TestCase):
             
         parser = xy | string('z')
         # should not finish executing xy()
-        assert parser.parse('z') == 'z'
+        self.assertEqual(parser.parse('z'), 'z')
     
     def test_or(self):
         x_or_y = string('x') | string('y')
         
-        assert x_or_y.parse('x') == 'x'
-        assert x_or_y.parse('y') == 'y'
+        self.assertEqual(x_or_y.parse('x'), 'x')
+        self.assertEqual(x_or_y.parse('y'), 'y')
     
     def test_or_with_then(self):
         parser = (string('\\') >> string('y')) | string('z')
-        assert parser.parse('\\y') == 'y'
-        assert parser.parse('z') == 'z'
+        self.assertEqual(parser.parse('\\y'), 'y')
+        self.assertEqual(parser.parse('z'), 'z')
         
-        try: parser.parse('\\z'); assert False
-        except ParseError: pass
+        self.assertRaises(ParseError, parser.parse, '\\z')
     
     def test_many(self):
         letters = letter.many()
-        assert letters.parse('x') == ['x']
-        assert letters.parse('xyz') == ['x', 'y', 'z']
-        assert letters.parse('') == []
+        self.assertEqual(letters.parse('x'), ['x'])
+        self.assertEqual(letters.parse('xyz'), ['x', 'y', 'z'])
+        self.assertEqual(letters.parse(''), [])
         
-        try: letters.parse('1'); assert False
-        except ParseError: pass
+        self.assertRaises(ParseError, letters.parse, '1')
     
     def test_many_with_then(self):
         parser = string('x').many() >> string('y')
-        assert parser.parse('y') == 'y'
-        assert parser.parse('xy') == 'y'
-        assert parser.parse('xxxxxy') == 'y'
+        self.assertEqual(parser.parse('y'), 'y')
+        self.assertEqual(parser.parse('xy'), 'y')
+        self.assertEqual(parser.parse('xxxxxy'), 'y')
     
     def test_times_zero(self):
         zero_letters = letter.times(0)
-        assert zero_letters.parse('') == []
+        self.assertEqual(zero_letters.parse(''), [])
         
-        try: zero_letters.parse('x'); assert False
-        except ParseError: pass
+        self.assertRaises(ParseError, zero_letters.parse, 'x')
     
     def test_times(self):
         three_letters = letter.times(3)
-        assert three_letters.parse('xyz') == ['x', 'y', 'z']
+        self.assertEqual(three_letters.parse('xyz'), ['x', 'y', 'z'])
         
-        try: three_letters.parse('xy'); assert False
-        except ParseError: pass
-        
-        try: three_letters.parse('xyzw'); assert False
-        except ParseError: pass
+        self.assertRaises(ParseError, three_letters.parse, 'xy')
+        self.assertRaises(ParseError, three_letters.parse, 'xyzw')
     
     def test_times_with_then(self):
         then_digit = letter.times(3) >> digit
-        assert then_digit.parse('xyz1') == '1'
+        self.assertEqual(then_digit.parse('xyz1'), '1')
         
-        try: then_digit.parse('xy1'); assert False
-        except ParseError: pass
-        
-        try: then_digit.parse('xyz'); assert False
-        except ParseError: pass
-        
-        try: then_digit.parse('xyzw'); assert False
-        except ParseError: pass
+        self.assertRaises(ParseError, then_digit.parse, 'xy1')
+        self.assertRaises(ParseError, then_digit.parse, 'xyz')
+        self.assertRaises(ParseError, then_digit.parse, 'xyzw')
     
     def test_times_with_min_and_max(self):
         some_letters = letter.times(2, 4)
         
-        assert some_letters.parse('xy') == ['x', 'y']
-        assert some_letters.parse('xyz') == ['x', 'y', 'z']
-        assert some_letters.parse('xyzw') == ['x', 'y', 'z', 'w']
+        self.assertEqual(some_letters.parse('xy'), ['x', 'y'])
+        self.assertEqual(some_letters.parse('xyz'), ['x', 'y', 'z'])
+        self.assertEqual(some_letters.parse('xyzw'), ['x', 'y', 'z', 'w'])
         
-        try: some_letters.parse('x'); assert False
-        except ParseError: pass
-        
-        try: some_letters.parse('xyzwv'); assert False
-        except ParseError: pass
+        self.assertRaises(ParseError, some_letters.parse, 'x')
+        self.assertRaises(ParseError, some_letters.parse, 'xyzwv')
     
     def test_times_with_min_and_max_and_then(self):
         then_digit = letter.times(2, 4) >> digit
         
-        assert then_digit.parse('xy1') == '1'
-        assert then_digit.parse('xyz1') == '1'
-        assert then_digit.parse('xyzw1') == '1'
+        self.assertEqual(then_digit.parse('xy1'), '1')
+        self.assertEqual(then_digit.parse('xyz1'), '1')
+        self.assertEqual(then_digit.parse('xyzw1'), '1')
         
-        try: then_digit.parse('xy'); assert False
-        except ParseError: pass
-        
-        try: then_digit.parse('xyzw'); assert False
-        except ParseError: pass
-        
-        try: then_digit.parse('xyzwv1'); assert False
-        except ParseError: pass
-        
-        try: then_digit.parse('x1'); assert False
-        except ParseError: pass
+        self.assertRaises(ParseError, then_digit.parse, 'xy')
+        self.assertRaises(ParseError, then_digit.parse, 'xyzw')
+        self.assertRaises(ParseError, then_digit.parse, 'xyzwv1')
+        self.assertRaises(ParseError, then_digit.parse, 'x1')
 
 if __name__ == '__main__':
     unittest.main()
