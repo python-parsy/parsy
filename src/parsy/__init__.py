@@ -14,8 +14,6 @@ class ParseError(RuntimeError):
     def __str__(self):
         return 'parse error: expected {!s} at {!r}'.format(self.expected, self.index)
 
-Result = namedtuple('Result', ['success', 'index', 'value'])
-
 class Parser(object):
     """
     A Parser is an object that wraps a function whose arguments are
