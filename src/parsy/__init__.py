@@ -138,6 +138,14 @@ class Parser(object):
     def desc(self, description):
         return self | fail(description)
 
+    def mark(self):
+        @generate
+        def marked():
+            start = yield index
+            body = yield self
+            end = yield index
+            return (start, body, end)
+
     def __or__(self, other):
         if not isinstance(other, Parser):
             raise TypeError('{!r} is not a parser!'.format(other))
@@ -190,6 +198,10 @@ def generate(fn):
             return (True, index, returnVal)
 
     return generated.desc(fn.__name__)
+
+@Parser
+def index(stream, index):
+    return (True, index, index)
 
 def success(val):
     return Parser(lambda _, index: (True, index, val))
