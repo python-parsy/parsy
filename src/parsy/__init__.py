@@ -138,13 +138,7 @@ class Parser(object):
         return self.times(0, n)
 
     def at_least(self, n):
-        @generate
-        def at_least_parser():
-            start = yield self.times(n)
-            end = yield self.many()
-            return start + end
-
-        return at_least_parser
+        return self.times(n) + self.many()
 
     def desc(self, description):
         return self | fail(description)
