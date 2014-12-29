@@ -1,9 +1,6 @@
 from parsy import string, regex, generate, ParseError
 import pdb
 
-letter = regex(r'[a-zA-Z]')
-digit  = regex(r'[0-9]')
-
 def test_string():
     parser = string('x')
     assert parser.parse('x') == 'x'
