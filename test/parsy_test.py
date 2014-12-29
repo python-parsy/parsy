@@ -1,4 +1,4 @@
-from parsy import string, regex, generate, ParseError
+from parsy import string, regex, generate, ParseError, letter, digit
 import pdb
 
 def test_string():
