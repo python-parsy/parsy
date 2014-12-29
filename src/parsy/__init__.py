@@ -159,6 +159,9 @@ class Parser(object):
 
         return marked
 
+    def __add__(self, other):
+        return self.bind(lambda res: other.map(lambda res2: res+res2))
+
     def __or__(self, other):
         if not isinstance(other, Parser):
             raise TypeError('{!r} is not a parser!'.format(other))
