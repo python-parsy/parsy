@@ -5,14 +5,27 @@ from .version import __version__
 from functools import wraps
 from collections import namedtuple
 
+def line_info_at(stream, index):
+    if index > len(stream): raise "invalid index"
+
+    prefix = stream[0:index]
+    line = prefix.count("\n")
+    last_nl = prefix.rfind("\n")
+    col = index - 1 - last_nl if last_nl >= 0 else index
+    return (line, col)
+
 class ParseError(RuntimeError):
     def __init__(self, expected, stream, index):
         self.expected = expected
         self.stream = stream
         self.index = index
 
+    def line_info(self):
+        return line_info_at(self.stream, self.index)
+
     def __str__(self):
-        return 'parse error: expected {!s} at {!r}'.format(self.expected, self.index)
+        (line, col) = self.line_info()
+        return 'parse error: expected {!s} at {!r}:{!r}'.format(self.expected, line, col)
 
 class Parser(object):
     """
@@ -139,10 +152,12 @@ class Parser(object):
     def mark(self):
         @generate
         def marked():
-            start = yield index
+            start = yield line_info
             body = yield self
-            end = yield index
+            end = yield line_info
             return (start, body, end)
+
+        return marked
 
     def __or__(self, other):
         if not isinstance(other, Parser):
@@ -200,6 +215,10 @@ def generate(fn):
 @Parser
 def index(stream, index):
     return (True, index, index)
+
+@Parser
+def line_info(stream, index):
+    return (True, index, line_info_at(stream, index))
 
 def success(val):
     return Parser(lambda _, index: (True, index, val))

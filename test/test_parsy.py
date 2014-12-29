@@ -54,6 +54,24 @@ class TestParser(unittest.TestCase):
         self.assertEqual(x, 'x')
         self.assertEqual(y, 'y')
 
+    def test_mark(self):
+        parser = (letter.many().mark() << string("\n")).many()
+        print()
+
+        lines = parser.parse("asdf\nqwer\n")
+
+        self.assertEqual(len(lines), 2)
+
+        (start, letters, end) = lines[0]
+        self.assertEqual(start, (0, 0))
+        self.assertEqual(letters, ['a', 's', 'd', 'f'])
+        self.assertEqual(end, (0, 4))
+
+        (start, letters, end) = lines[1]
+        self.assertEqual(start, (1, 0))
+        self.assertEqual(letters, ['q', 'w', 'e', 'r'])
+        self.assertEqual(end, (1, 4))
+
     def test_generate_desc(self):
         @generate('a thing')
         def thing():
