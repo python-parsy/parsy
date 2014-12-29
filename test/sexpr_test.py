@@ -1,6 +1,7 @@
 from parsy import string, regex, generate
 import re
 import pdb
+import unittest
 
 whitespace = regex(r'\s+', re.MULTILINE)
 comment = regex(r';.*')
@@ -34,30 +35,35 @@ expr = form | quote | atom
 
 program = ignore >> expr.many()
 
-def test_form():
-    result = program.parse('(1 2 3)')
-    assert result == [[1, 2, 3]]
+class TestSexpr(unittest.TestCase):
+    def test_form(self):
+        result = program.parse('(1 2 3)')
+        self.assertEqual(result, [[1, 2, 3]])
+    
+    def test_quote(self):
+        result = program.parse("'foo '(bar baz)")
+        self.assertEqual(result,
+                         [['quote', 'foo'], ['quote', ['bar', 'baz']]])
+    
+    def test_double_quote(self):
+        result = program.parse("''foo")
+        self.assertEqual(result, [['quote', ['quote', 'foo']]])
+    
+    def test_boolean(self):
+        result = program.parse('#t #f')
+        self.assertEqual(result, [True, False])
+    
+    def test_comments(self):
+        result = program.parse(
+          """
+          ; a program with a comment
+          (           foo ; that's a foo
+          bar )
+          ; some comments at the end
+          """
+        )
+        
+        self.assertEqual(result, [['foo', 'bar']])
 
-def test_quote():
-    result = program.parse("'foo '(bar baz)")
-    assert result == [['quote', 'foo'], ['quote', ['bar', 'baz']]]
-
-def test_double_quote():
-    result = program.parse("''foo")
-    assert result == [['quote', ['quote', 'foo']]]
-
-def test_boolean():
-    result = program.parse('#t #f')
-    assert result == [True, False]
-
-def test_comments():
-    result = program.parse(
-      """
-      ; a program with a comment
-      (           foo ; that's a foo
-      bar )
-      ; some comments at the end
-      """
-    )
-
-    assert result == [['foo', 'bar']]
+if __name__ == '__main__':
+    unittest.main()
