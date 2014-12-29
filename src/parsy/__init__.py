@@ -180,11 +180,10 @@ def generate(fn):
     return generated
 
 def success(val):
-    @Parser
-    def success_parser(stream, index):
-        return (True, index, val)
+    return Parser(lambda _, index: (True, index, val))
 
-    return success_parser
+def fail(message):
+    return Parser(lambda _, index: (False, index, message))
 
 def string(s):
     slen = len(s)
