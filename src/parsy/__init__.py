@@ -223,6 +223,20 @@ def regex(exp, flags=0):
 whitespace = regex(r'\s+')
 
 @Parser
+def letter(stream, index):
+    if index < len(stream):
+        if stream[index].isalpha():
+            return (True, index+1, stream[index])
+    return (False, index, 'a letter')
+
+@Parser
+def digit(stream, index):
+    if index < len(stream):
+            if stream[index].isdigit():
+                return (True, index+1, stream[index])
+    return (False, index, 'a digit')
+
+@Parser
 def eof(stream, index):
     if index < len(stream):
         return (False, index, 'EOF')
