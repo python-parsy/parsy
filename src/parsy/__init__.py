@@ -6,7 +6,13 @@ from functools import wraps
 from collections import namedtuple
 
 class ParseError(RuntimeError):
-    pass
+    def __init__(self, expected, stream, index):
+        self.expected = expected
+        self.stream = stream
+        self.index = index
+
+    def __str__(self):
+        return 'parse error: expected {!s} at {!r}'.format(self.expected, self.index)
 
 Result = namedtuple('Result', ['success', 'index', 'value'])
 
@@ -43,7 +49,7 @@ class Parser(object):
         if status:
             return (value, string[index:])
         else:
-            raise ParseError('expected {!r} at {!r}'.format(value, index))
+            raise ParseError(value, string, index)
 
     def bind(self, bind_fn):
         @Parser
