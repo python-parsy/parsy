@@ -162,6 +162,11 @@ class Parser(object):
     def __add__(self, other):
         return self.bind(lambda res: other.map(lambda res2: res+res2))
 
+    def __mul__(self, other):
+        if isinstance(other, range):
+            return self.times(other.start, other.stop-1)
+        return self.times(other)
+
     def __or__(self, other):
         if not isinstance(other, Parser):
             raise TypeError('{!r} is not a parser!'.format(other))
