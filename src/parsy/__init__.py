@@ -135,6 +135,9 @@ class Parser(object):
 
         return at_least_parser
 
+    def desc(self, description):
+        return self | fail(description)
+
     def __or__(self, other):
         if not isinstance(other, Parser):
             raise TypeError('{!r} is not a parser!'.format(other))
@@ -165,6 +168,9 @@ class Parser(object):
 
 # combinator syntax
 def generate(fn):
+    if isinstance(fn, str):
+        return lambda f: generate(f).desc(fn)
+
     @wraps(fn)
     @Parser
     def generated(stream, index):
@@ -183,7 +189,7 @@ def generate(fn):
 
             return (True, index, returnVal)
 
-    return generated
+    return generated.desc(fn.__name__)
 
 def success(val):
     return Parser(lambda _, index: (True, index, val))

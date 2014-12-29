@@ -18,7 +18,7 @@ false  = lexeme(string('#f')).result(False)
 
 atom = true | false | number | symbol
 
-@generate
+@generate('a form')
 def form():
     yield lparen
     els = yield expr.many()

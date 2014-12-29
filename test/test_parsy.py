@@ -54,6 +54,19 @@ class TestParser(unittest.TestCase):
         self.assertEqual(x, 'x')
         self.assertEqual(y, 'y')
 
+    def test_generate_desc(self):
+        @generate('a thing')
+        def thing():
+            yield string('t')
+
+        with self.assertRaises(ParseError) as err: thing.parse('x')
+
+        ex = err.exception
+
+        self.assertEqual(ex.expected, 'a thing')
+        self.assertEqual(ex.stream, 'x')
+        self.assertEqual(ex.index, 0)
+
     def test_generate_backtracking(self):
         @generate
         def xy():
