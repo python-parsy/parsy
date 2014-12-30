@@ -43,20 +43,19 @@ class TestParser(unittest.TestCase):
     def test_generate(self):
         x = y = None
         @generate
-        def parser():
+        def xy():
             nonlocal x
             nonlocal y
             x = yield string('x')
             y = yield string('y')
             return 3
 
-        self.assertEqual(parser.parse('xy'), 3)
+        self.assertEqual(xy.parse('xy'), 3)
         self.assertEqual(x, 'x')
         self.assertEqual(y, 'y')
 
     def test_mark(self):
         parser = (letter.many().mark() << string("\n")).many()
-        print()
 
         lines = parser.parse("asdf\nqwer\n")
 

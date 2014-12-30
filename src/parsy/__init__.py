@@ -27,6 +27,20 @@ class ParseError(RuntimeError):
         (line, col) = self.line_info()
         return 'parse error: expected {!s} at {!r}:{!r}'.format(self.expected, line, col)
 
+class Result(namedtuple('Result', 'status index value furthest expected')):
+    @staticmethod
+    def success(index, value): return Result(True, index, value, -1, None)
+
+    @staticmethod
+    def failure(index, expected): return Result(False, -1, None, index, expected)
+
+    # collect the furthest failure from self and other
+    def aggregate(self, other):
+        if not other: return self
+        if self.furthest >= other.furthest: return self
+
+        return Result(self.status, self.index, self.value, other.furthest, other.expected)
+
 class Parser(object):
     """
     A Parser is an object that wraps a function whose arguments are
@@ -55,23 +69,23 @@ class Parser(object):
         Return a tuple of the result and the rest of the string,
         or raise a ParseError.
         """
-        (status, index, value) = self(string, 0)
+        result = self(string, 0)
 
-        if status:
-            return (value, string[index:])
+        if result.status:
+            return (result.value, string[result.index:])
         else:
-            raise ParseError(value, string, index)
+            raise ParseError(result.expected, string, result.furthest)
 
     def bind(self, bind_fn):
         @Parser
         def bound_parser(stream, index):
-            (success, new_index, value) = self(stream, index)
+            result = self(stream, index)
 
-            if success:
-                next_parser = bind_fn(value)
-                return next_parser(stream, new_index)
+            if result.status:
+                next_parser = bind_fn(result.value)
+                return next_parser(stream, result.index).aggregate(result)
             else:
-                return (False, index, value)
+                return result
 
         return bound_parser
 
@@ -88,7 +102,7 @@ class Parser(object):
         return self >> success(res)
 
     def many(self):
-        return self.times(None)
+        return self.times(0, float('inf'))
 
     def times(self, min, max=None):
         # max=None means exactly min
@@ -98,19 +112,22 @@ class Parser(object):
 
         @Parser
         def times_parser(stream, index):
-            aggregate = []
+            values = []
             times = 0
-            while max is None or times < max:
-                (status, next_index, value) = self(stream, index)
-                if status:
-                    index = next_index
-                    aggregate.append(value)
+            result = None
+
+            while times < max:
+                result = self(stream, index).aggregate(result)
+                if result.status:
+                    values.append(result.value)
+                    index = result.index
                     times += 1
-                else:
-                    if min is not None and times < min:
-                        return (False, next_index, value)
+                elif times >= min:
                     break
-            return (True, index, aggregate)
+                else:
+                    return result
+
+            return Result.success(index, values).aggregate(result)
 
         return times_parser
 
@@ -145,19 +162,7 @@ class Parser(object):
         if not isinstance(other, Parser):
             raise TypeError('{!r} is not a parser!'.format(other))
 
-        @Parser
-        def or_parser(stream, index):
-            def failure(new_index, message):
-                # we use the closured index here so it backtracks
-                return other(stream, index)
-
-            (status, next_index, value) = self(stream, index)
-            if status:
-                return (True, next_index, value)
-            else:
-                return other(stream, index)
-
-        return or_parser
+        return alt(self, other)
 
     # haskelley operators, for fun #
 
@@ -169,6 +174,22 @@ class Parser(object):
     def __lshift__(self, other):
         return self.skip(other)
 
+def alt(*parsers):
+    if not parsers:
+        return fail('<empty alt>')
+
+    @Parser
+    def alt_parser(stream, index):
+        result = None
+        for parser in parsers:
+            result = parser(stream, index).aggregate(result)
+            if result.status:
+                return result
+
+        return result
+
+    return alt_parser
+
 # combinator syntax
 def generate(fn):
     if isinstance(fn, str):
@@ -177,36 +198,35 @@ def generate(fn):
     @wraps(fn)
     @Parser
     def generated(stream, index):
+        # start up the generator
         iterator = fn()
+
+        result = None
         value = None
         try:
             while True:
                 next_parser = iterator.send(value)
-                (status, index, value) = next_parser(stream, index)
-                if not status:
-                    return (False, index, value)
-        except StopIteration as result:
-            returnVal = result.value
+                result = next_parser(stream, index).aggregate(result)
+                if not result.status: return result
+                value = result.value
+                index = result.index
+        except StopIteration as stop:
+            returnVal = stop.value
             if isinstance(returnVal, Parser):
-                return returnVal(stream, index)
+                return returnVal(stream, index).aggregate(result)
 
-            return (True, index, returnVal)
+            return Result.success(index, returnVal).aggregate(result)
 
     return generated.desc(fn.__name__)
 
-@Parser
-def index(stream, index):
-    return (True, index, index)
-
-@Parser
-def line_info(stream, index):
-    return (True, index, line_info_at(stream, index))
+index = Parser(lambda _, index: Result.success(index, index))
+line_info = Parser(lambda stream, index: Result.success(index, line_info_at(stream, index)))
 
 def success(val):
-    return Parser(lambda _, index: (True, index, val))
+    return Parser(lambda _, index: Result.success(index, val))
 
-def fail(message):
-    return Parser(lambda _, index: (False, index, message))
+def fail(expected):
+    return Parser(lambda _, index: Result.failure(index, expected))
 
 def string(s):
     slen = len(s)
@@ -214,9 +234,9 @@ def string(s):
     @Parser
     def string_parser(stream, index):
         if stream[index:index+slen] == s:
-            return (True, index+slen, s)
+            return Result.success(index + slen, s)
         else:
-            return (False, index, s)
+            return Result.failure(index, s)
 
     string_parser.__name__ = 'string_parser<%s>' % s
 
@@ -230,9 +250,9 @@ def regex(exp, flags=0):
     def regex_parser(stream, index):
         match = exp.match(stream, index)
         if match:
-            return (True, match.end(), match.group(0))
+            return Result.success(match.end(), match.group(0))
         else:
-            return (False, index, exp.pattern)
+            return Result.failure(index, exp.pattern)
 
     regex_parser.__name__ = 'regex_parser<%s>' % exp.pattern
 
@@ -242,21 +262,21 @@ whitespace = regex(r'\s+')
 
 @Parser
 def letter(stream, index):
-    if index < len(stream):
-        if stream[index].isalpha():
-            return (True, index+1, stream[index])
-    return (False, index, 'a letter')
+    if index < len(stream) and stream[index].isalpha():
+        return Result.success(index+1, stream[index])
+    else:
+        return Result.failure(index, 'a letter')
 
 @Parser
 def digit(stream, index):
-    if index < len(stream):
-            if stream[index].isdigit():
-                return (True, index+1, stream[index])
-    return (False, index, 'a digit')
+    if index < len(stream) and stream[index].isdigit():
+        return Result.success(index+1, stream[index])
+    else:
+        return Result.failure(index, 'a digit')
 
 @Parser
 def eof(stream, index):
-    if index < len(stream):
-        return (False, index, 'EOF')
-
-    return (True, index, None)
+    if index >= len(stream):
+        return Result.success(index, None)
+    else:
+        return Result.failure(index, 'EOF')
