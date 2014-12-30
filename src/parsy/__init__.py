@@ -6,12 +6,11 @@ from functools import wraps
 from collections import namedtuple
 
 def line_info_at(stream, index):
-    if index > len(stream): raise "invalid index"
-
-    prefix = stream[0:index]
-    line = prefix.count("\n")
-    last_nl = prefix.rfind("\n")
-    col = index - 1 - last_nl if last_nl >= 0 else index
+    if index > len(stream):
+        raise ValueError("invalid index")
+    line = stream.count("\n", 0, index)
+    last_nl = stream.rfind("\n", 0, index)
+    col = index - (last_nl + 1)
     return (line, col)
 
 class ParseError(RuntimeError):
@@ -21,11 +20,13 @@ class ParseError(RuntimeError):
         self.index = index
 
     def line_info(self):
-        return line_info_at(self.stream, self.index)
+        try:
+            return '{}:{}'.format(*line_info_at(self.stream, self.index))
+        except (TypeError, AttributeError): # not a str
+            return str(self.index)
 
     def __str__(self):
-        (line, col) = self.line_info()
-        return 'parse error: expected {!s} at {!r}:{!r}'.format(self.expected, line, col)
+        return 'expected {} at {}'.format(self.expected, self.line_info())
 
 class Result(namedtuple('Result', 'status index value furthest expected')):
     @staticmethod
