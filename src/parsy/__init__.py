@@ -88,48 +88,28 @@ class Parser(object):
         return self >> success(res)
 
     def many(self):
-        @Parser
-        def many_parser(stream, index):
-            aggregate = []
-            next_index = index
-
-            while True:
-                (status, next_index, value) = self(stream, index)
-                if status:
-                    aggregate.append(value)
-                    index = next_index
-                else:
-                    break
-
-            return (True, index, aggregate)
-
-        return many_parser
+        return self.times(None)
 
     def times(self, min, max=None):
+        # max=None means exactly min
+        # min=max=None means from 0 to infinity
         if max is None:
             max = min
 
         @Parser
         def times_parser(stream, index):
             aggregate = []
-            next_index = index
-
-            for times in range(0, min):
-                (status, next_index, value) = self(stream, index)
-                index = next_index
-                if status:
-                    aggregate.append(value)
-                else:
-                    return (False, index, value)
-
-            for times in range(min, max):
+            times = 0
+            while max is None or times < max:
                 (status, next_index, value) = self(stream, index)
                 if status:
                     index = next_index
                     aggregate.append(value)
+                    times += 1
                 else:
+                    if min is not None and times < min:
+                        return (False, next_index, value)
                     break
-
             return (True, index, aggregate)
 
         return times_parser
@@ -138,13 +118,7 @@ class Parser(object):
         return self.times(0, n)
 
     def at_least(self, n):
-        @generate
-        def at_least_parser():
-            start = yield self.times(n)
-            end = yield self.many()
-            return start + end
-
-        return at_least_parser
+        return self.times(n) + self.many()
 
     def desc(self, description):
         return self | fail(description)
@@ -158,6 +132,14 @@ class Parser(object):
             return (start, body, end)
 
         return marked
+
+    def __add__(self, other):
+        return self.bind(lambda res: other.map(lambda res2: res+res2))
+
+    def __mul__(self, other):
+        if isinstance(other, range):
+            return self.times(other.start, other.stop-1)
+        return self.times(other)
 
     def __or__(self, other):
         if not isinstance(other, Parser):
