@@ -93,10 +93,10 @@ class Parser(object):
         return self.bind(lambda res: success(map_fn(res)))
 
     def then(self, other):
-        return self.bind(lambda _: other)
+        return seq(self, other).map(lambda r: r[1])
 
     def skip(self, other):
-        return self.bind(lambda res: other.result(res))
+        return seq(self, other).map(lambda r: r[0])
 
     def result(self, res):
         return self >> success(res)
@@ -151,7 +151,7 @@ class Parser(object):
         return marked
 
     def __add__(self, other):
-        return self.bind(lambda res: other.map(lambda res2: res+res2))
+        return seq(self, other).map(lambda res: res[0] + res[1])
 
     def __mul__(self, other):
         if isinstance(other, range):
@@ -189,6 +189,25 @@ def alt(*parsers):
         return result
 
     return alt_parser
+
+def seq(*parsers):
+    if not parsers:
+        return success([])
+
+    @Parser
+    def seq_parser(stream, index):
+        result = None
+        values = []
+        for parser in parsers:
+            result = parser(stream, index).aggregate(result)
+            if not result.status:
+                return result
+            index = result.index
+            values.append(result.value)
+
+        return Result.success(index, values).aggregate(result)
+
+    return seq_parser
 
 # combinator syntax
 def generate(fn):
