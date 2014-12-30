@@ -20,11 +20,13 @@ class ParseError(RuntimeError):
         self.index = index
 
     def line_info(self):
-        return line_info_at(self.stream, self.index)
+        try:
+            return '{}:{}'.format(*line_info_at(self.stream, self.index))
+        except (TypeError, AttributeError): # not a str
+            return str(self.index)
 
     def __str__(self):
-        (line, col) = self.line_info()
-        return 'parse error: expected {!s} at {!r}:{!r}'.format(self.expected, line, col)
+        return 'expected {} at {}'.format(self.expected, self.line_info())
 
 class Parser(object):
     """
