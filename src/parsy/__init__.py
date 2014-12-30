@@ -6,8 +6,8 @@ from functools import wraps
 from collections import namedtuple
 
 def line_info_at(stream, index):
-    if index > len(stream): raise "invalid index"
-
+    if index > len(stream):
+        raise ValueError("invalid index")
     prefix = stream[0:index]
     line = prefix.count("\n")
     last_nl = prefix.rfind("\n")
