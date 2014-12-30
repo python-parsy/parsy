@@ -8,10 +8,9 @@ from collections import namedtuple
 def line_info_at(stream, index):
     if index > len(stream):
         raise ValueError("invalid index")
-    prefix = stream[0:index]
-    line = prefix.count("\n")
-    last_nl = prefix.rfind("\n")
-    col = index - 1 - last_nl if last_nl >= 0 else index
+    line = stream.count("\n", 0, index)
+    last_nl = stream.rfind("\n", 0, index)
+    col = index - (last_nl + 1)
     return (line, col)
 
 class ParseError(RuntimeError):
