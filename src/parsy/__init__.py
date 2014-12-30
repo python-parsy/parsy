@@ -46,11 +46,11 @@ class Parser(object):
     """
     A Parser is an object that wraps a function whose arguments are
     a string to be parsed and the index on which to begin parsing.
-    The function returns a 3-tuple of (status, next_index, value),
-    where the status is True if the parse was successful and False
-    otherwise, the next_index is where to begin the next parse
-    (or where to report a failure), and the value is the yielded value
-    (or an error message).
+    The function should return either Result.success(next_index, value),
+    where the next index is where to continue the parse and the value is
+    the yielded value, or Result.failure(index, expected), where expected
+    is a string indicating what was expected, and the index is the index
+    of the failure.
     """
 
     def __init__(self, wrapped_fn):
