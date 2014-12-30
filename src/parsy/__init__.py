@@ -88,48 +88,28 @@ class Parser(object):
         return self >> success(res)
 
     def many(self):
-        @Parser
-        def many_parser(stream, index):
-            aggregate = []
-            next_index = index
-
-            while True:
-                (status, next_index, value) = self(stream, index)
-                if status:
-                    aggregate.append(value)
-                    index = next_index
-                else:
-                    break
-
-            return (True, index, aggregate)
-
-        return many_parser
+        return self.times(None)
 
     def times(self, min, max=None):
+        # max=None means exactly min
+        # min=max=None means from 0 to infinity
         if max is None:
             max = min
 
         @Parser
         def times_parser(stream, index):
             aggregate = []
-            next_index = index
-
-            for times in range(0, min):
-                (status, next_index, value) = self(stream, index)
-                index = next_index
-                if status:
-                    aggregate.append(value)
-                else:
-                    return (False, index, value)
-
-            for times in range(min, max):
+            times = 0
+            while max is None or times < max:
                 (status, next_index, value) = self(stream, index)
                 if status:
                     index = next_index
                     aggregate.append(value)
+                    times += 1
                 else:
+                    if min is not None and times < min:
+                        return (False, next_index, value)
                     break
-
             return (True, index, aggregate)
 
         return times_parser
