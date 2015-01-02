@@ -161,6 +161,15 @@ class Parser(object):
     def at_least(self, n):
         return self.times(n) + self.many()
 
+    def sep_by(self, sep, *, min=0, max=float('inf')):
+        zero_times = success([])
+        if max == 0:
+            return zero_times
+        res = self.times(1) + (sep >> self).times(min - 1, max - 1)
+        if min == 0:
+            res |= zero_times
+        return res
+
     def desc(self, description):
         @Parser
         def desc_parser(stream, index):
