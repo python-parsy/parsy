@@ -1,2 +1,4 @@
 /build
 /dist
+.tox
+src/parsy.egg-info
