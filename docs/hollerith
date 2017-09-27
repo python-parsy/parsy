@@ -1,0 +1,14 @@
+import pyparsing as pp
+
+def hollerith():
+    intExpr = pp.Word(pp.nums).setParseAction(lambda t: int(t[0]))
+    stringExpr = pp.Forward()
+
+    def countedParseAction(toks):
+        n = toks[0]
+        contents = pp.CharsNotIn('', exact=n)
+        stringExpr << (pp.Suppress(pp.CaselessLiteral('H')) + contents)
+        return None
+
+    intExpr.addParseAction(countedParseAction)
+    return (pp.Suppress(intExpr) + stringExpr)

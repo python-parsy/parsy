@@ -195,6 +195,10 @@ def alt(*parsers):
     return alt_parser
 
 def seq(*parsers):
+    """
+    Takes a list of list of parsers, runs them in order,
+    and collects their individuals results in a list
+    """
     if not parsers:
         return success([])
 

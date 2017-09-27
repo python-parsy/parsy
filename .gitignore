@@ -2,3 +2,5 @@
 /dist
 .tox
 src/parsy.egg-info
+docs/_build
+.cache
