@@ -18,8 +18,10 @@ setup(
     version=version,
     description="easy-to-use parser combinators",
     author="Jeanine Adkisson",
-    url="https://github.com/jneen/parsy",
     author_email="jneen at jneen dot net (humans only, please)",
+    maintainer="Luke Plant",
+    maintainer_email="L.Plant.98@cantab.net",
+    url="https://github.com/python-parsy/parsy",
     license="MIT",
     classifiers=[
         "Development Status :: 3 - Alpha",
