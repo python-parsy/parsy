@@ -1,6 +1,7 @@
 # parsy
 
 [![Documentation Status](https://readthedocs.org/projects/parsy/badge/?version=latest)](http://parsy.readthedocs.io/en/latest/?badge=latest)
+[![Build Status](https://travis-ci.org/python-parsy/parsy.svg?branch=master)](https://travis-ci.org/python-parsy/parsy)
 
 
 Parsy is an easy way to combine simple, small parsers into complex,
