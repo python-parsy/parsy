@@ -13,7 +13,7 @@ Parsy requires Python 3.3 or greater.
 
 Links:
 
-* [Documentation](https://readthedocs.org/projects/parsy/badge/?version=latest)
+* [Documentation](http://parsy.readthedocs.io/en/latest/)
 
 To contribute, please create a fork and submit a pull request on GitHub, after
 checking the "contributing" section of the docs. Thanks!
