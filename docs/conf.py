@@ -47,7 +47,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'parsy'
-copyright = '2017, Jeanine Adkisson'
+copyright = '2017, Jeanine Adkisson, Luke Plant'
 author = 'Jeanine Adkisson'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -95,21 +95,6 @@ html_theme = 'default'
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
-
-# # Custom sidebar templates, must be a dictionary that maps document names
-# # to template names.
-# #
-# # This is required for the alabaster theme
-# # refs: http://alabaster.readthedocs.io/en/latest/installation.html#sidebars
-# html_sidebars = {
-#     '**': [
-#         'about.html',
-#         'navigation.html',
-#         'relations.html',  # needs 'show_related': True theme option to display
-#         'searchbox.html',
-#         'donate.html',
-#     ]
-# }
 
 
 # -- Options for HTMLHelp output ------------------------------------------
@@ -167,6 +152,3 @@ texinfo_documents = [
      author, 'parsy', 'One line description of project.',
      'Miscellaneous'),
 ]
-
-
-
