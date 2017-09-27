@@ -6,5 +6,6 @@ python:
   - "3.6"
 install:
   - pip install pytest
+  - ./setup.py develop
 script:
-  - pytest
+  - py.test
