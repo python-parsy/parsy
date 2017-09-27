@@ -1,7 +1,7 @@
-from parsy import string, regex, generate
 import re
-import pdb
 import unittest
+
+from parsy import generate, regex, string
 
 whitespace = regex(r'\s+', re.MULTILINE)
 comment = regex(r';.*')
@@ -18,6 +18,7 @@ false  = lexeme(string('#f')).result(False)
 
 atom = true | false | number | symbol
 
+
 @generate('a form')
 def form():
     yield lparen
@@ -25,15 +26,17 @@ def form():
     yield rparen
     return els
 
+
 @generate
 def quote():
     yield string("'")
     e = yield expr
     return ['quote', e]
 
-expr = form | quote | atom
 
+expr = form | quote | atom
 program = ignore >> expr.many()
+
 
 class TestSexpr(unittest.TestCase):
     def test_form(self):
@@ -55,15 +58,16 @@ class TestSexpr(unittest.TestCase):
 
     def test_comments(self):
         result = program.parse(
-          """
-          ; a program with a comment
-          (           foo ; that's a foo
-          bar )
-          ; some comments at the end
-          """
+            """
+            ; a program with a comment
+            (           foo ; that's a foo
+            bar )
+            ; some comments at the end
+            """
         )
 
         self.assertEqual(result, [['foo', 'bar']])
+
 
 if __name__ == '__main__':
     unittest.main()

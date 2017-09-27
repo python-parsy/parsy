@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*- #
 
 import re
-from .version import __version__
+from .version import __version__  # noqa: F401
 from functools import wraps
 from collections import namedtuple
+
 
 def line_info_at(stream, index):
     if index > len(stream):
@@ -12,6 +13,7 @@ def line_info_at(stream, index):
     last_nl = stream.rfind("\n", 0, index)
     col = index - (last_nl + 1)
     return (line, col)
+
 
 class ParseError(RuntimeError):
     def __init__(self, expected, stream, index):
@@ -28,19 +30,25 @@ class ParseError(RuntimeError):
     def __str__(self):
         return 'expected {} at {}'.format(self.expected, self.line_info())
 
+
 class Result(namedtuple('Result', 'status index value furthest expected')):
     @staticmethod
-    def success(index, value): return Result(True, index, value, -1, None)
+    def success(index, value):
+        return Result(True, index, value, -1, None)
 
     @staticmethod
-    def failure(index, expected): return Result(False, -1, None, index, expected)
+    def failure(index, expected):
+        return Result(False, -1, None, index, expected)
 
     # collect the furthest failure from self and other
     def aggregate(self, other):
-        if not other: return self
-        if self.furthest >= other.furthest: return self
+        if not other:
+            return self
+        if self.furthest >= other.furthest:
+            return self
 
         return Result(self.status, self.index, self.value, other.furthest, other.expected)
+
 
 class Parser(object):
     """
@@ -159,7 +167,7 @@ class Parser(object):
 
     def __mul__(self, other):
         if isinstance(other, range):
-            return self.times(other.start, other.stop-1)
+            return self.times(other.start, other.stop - 1)
         return self.times(other)
 
     def __or__(self, other):
@@ -178,6 +186,7 @@ class Parser(object):
     def __lshift__(self, other):
         return self.skip(other)
 
+
 def alt(*parsers):
     if not parsers:
         return fail('<empty alt>')
@@ -193,6 +202,7 @@ def alt(*parsers):
         return result
 
     return alt_parser
+
 
 def seq(*parsers):
     """
@@ -217,6 +227,7 @@ def seq(*parsers):
 
     return seq_parser
 
+
 # combinator syntax
 def generate(fn):
     if isinstance(fn, str):
@@ -234,7 +245,8 @@ def generate(fn):
             while True:
                 next_parser = iterator.send(value)
                 result = next_parser(stream, index).aggregate(result)
-                if not result.status: return result
+                if not result.status:
+                    return result
                 value = result.value
                 index = result.index
         except StopIteration as stop:
@@ -246,21 +258,25 @@ def generate(fn):
 
     return generated.desc(fn.__name__)
 
+
 index = Parser(lambda _, index: Result.success(index, index))
 line_info = Parser(lambda stream, index: Result.success(index, line_info_at(stream, index)))
+
 
 def success(val):
     return Parser(lambda _, index: Result.success(index, val))
 
+
 def fail(expected):
     return Parser(lambda _, index: Result.failure(index, expected))
+
 
 def string(s):
     slen = len(s)
 
     @Parser
     def string_parser(stream, index):
-        if stream[index:index+slen] == s:
+        if stream[index:index + slen] == s:
             return Result.success(index + slen, s)
         else:
             return Result.failure(index, s)
@@ -268,6 +284,7 @@ def string(s):
     string_parser.__name__ = 'string_parser<%s>' % s
 
     return string_parser
+
 
 def regex(exp, flags=0):
     if isinstance(exp, str):
@@ -285,21 +302,25 @@ def regex(exp, flags=0):
 
     return regex_parser
 
+
 whitespace = regex(r'\s+')
+
 
 @Parser
 def letter(stream, index):
     if index < len(stream) and stream[index].isalpha():
-        return Result.success(index+1, stream[index])
+        return Result.success(index + 1, stream[index])
     else:
         return Result.failure(index, 'a letter')
+
 
 @Parser
 def digit(stream, index):
     if index < len(stream) and stream[index].isdigit():
-        return Result.success(index+1, stream[index])
+        return Result.success(index + 1, stream[index])
     else:
         return Result.failure(index, 'a digit')
+
 
 @Parser
 def eof(stream, index):

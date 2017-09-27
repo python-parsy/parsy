@@ -1,0 +1,9 @@
+include *.md
+include LICENSE
+include tox.ini
+include .editorconfig
+recursive-include docs *.bat
+recursive-include docs *.py
+recursive-include docs *.rst
+recursive-include docs Makefile
+recursive-include examples *.py

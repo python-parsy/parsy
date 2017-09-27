@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
-from setuptools import setup, find_packages
-
 import os.path
+
+from setuptools import find_packages, setup
 
 # Evaluate version module without importing parsy, which could have undesirable
 # effects.

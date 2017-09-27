@@ -1,6 +1,7 @@
-from parsy import string, regex, generate, ParseError, letter, digit
-import pdb
 import unittest
+
+from parsy import ParseError, digit, generate, letter, regex, string
+
 
 class TestParser(unittest.TestCase):
 
@@ -42,6 +43,7 @@ class TestParser(unittest.TestCase):
 
     def test_generate(self):
         x = y = None
+
         @generate
         def xy():
             nonlocal x
@@ -76,7 +78,8 @@ class TestParser(unittest.TestCase):
         def thing():
             yield string('t')
 
-        with self.assertRaises(ParseError) as err: thing.parse('x')
+        with self.assertRaises(ParseError) as err:
+            thing.parse('x')
 
         ex = err.exception
 
@@ -164,6 +167,7 @@ class TestParser(unittest.TestCase):
         self.assertRaises(ParseError, then_digit.parse, 'xyzw')
         self.assertRaises(ParseError, then_digit.parse, 'xyzwv1')
         self.assertRaises(ParseError, then_digit.parse, 'x1')
+
 
 if __name__ == '__main__':
     unittest.main()

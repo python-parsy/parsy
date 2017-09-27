@@ -1,6 +1,7 @@
-from parsy import string, regex, generate
 import re
 from sys import stdin
+
+from parsy import generate, regex, string
 
 whitespace = regex(r'\s*', re.MULTILINE)
 
@@ -17,20 +18,21 @@ false  = lexeme(string('false')).result(False)
 null   = lexeme(string('null')).result(None)
 
 number = lexeme(
-  regex(r'-?(0|[1-9][0-9]*)([.][0-9]+)?([eE][+-]?[0-9]+)?')
+    regex(r'-?(0|[1-9][0-9]*)([.][0-9]+)?([eE][+-]?[0-9]+)?')
 ).map(float)
 
 string_part = regex(r'[^"\\]+')
 string_esc = string('\\') >> (
-  string('\\')
-  | string('/')
-  | string('b').result('\b')
-  | string('f').result('\f')
-  | string('n').result('\n')
-  | string('r').result('\r')
-  | string('t').result('\t')
-  | regex(r'u[0-9a-fA-F]{4}').map(lambda s: chr(int(s[1:], 16)))
+    string('\\')
+    | string('/')
+    | string('b').result('\b')
+    | string('f').result('\f')
+    | string('n').result('\n')
+    | string('r').result('\r')
+    | string('t').result('\t')
+    | regex(r'u[0-9a-fA-F]{4}').map(lambda s: chr(int(s[1:], 16)))
 )
+
 
 @lexeme
 @generate
@@ -39,6 +41,7 @@ def quoted():
     body = yield (string_part | string_esc).many()
     yield string('"')
     return ''.join(body)
+
 
 @generate
 def array():
@@ -49,12 +52,14 @@ def array():
     rest.insert(0, first)
     return rest
 
+
 @generate
 def object_pair():
     key = yield quoted
     yield colon
     val = yield value
     return (key, val)
+
 
 @generate
 def json_object():
@@ -65,8 +70,8 @@ def json_object():
     rest.insert(0, first)
     return dict(rest)
 
-value = quoted | number | json_object | array | true | false | null
 
+value = quoted | number | json_object | array | true | false | null
 json = whitespace >> value
 
 if __name__ == '__main__':
