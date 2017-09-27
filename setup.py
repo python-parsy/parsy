@@ -2,15 +2,20 @@
 
 from setuptools import setup, find_packages
 
-from os.path import join, dirname
-import sys
-sys.path.insert(0, join(dirname(__file__), 'src'))
-from parsy.version import __version__
-sys.path.pop(0)
+import os.path
+
+# Evaluate version module without importing parsy, which could have undesirable
+# effects.
+version_file = os.path.join(os.path.dirname(__file__),
+                            "src", "parsy", "version.py")
+namespace = {}
+exec(compile(open(version_file, "rb").read(), version_file, 'exec'),
+     globals(), namespace)
+version = namespace['__version__']
 
 setup(
     name="parsy",
-    version=__version__,
+    version=version,
     description="easy-to-use parser combinators",
     author="Jeanine Adkisson",
     url="https://github.com/jneen/parsy",
