@@ -78,7 +78,7 @@ date. The simplest way is to use the :meth:`Parser.then` method:
 The ``then`` method returns a new parser that requires the first parser to
 succeed, followed by the second parser (the argument to the method).
 
-We could also write this using the :ref:`>> <parser-rshift>` operator which
+We could also write this using the :ref:`parser-rshift` which
 does the same thing as :meth:`Parser.then`:
 
 .. code-block:: python
