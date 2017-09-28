@@ -15,9 +15,7 @@ monads.
 parsy differentiates itself from other solutions with the following:
 
 * a very clean implementation, only a few hundred lines.
-* free, good quality documentation, all in one place. (Please raise an issue on
-  GitHub if you have any problems, or find the documentation lacking in any
-  way).
+* free, good quality documentation, all in one place.
 * it avoids mutability, and therefore a ton of related bugs.
 * it has monadic binding with a :doc:`nice syntax </generating>`. In plain
   English:
