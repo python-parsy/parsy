@@ -167,14 +167,18 @@ Now, we don't need those dashes, so we can eliminate them using the :ref:`parser
    >>> fulldate.parse('2017-01-02')
    [2017, 1, 2]
 
-At this point, we could also convert this to a date object if we wanted::
+At this point, we could also convert this to a date object if we wanted using
+:meth:`Parser.combine`:
 
 .. code-block:: python
 
    >>> from datetime import date
-   >>> fulldate = seq(year, dash >> month, dash >> day).map(
-                      lambda l: date(l[0], l[1], l[2]))
+   >>> fulldate = seq(year, dash >> month, dash >> day).combine(date)
 
+We could have used :meth:`Parser.map` here, but :meth:`Parser.combine` is a bit
+nicer. It's especially succint because the argument order to ``date`` matches
+the order of the values parsed (year, month, day), otherwise we could pass a
+``lambda`` to ``combine``.
 
 Using previously parsed values
 ==============================
