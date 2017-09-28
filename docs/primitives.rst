@@ -1,6 +1,6 @@
-=================
-Primitive parsers
-=================
+==================
+Parsing primitives
+==================
 
 These are the lowest level building blocks for creating parsers.
 
@@ -28,7 +28,7 @@ These are the lowest level building blocks for creating parsers.
 
 .. data:: whitespace
 
-   A parser that matches and returns whitespace
+   A parser that matches and returns one or more whitespace characters
 
 .. data:: letter
 
