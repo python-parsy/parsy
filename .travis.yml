@@ -4,8 +4,17 @@ python:
   - "3.4"
   - "3.5"
   - "3.6"
+matrix:
+  include:
+    - env: SCRIPT=py.test
+    - python: "3.5"
+      env: SCRIPT=flake8
+    - python: "3.5"
+      env: SCRIPT=isort -c
+    - python: "3.5"
+      env: SCRIPT=check-manifest
 install:
-  - pip install pytest
+  - pip install pytest flake8 check-manifest isort
   - ./setup.py develop
 script:
-  - py.test
+  - $SCRIPT
