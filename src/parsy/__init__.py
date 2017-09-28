@@ -28,26 +28,35 @@ class ParseError(RuntimeError):
             return '<out of bounds index {!r}>'.format(self.index)
 
     def __str__(self):
-        return 'expected {} at {}'.format(self.expected, self.line_info())
+        expected_list = sorted(repr(e) for e in self.expected)
+
+        if len(expected_list) == 1:
+            return 'expected {} at {}'.format(expected_list[0], self.line_info())
+        else:
+            return 'expected one of {} at {}'.format(', '.join(expected_list), self.line_info())
 
 
 class Result(namedtuple('Result', 'status index value furthest expected')):
     @staticmethod
     def success(index, value):
-        return Result(True, index, value, -1, None)
+        return Result(True, index, value, -1, frozenset())
 
     @staticmethod
     def failure(index, expected):
-        return Result(False, -1, None, index, expected)
+        return Result(False, -1, None, index, frozenset([expected]))
 
     # collect the furthest failure from self and other
     def aggregate(self, other):
         if not other:
             return self
-        if self.furthest >= other.furthest:
-            return self
 
-        return Result(self.status, self.index, self.value, other.furthest, other.expected)
+        if self.furthest > other.furthest:
+            return self
+        elif self.furthest == other.furthest:
+            # if we both have the same failure index, we combine the expected messages.
+            return Result(self.status, self.index, self.value, self.furthest, self.expected | other.expected)
+        else:
+            return Result(self.status, self.index, self.value, other.furthest, other.expected)
 
 
 class Parser(object):
@@ -150,7 +159,15 @@ class Parser(object):
         return self.times(n) + self.many()
 
     def desc(self, description):
-        return self | fail(description)
+        @Parser
+        def desc_parser(stream, index):
+            result = self(stream, index)
+            if result.status:
+                return result
+            else:
+                return Result.failure(index, description)
+
+        return desc_parser
 
     def mark(self):
         @generate

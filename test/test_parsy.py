@@ -88,9 +88,19 @@ class TestParser(unittest.TestCase):
 
         ex = err.exception
 
-        self.assertEqual(ex.expected, 'a thing')
+        self.assertEqual(ex.expected, frozenset(['a thing']))
         self.assertEqual(ex.stream, 'x')
         self.assertEqual(ex.index, 0)
+
+    def test_multiple_failures(self):
+        abc = string('a') | string('b') | string('c')
+
+        with self.assertRaises(ParseError) as err:
+            abc.parse('d')
+
+        ex = err.exception
+        self.assertEqual(ex.expected, frozenset(['a', 'b', 'c']))
+        self.assertEqual(str(ex), "expected one of 'a', 'b', 'c' at 0:0")
 
     def test_generate_backtracking(self):
         @generate

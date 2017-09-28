@@ -37,7 +37,7 @@ immediately check that it works using the :meth:`Parser.parse` method:
    >>> year.parse('2017')
    '2017'
    >>> year.parse('abc')
-   ParseError: expected [0-9]{4} at 0:0
+   ParseError: expected '[0-9]{4}' at 0:0
 
 Notice first of all that a parser consumes input (the value we pass to
 ``parse``), and it produces an output. In the case of ``regex``, the produced
@@ -53,7 +53,7 @@ with a message saying it expected EOF (End Of File/Data):
 .. code-block:: python
 
    >>> year.parse('2017 ')
-   ParseError: expected EOF at 0:4
+   ParseError: expected 'EOF' at 0:4
 
 To parse the data, we need to parse months, days, and the dash symbol, so we'll
 add those:
@@ -91,9 +91,9 @@ as a basic validator:
 .. code-block:: python
 
    >>> fulldate.parse('2017-xx')
-   ParseError: expected [0-9]{2} at 0:5
+   ParseError: expected '[0-9]{2}' at 0:5
    >>> fulldate.parse('2017-01')
-   ParseError: expected - at 0:7
+   ParseError: expected '-' at 0:7
    >>> fulldate.parse('2017-02-01')
    '01'
 
@@ -138,7 +138,7 @@ We get better error messages now:
 .. code-block:: python
 
    >>> year.then(dash).then(month).parse('2017-xx')
-   ParseError: expected 2 digit month at 0:5
+   ParseError: expected '2 digit month' at 0:5
 
 
 Notice that the ``map`` and ``desc`` methods, like all similar methods on
@@ -298,7 +298,7 @@ This works now works as expected:
    >>> full_or_partial_date('2017-02')
    (2017, 2, None)
    >>> full_or_partial_date('2017-02-29')
-   ParseError: expected day is out of range for month at 0:10
+   ParseError: expected 'day is out of range for month' at 0:10
 
 We could of course use a custom object in the final line to return a more
 convenient data type, if wanted.
@@ -338,9 +338,9 @@ depending on which parser got furthest before returning a failure:
 .. code-block:: python
 
    >>> flexi_date.parse('2012-')
-   ParseError: expected 2 digit month at 0:5
+   ParseError: expected '2 digit month' at 0:5
    >>> flexi_data.parse('2 years ago')
-   ParseError: expected  days ago at 0:1
+   ParseError: expected ' days ago' at 0:1
 
 When using backtracking, you need to understand that backtracking to the other
 option only occurs if the first parser fails. So, for example:
@@ -354,7 +354,7 @@ option only occurs if the first parser fails. So, for example:
    >>> a_or_ab_and_c.parse('ac')
    'ac'
    >>> a_or_ab_and_c.parse('abc')
-   ParseError: expected c at 0:1
+   ParseError: expected 'c' at 0:1
 
 The parse fails because the ``a`` parser succeeds, and so the ``ab`` parser is
 never tried. In this case we can fix it by switching the order:
