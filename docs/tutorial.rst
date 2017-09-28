@@ -324,7 +324,7 @@ a parser for this easily:
    >>> days_ago.parse("5 days ago")
    datetime.timedelta(-5)
 
-Now we need to combine it with out date parser, and allow either to succeed.
+Now we need to combine it with our date parser, and allow either to succeed.
 This is done using the :ref:`parser-or`, as follows:
 
 
@@ -361,7 +361,10 @@ option only occurs if the first parser fails. So, for example:
    ParseError: expected 'c' at 0:1
 
 The parse fails because the ``a`` parser succeeds, and so the ``ab`` parser is
-never tried. In this case we can fix it by switching the order:
+never tried. This is different from most regular expressions engines, where
+backtracking is done over the whole regex by default.
+
+In this case we can get the parse to succeed by switching the order:
 
 .. code-block:: python
 
@@ -378,6 +381,8 @@ We could also fix it like this:
    >>> ((a + c) | (ab + c)).parse('abc')
    'abc'
 
+Learn more
+==========
 
 For further topics, see the :doc:`table of contents </index>` for the rest of
 the documentation that should enable you to build parsers for your needs.
