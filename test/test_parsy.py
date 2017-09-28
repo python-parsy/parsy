@@ -1,6 +1,6 @@
 import unittest
 
-from parsy import ParseError, digit, generate, letter, regex, string, seq
+from parsy import ParseError, digit, generate, letter, regex, seq, string
 
 
 class TestParser(unittest.TestCase):
