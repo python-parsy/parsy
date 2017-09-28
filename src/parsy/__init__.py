@@ -104,6 +104,9 @@ class Parser(object):
     def map(self, map_fn):
         return self.bind(lambda res: success(map_fn(res)))
 
+    def combine(self, combine_fn):
+        return self.bind(lambda res: success(combine_fn(*res)))
+
     def then(self, other):
         return seq(self, other).map(lambda r: r[1])
 
