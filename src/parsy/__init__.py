@@ -161,7 +161,15 @@ class Parser(object):
         return self.times(n) + self.many()
 
     def desc(self, description):
-        return self | fail(description)
+        @Parser
+        def desc_parser(stream, index):
+            result = self(stream, index)
+            if result.status:
+                return result
+            else:
+                return Result.failure(index, description)
+
+        return desc_parser
 
     def mark(self):
         @generate
