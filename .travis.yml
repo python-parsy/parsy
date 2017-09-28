@@ -4,9 +4,9 @@ python:
   - "3.4"
   - "3.5"
   - "3.6"
+env: SCRIPT=py.test
 matrix:
   include:
-    - env: SCRIPT=py.test
     - python: "3.5"
       env: SCRIPT=flake8
     - python: "3.5"
