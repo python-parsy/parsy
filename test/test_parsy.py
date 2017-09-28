@@ -1,6 +1,6 @@
 import unittest
 
-from parsy import ParseError, digit, generate, letter, regex, seq, string, line_info_at
+from parsy import ParseError, digit, generate, letter, line_info_at, regex, seq, string
 
 
 class TestParser(unittest.TestCase):
@@ -114,6 +114,9 @@ class TestParser(unittest.TestCase):
         self.assertEqual(ex.expected, frozenset(['b']))
         self.assertEqual(ex.stream, 'ax')
         self.assertEqual(ex.index, 1)
+
+        self.assertIn("expected 'b' at 0:1",
+                      str(ex))
 
     def test_multiple_failures(self):
         abc = string('a') | string('b') | string('c')
