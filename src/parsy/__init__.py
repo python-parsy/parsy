@@ -28,8 +28,7 @@ class ParseError(RuntimeError):
             return '<out of bounds index {!r}>'.format(self.index)
 
     def __str__(self):
-        expected_list = [repr(e) for e in self.expected]
-        expected_list.sort()
+        expected_list = sorted(repr(e) for e in self.expected)
 
         if len(expected_list) == 1:
             return 'expected {} at {}'.format(expected_list[0], self.line_info())
@@ -40,7 +39,7 @@ class ParseError(RuntimeError):
 class Result(namedtuple('Result', 'status index value furthest expected')):
     @staticmethod
     def success(index, value):
-        return Result(True, index, value, -1, frozenset([]))
+        return Result(True, index, value, -1, frozenset())
 
     @staticmethod
     def failure(index, expected):
@@ -58,7 +57,6 @@ class Result(namedtuple('Result', 'status index value furthest expected')):
             return Result(self.status, self.index, self.value, self.furthest, self.expected | other.expected)
         else:
             return Result(self.status, self.index, self.value, other.furthest, other.expected)
-
 
 
 class Parser(object):
