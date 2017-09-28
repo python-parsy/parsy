@@ -276,7 +276,7 @@ def generate(fn):
 
             return Result.success(index, returnVal).aggregate(result)
 
-    return generated.desc(fn.__name__)
+    return generated
 
 
 index = Parser(lambda _, index: Result.success(index, index))

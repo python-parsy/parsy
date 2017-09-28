@@ -98,6 +98,23 @@ class TestParser(unittest.TestCase):
         self.assertEqual(ex.stream, 'x')
         self.assertEqual(ex.index, 0)
 
+    def test_generate_default_desc(self):
+        # We shouldn't give a default desc, the messages from the internal
+        # parsers should bubble up.
+        @generate
+        def thing():
+            yield string('a')
+            yield string('b')
+
+        with self.assertRaises(ParseError) as err:
+            thing.parse('ax')
+
+        ex = err.exception
+
+        self.assertEqual(ex.expected, frozenset(['b']))
+        self.assertEqual(ex.stream, 'ax')
+        self.assertEqual(ex.index, 1)
+
     def test_multiple_failures(self):
         abc = string('a') | string('b') | string('c')
 

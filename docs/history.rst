@@ -7,6 +7,9 @@ History and release notes
 1.0.0 - unreleased
 ------------------
 
+* Improved parse failure messages of ``@generate`` parsers. Previously
+  the parser was given a default description of the function name,
+  which hides all useful internal info there might be.
 
 0.9.0 - 2017-09-28
 ------------------
