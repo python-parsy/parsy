@@ -41,6 +41,11 @@ class TestParser(unittest.TestCase):
 
         self.assertRaises(ParseError, parser.parse, 'x')
 
+    def test_map(self):
+        parser = digit.map(int)
+        self.assertEqual(parser.parse('7'),
+                         7)
+
     def test_generate(self):
         x = y = None
 
