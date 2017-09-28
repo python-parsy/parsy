@@ -1,6 +1,6 @@
 import unittest
 
-from parsy import ParseError, digit, generate, letter, regex, seq, string
+from parsy import ParseError, digit, generate, letter, regex, seq, string, line_info_at
 
 
 class TestParser(unittest.TestCase):
@@ -205,6 +205,22 @@ class TestParser(unittest.TestCase):
         self.assertRaises(ParseError, then_digit.parse, 'xyzw')
         self.assertRaises(ParseError, then_digit.parse, 'xyzwv1')
         self.assertRaises(ParseError, then_digit.parse, 'x1')
+
+
+class TestUtils(unittest.TestCase):
+    def test_line_info_at(self):
+        text = "abc\ndef"
+        self.assertEqual(line_info_at(text, 0),
+                         (0, 0))
+        self.assertEqual(line_info_at(text, 2),
+                         (0, 2))
+        self.assertEqual(line_info_at(text, 3),
+                         (0, 3))
+        self.assertEqual(line_info_at(text, 4),
+                         (1, 0))
+        self.assertEqual(line_info_at(text, 7),
+                         (1, 3))
+        self.assertRaises(ValueError, lambda: line_info_at(text, 8))
 
 
 if __name__ == '__main__':
