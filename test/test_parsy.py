@@ -1,6 +1,6 @@
 import unittest
 
-from parsy import ParseError, digit, generate, letter, regex, string
+from parsy import ParseError, digit, generate, letter, regex, seq, string
 
 
 class TestParser(unittest.TestCase):
@@ -45,6 +45,12 @@ class TestParser(unittest.TestCase):
         parser = digit.map(int)
         self.assertEqual(parser.parse('7'),
                          7)
+
+    def test_combine(self):
+        parser = (seq(digit, letter)
+                  .combine(lambda d, l: (d, l)))
+        self.assertEqual(parser.parse('1A'),
+                         ('1', 'A'))
 
     def test_generate(self):
         x = y = None
