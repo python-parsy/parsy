@@ -30,9 +30,9 @@ How to do releases
 Post release
 ------------
 
-* Bump version numbers to next version, and add ``.dev1`` suffix, for example
-  ``0.9.0.dev1``
+* Bump version numbers to next version, and add ``-dev1`` suffix, for example
+  ``0.9.0-dev1``
 
-* Add new section to docs/release_notes.rst, with " - unreleased".
+* Add new section to docs/history.rst, with " - unreleased".
 
-* Commit
+* Commit and push
