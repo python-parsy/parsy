@@ -4,7 +4,7 @@ History and release notes
 
 .. currentmodule:: parsy
 
-0.9.0 - unreleased
+0.9.0 - 2017-09-28
 ------------------
 
 * Better error reporting of failed parses.
