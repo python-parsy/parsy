@@ -228,6 +228,11 @@ def seq(*parsers):
     return seq_parser
 
 
+def seq_map(*args):
+    (*parsers, fn) = args
+    return seq(*parsers).map(lambda values: fn(*values))
+
+
 # combinator syntax
 def generate(fn):
     if isinstance(fn, str):

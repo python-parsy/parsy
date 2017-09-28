@@ -1,6 +1,6 @@
 import unittest
 
-from parsy import ParseError, digit, generate, letter, regex, string
+from parsy import ParseError, digit, generate, letter, regex, string, seq_map
 
 
 class TestParser(unittest.TestCase):
@@ -173,6 +173,11 @@ class TestParser(unittest.TestCase):
         self.assertRaises(ParseError, then_digit.parse, 'xyzwv1')
         self.assertRaises(ParseError, then_digit.parse, 'x1')
 
+    def test_seq_map(self):
+        d = digit.map(int)
+        add_three_digits = seq_map(d, d, d, lambda x, y, z: x + y + z)
+
+        self.assertEqual(add_three_digits.parse('234'), 9)
 
 if __name__ == '__main__':
     unittest.main()
