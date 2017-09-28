@@ -4,6 +4,10 @@ History and release notes
 
 .. currentmodule:: parsy
 
+1.0.0 - unreleased
+------------------
+
+
 0.9.0 - 2017-09-28
 ------------------
 
