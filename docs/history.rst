@@ -10,6 +10,8 @@ History and release notes
 * Improved parse failure messages of ``@generate`` parsers. Previously
   the parser was given a default description of the function name,
   which hides all useful internal info there might be.
+* Added :meth:`Parser.sep_by`
+
 
 0.9.0 - 2017-09-28
 ------------------

@@ -161,6 +161,18 @@ can be used and manipulated as below.
       result to ``fn``, and continues with the parser returned from ``fn``.
       This is the monadic binding operation.
 
+   .. function:: sep_by(sep, min=0, max=inf)
+
+      Like :meth:`Parser.times`, this returns a new parser that repeats
+      ``parser`` and collects the results in a list, but in this case separated
+      by the parser ``sep`` (whose return value is discarded). By default it
+      repeats with no limit, but minimum and maximum values can be supplied.
+
+      .. code:: python
+
+         >>> csv = letter.at_least(1).map(''.join).sep_by(string(","))
+         >>> csv.parse("abc,def")
+         ['abc', 'def']
 
 .. _operators:
 
