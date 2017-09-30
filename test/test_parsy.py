@@ -209,17 +209,6 @@ class TestParser(unittest.TestCase):
         self.assertRaises(ParseError, then_digit.parse, 'xyzwv1')
         self.assertRaises(ParseError, then_digit.parse, 'x1')
 
-    def test_should_fail(self):
-        not_a_digit = digit.should_fail() >> regex(r'.*')
-
-        self.assertEqual(not_a_digit.parse('a'), 'a')
-        self.assertEqual(not_a_digit.parse('abc'), 'abc')
-        self.assertEqual(not_a_digit.parse('a10'), 'a10')
-        self.assertEqual(not_a_digit.parse(''), '')
-
-        self.assertRaises(ParseError, not_a_digit.parse, '8')
-        self.assertRaises(ParseError, not_a_digit.parse, '8ab')
-
     def test_sep_by(self):
         digit_list = digit.map(int).sep_by(string(','))
 
@@ -247,30 +236,6 @@ class TestParser(unittest.TestCase):
         self.assertRaises(ParseError, digit_list.parse, ',9')
         self.assertRaises(ParseError, digit_list.parse, '82')
         self.assertRaises(ParseError, digit_list.parse, '7.6')
-
-    def test_seq(self):
-        int_ = digit.at_least(1).map(''.join).map(int)
-        addition = seq(int_, string('+'), int_).map(lambda l: l[0] + l[2])
-
-        self.assertEqual(addition.parse('2+2'), 4)
-        self.assertEqual(addition.parse('9+4'), 13)
-        self.assertEqual(addition.parse('20+19'), 39)
-
-        self.assertRaises(ParseError, addition.parse, '32')
-        self.assertRaises(ParseError, addition.parse, '3+')
-        self.assertRaises(ParseError, addition.parse, '5-67')
-
-    def test_seq_with_post_processing(self):
-        int_ = digit.at_least(1).map(''.join).map(int)
-        addition = seq(int_, string('+'), int_, f=lambda a, plus, b: a + b)
-
-        self.assertEqual(addition.parse('2+2'), 4)
-        self.assertEqual(addition.parse('9+4'), 13)
-        self.assertEqual(addition.parse('20+19'), 39)
-
-        self.assertRaises(ParseError, addition.parse, '32')
-        self.assertRaises(ParseError, addition.parse, '3+')
-        self.assertRaises(ParseError, addition.parse, '5-67')
 
 
 class TestUtils(unittest.TestCase):
