@@ -313,7 +313,7 @@ Parser combinators
 Other combinators
 =================
 
-parsy does not try to include every possible combinator - there is no reason why
+Parsy does not try to include every possible combinator - there is no reason why
 you cannot create your own for your needs using the builtin combinators and
 primitives. If you find something that is very generic and would be very useful
 to have as a builtin, please submit as a PR!

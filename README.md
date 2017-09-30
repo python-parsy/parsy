@@ -18,5 +18,5 @@ Links:
 To contribute, please create a fork and submit a pull request on GitHub, after
 checking the "contributing" section of the docs. Thanks!
 
-parsy was original written by [Jeanine Adkisson](https://github.com/jneen), with
+Parsy was originally written by [Jeanine Adkisson](https://github.com/jneen), with
 contributions by other people as can be found in the git commit history.

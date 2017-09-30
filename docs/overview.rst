@@ -12,7 +12,7 @@ If that means nothing, rest assured that parsy is a very straightforward and
 Pythonic solution for parsing text that doesn't require knowing anything about
 monads.
 
-parsy differentiates itself from other solutions with the following:
+Parsy differentiates itself from other solutions with the following:
 
 * a very clean implementation, only a few hundred lines.
 * free, good quality documentation, all in one place. (Please raise an issue on
