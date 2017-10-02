@@ -30,7 +30,7 @@ These are the lowest level building blocks for creating parsers.
       >>> ascii.parse("A")
       'A'
 
-.. function:: char_from(characters):
+.. function:: char_from(characters)
 
    Accepts a string and returns a parser that matches and returns one character
    from the string.
@@ -40,7 +40,7 @@ These are the lowest level building blocks for creating parsers.
       >>> char_from("abc").parse("a")
       'a'
 
-.. function:: string_from(*strings):
+.. function:: string_from(*strings)
 
    Accepts a sequence of strings as positional arguments, and returns a parser
    that matches and returns one string from the list. The list is first sorted
