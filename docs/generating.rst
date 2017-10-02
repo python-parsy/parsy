@@ -45,7 +45,7 @@ complex object:
 
    from datetime import date
 
-   from parsy import generate
+   from parsy import generate, regex, string
 
    @generate
    def date():
@@ -68,7 +68,7 @@ set of characters. For example, ``pancakes`` would be written ``8Hpancakes``.
 
 .. code:: python
 
-   from parsy import generate
+   from parsy import generate, regex, string
 
    @generate
    def hollerith():
@@ -83,3 +83,6 @@ uses `pyparsing <http://pyparsing.wikispaces.com/>`_, originally by John
 Shipman from his `pyparsing docs
 <http://infohost.nmt.edu/tcc/help/pubs/pyparsing/web/class-Forward.html>`_.)
 
+There are also more complex examples in the :ref:`tutorial
+<using-previous-values>` of using the ``generate`` decorator to create parsers
+where there is logic that is conditional upon earlier parsed values.

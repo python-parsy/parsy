@@ -6,7 +6,10 @@ Parsy is an easy way to combine simple, small parsers into complex, larger
 parsers.
 
 If it means anything to you, it's a monadic parser combinator library for
-LL(infinity) grammars in the spirit of Parsec, Parsnip, and Parsimmon.
+LL(infinity) grammars in the spirit of `Parsec
+<https://github.com/haskell/parsec>`_, `Parsnip
+<http://parsnip-parser.sourceforge.net/>`_, and `Parsimmon
+<https://github.com/jneen/parsimmon>`_.
 
 If that means nothing, rest assured that parsy is a very straightforward and
 Pythonic solution for parsing text that doesn't require knowing anything about
@@ -14,7 +17,9 @@ monads.
 
 Parsy differentiates itself from other solutions with the following:
 
-* a very clean implementation, only a few hundred lines.
+* it is not a parser generator, but a combinator based parsing library.
+* a very clean implementation, only a few hundred lines, that borrows
+  from the best of recent combinator libraries.
 * free, good quality documentation, all in one place. (Please raise an issue on
   GitHub if you have any problems, or find the documentation lacking in any
   way).
@@ -56,3 +61,21 @@ To learn how to use parsy, you should continue with:
 * the :doc:`parser generator decorator </generating>`
 * the :doc:`builtin parser primitives </primitives>`
 * the :doc:`method reference </methods_and_combinators>`
+
+Other Python projects
+=====================
+
+* `pyparsing <http://pyparsing.wikispaces.com/>`_. Also a combinator approach,
+  but in general much less cleanly implemented, and rather scattered
+  documentation.
+
+* `funcparserlib <https://github.com/vlasovskikh/funcparserlib>`_ - the most
+  similar to parsy. It differs from parsy mainly in normally using a separate
+  tokenization phase, lacking the convenience of the :func:`generate` method for
+  creating parsers, and documentation that relies on understanding Haskell type
+  annotations.
+
+* `Lark <https://github.com/erezsh/lark>`_. With Lark you write a grammar
+  definition in a separate mini-langauge as a string, and have a parser
+  generated for you, rather than writing the grammar in Python. It has the
+  advantage of speed and being able to use different parsing algorithms.

@@ -180,6 +180,8 @@ nicer. It's especially succint because the argument order to ``date`` matches
 the order of the values parsed (year, month, day), otherwise we could pass a
 ``lambda`` to ``combine``.
 
+.. _using-previous-values:
+
 Using previously parsed values
 ==============================
 
@@ -200,7 +202,7 @@ their leading dashes) are missing - that is, we need to express optional
 components, and we need a way to be able to test earlier values while in the
 middle of parsing, to see if we should continue looking for another component.
 
-The :meth:`Parse.bind` method provides one way to do it (yay monads!). You pass
+The :meth:`Parser.bind` method provides one way to do it (yay monads!). You pass
 it a function that takes the output value from one parser as its input, and
 returns another parser as its output. (An example will help!) By appropriate use
 of closures, plus the :func:`success` primitive to return our values as a tuple,
@@ -219,7 +221,7 @@ and requires the full date to be present. It might look like this:
 
 That is not a pretty sight, and it will get even worse if we want to use
 statements that are not allowed inside a lambda, and therefore need to define
-the callables using ``def``. Can be do better?
+the callables using ``def``. Can we do better?
 
 In Haskell, there is ``do`` notation that eliminates the lambdas. We don't have
 that in Python, but instead we can use generators and the ``yield`` keyword to
