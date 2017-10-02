@@ -13,10 +13,13 @@ exec(compile(open(version_file, "rb").read(), version_file, 'exec'),
      globals(), namespace)
 version = namespace['__version__']
 
+readme = open('README.rst').read()
+
 setup(
     name="parsy",
     version=version,
     description="easy-to-use parser combinators, for parsing in pure Python",
+    long_description=readme,
     author="Jeanine Adkisson",
     author_email="jneen at jneen dot net (humans only, please)",
     maintainer="Luke Plant",
