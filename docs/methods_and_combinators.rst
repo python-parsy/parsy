@@ -316,11 +316,13 @@ Parser combinators
 
    .. code-block:: python
 
-      >>> seq(regex("[0-9]+").map(int) << string(" bottles of "),
-              regex(r"\S+") << string(" on the "),
-              regex(r"\S+")
-              ).parse("99 bottles of beer on the wall")
-      [99, 'bottles', 'wall']
+      >>> x_bottles_of_y_on_the_z = \
+      ...    seq(regex(r"[0-9]+").map(int) << string(" bottles of "),
+                 regex(r"\S+") << string(" on the "),
+                 regex(r"\S+")
+                 )
+      >>> x_bottles_of_y_on_the_z.parse("99 bottles of beer on the wall")
+      [99, 'beer', 'wall']
 
 Other combinators
 =================
