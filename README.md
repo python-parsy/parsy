@@ -16,6 +16,7 @@ Parsy requires Python 3.3 or greater.
 Links:
 
 * [Documentation](http://parsy.readthedocs.io/en/latest/)
+* [PyPI](https://pypi.python.org/pypi/parsy/)
 
 To contribute, please create a fork and submit a pull request on GitHub, after
 checking the "contributing" section of the docs. Thanks!

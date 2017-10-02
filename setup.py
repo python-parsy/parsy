@@ -16,7 +16,7 @@ version = namespace['__version__']
 setup(
     name="parsy",
     version=version,
-    description="easy-to-use parser combinators",
+    description="easy-to-use parser combinators, for parsing in pure Python",
     author="Jeanine Adkisson",
     author_email="jneen at jneen dot net (humans only, please)",
     maintainer="Luke Plant",
@@ -35,7 +35,7 @@ setup(
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
     ],
-    keywords="parser parsing monad combinators",
+    keywords="parser parsers parsing monad combinators",
     packages=find_packages('src'),
     package_dir={'': 'src'},
 )
