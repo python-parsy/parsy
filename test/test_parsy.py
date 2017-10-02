@@ -1,6 +1,8 @@
+# -*- code: utf8 -*-
 import unittest
 
-from parsy import ParseError, digit, generate, letter, line_info_at, regex, seq, string, one_of
+from parsy import test as parsy_test  # to stop pytest thinking this function is a test
+from parsy import ParseError, digit, generate, letter, line_info_at, one_of, regex, seq, string
 
 
 class TestParser(unittest.TestCase):
@@ -236,6 +238,15 @@ class TestParser(unittest.TestCase):
         self.assertRaises(ParseError, digit_list.parse, ',9')
         self.assertRaises(ParseError, digit_list.parse, '82')
         self.assertRaises(ParseError, digit_list.parse, '7.6')
+
+    def test_test(self):
+        ascii = parsy_test(lambda c: ord(c) < 128,
+                           "ascii character")
+        self.assertEqual(ascii.parse("a"), "a")
+        with self.assertRaises(ParseError) as err:
+            ascii.parse('☺')
+        ex = err.exception
+        self.assertEqual(str(ex), """expected 'ascii character' at 0:0""")
 
     def test_one_of_string(self):
         ab = one_of("ab")

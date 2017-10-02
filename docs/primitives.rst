@@ -17,6 +17,36 @@ These are the lowest level building blocks for creating parsers.
    matched string. ``exp`` can be a compiled regular expression, or a
    string which will be compiled with the given ``flags``.
 
+.. function:: test(func, description)
+
+   Returns a parser that tests a single character with the callable
+   ``func``. If ``func`` returns ``True``, the parse succeeds, otherwise
+   the parse fails with the description ``description``.
+
+   .. code-block:: python
+
+      >>> ascii = parsy_test(lambda c: ord(c) < 128,
+                             "ascii character")
+      >>> ascii.parse("A")
+      'A'
+
+.. function:: one_of(characters_or_strings):
+
+   Accepts a string and returns a parser that matches and returns one character
+   from the string.
+
+   Alternatively, accepts a list of strings, and returns a parser that matches
+   and returns one string from the list. The list is first sorted in descending
+   length order, so that overlapping strings are handled as expected.
+
+   .. code-block:: python
+
+      >>> one_of("abc").parse("a")
+      'a'
+
+      >>> one_of(["y", "yes"]).parse("yes")
+      'yes'
+
 .. function:: success(val)
 
    Returns a parser that does not consume any of the stream, but
