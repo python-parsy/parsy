@@ -332,6 +332,28 @@ def regex(exp, flags=0):
     return regex_parser
 
 
+def test(func, description):
+    @Parser
+    def test_parser(stream, index):
+        c = stream[index:index + 1]
+        if func(c):
+            return Result.success(index + 1, c)
+        else:
+            return Result.failure(index, description)
+
+    test_parser.__name__ = 'test_parser<%s>' % func.__name__
+
+    return test_parser
+
+
+def one_of(string_or_strings):
+    if isinstance(string_or_strings, str):
+        return test(lambda c: c in string_or_strings, "one of '%s'" % string_or_strings)
+    else:
+        # Sort longest first, so that backtracking works correctly
+        return alt(*map(string, sorted(string_or_strings, key=lambda s: -len(s))))
+
+
 whitespace = regex(r'\s+')
 
 

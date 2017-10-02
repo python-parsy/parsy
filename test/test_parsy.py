@@ -1,6 +1,6 @@
 import unittest
 
-from parsy import ParseError, digit, generate, letter, line_info_at, regex, seq, string
+from parsy import ParseError, digit, generate, letter, line_info_at, regex, seq, string, one_of
 
 
 class TestParser(unittest.TestCase):
@@ -236,6 +236,29 @@ class TestParser(unittest.TestCase):
         self.assertRaises(ParseError, digit_list.parse, ',9')
         self.assertRaises(ParseError, digit_list.parse, '82')
         self.assertRaises(ParseError, digit_list.parse, '7.6')
+
+    def test_one_of_string(self):
+        ab = one_of("ab")
+        self.assertEqual(ab.parse("a"), "a")
+        self.assertEqual(ab.parse("b"), "b")
+
+        with self.assertRaises(ParseError) as err:
+            ab.parse('x')
+
+        ex = err.exception
+        self.assertEqual(str(ex), """expected "one of 'ab'" at 0:0""")
+
+    def test_one_of_string_list(self):
+        titles = one_of(["Mr", "Mr.", "Mrs", "Mrs."])
+        self.assertEqual(titles.parse("Mr"), "Mr")
+        self.assertEqual(titles.parse("Mr."), "Mr.")
+        self.assertEqual((titles + string(" Hyde")).parse("Mr. Hyde"),
+                         "Mr. Hyde")
+        with self.assertRaises(ParseError) as err:
+            titles.parse('foo')
+
+        ex = err.exception
+        self.assertEqual(str(ex), """expected one of 'Mr', 'Mr.', 'Mrs', 'Mrs.' at 0:0""")
 
 
 class TestUtils(unittest.TestCase):
