@@ -1,7 +1,7 @@
 # -*- code: utf8 -*-
 import unittest
 
-from parsy import test as parsy_test  # to stop pytest thinking this function is a test
+from parsy import test_char as parsy_test_char  # to stop pytest thinking this function is a test
 from parsy import ParseError, char_from, digit, generate, letter, line_info_at, regex, seq, string, string_from
 
 
@@ -239,9 +239,9 @@ class TestParser(unittest.TestCase):
         self.assertRaises(ParseError, digit_list.parse, '82')
         self.assertRaises(ParseError, digit_list.parse, '7.6')
 
-    def test_test(self):
-        ascii = parsy_test(lambda c: ord(c) < 128,
-                           "ascii character")
+    def test_test_char(self):
+        ascii = parsy_test_char(lambda c: ord(c) < 128,
+                                "ascii character")
         self.assertEqual(ascii.parse("a"), "a")
         with self.assertRaises(ParseError) as err:
             ascii.parse('☺')

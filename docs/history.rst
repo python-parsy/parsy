@@ -11,7 +11,7 @@ History and release notes
   the parser was given a default description of the function name,
   which hides all useful internal info there might be.
 * Added :meth:`Parser.sep_by`
-* Added :func:`test`
+* Added :func:`test_char`
 * Added :func:`char_from`
 * Added :func:`string_from`
 

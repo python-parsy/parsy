@@ -332,27 +332,27 @@ def regex(exp, flags=0):
     return regex_parser
 
 
-def test(func, description):
+def test_char(func, description):
     @Parser
-    def test_parser(stream, index):
+    def test_char_parser(stream, index):
         if index < len(stream):
             char = stream[index:index + 1]
             if func(char):
                 return Result.success(index + 1, char)
         return Result.failure(index, description)
 
-    test_parser.__name__ = 'test_parser<%s>' % func.__name__
+    test_char_parser.__name__ = 'test_char_parser<%s>' % func.__name__
 
-    return test_parser
+    return test_char_parser
 
 
 def string_from(*strings):
     # Sort longest first, so that backtracking works correctly
-    return alt(*map(string, sorted(strings, key=lambda s: -len(s))))
+    return alt(*map(string, sorted(strings, key=lambda s: len(s), reverse=True)))
 
 
 def char_from(string):
-    return test(lambda c: c in string, "[" + string + "]")
+    return test_char(lambda c: c in string, "[" + string + "]")
 
 
 whitespace = regex(r'\s+')

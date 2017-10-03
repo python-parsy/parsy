@@ -17,7 +17,7 @@ These are the lowest level building blocks for creating parsers.
    matched string. ``exp`` can be a compiled regular expression, or a
    string which will be compiled with the given ``flags``.
 
-.. function:: test(func, description)
+.. function:: test_char(func, description)
 
    Returns a parser that tests a single character with the callable
    ``func``. If ``func`` returns ``True``, the parse succeeds, otherwise
@@ -25,8 +25,8 @@ These are the lowest level building blocks for creating parsers.
 
    .. code-block:: python
 
-      >>> ascii = parsy_test(lambda c: ord(c) < 128,
-                             "ascii character")
+      >>> ascii = test_char(lambda c: ord(c) < 128,
+                            "ascii character")
       >>> ascii.parse("A")
       'A'
 
