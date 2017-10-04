@@ -4,7 +4,7 @@ python:
   - "3.4"
   - "3.5"
   - "3.6"
-env: SCRIPT="coverage run --source=parsy `which py.test`"
+env: SCRIPT=./travis_tests.sh
 matrix:
   include:
     - python: "3.5"
@@ -18,5 +18,3 @@ install:
   - ./setup.py develop
 script:
   - $SCRIPT
-after_success:
-  - test -f .coverage && coveralls
