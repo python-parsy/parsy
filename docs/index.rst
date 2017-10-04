@@ -2,15 +2,13 @@ Welcome to parsy's documentation!
 =================================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: Contents:
 
    installation
    overview
    tutorial
-   primitives
-   methods_and_combinators
-   generating
+   ref/index
    examples
    history
    contributing

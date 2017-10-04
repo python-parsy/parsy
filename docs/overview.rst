@@ -24,7 +24,7 @@ Parsy differentiates itself from other solutions with the following:
   GitHub if you have any problems, or find the documentation lacking in any
   way).
 * it avoids mutability, and therefore a ton of related bugs.
-* it has monadic binding with a :doc:`nice syntax </generating>`. In plain
+* it has monadic binding with a :doc:`nice syntax </ref/generating>`. In plain
   English:
 
   * we can easily handle cases where later parsing depends on the value of
@@ -72,9 +72,9 @@ To learn how to use parsy, you should continue with:
 
 * the :doc:`tutorial </tutorial>`, especially if you are not familiar with this
   type of parser library.
-* the :doc:`parser generator decorator </generating>`
-* the :doc:`builtin parser primitives </primitives>`
-* the :doc:`method reference </methods_and_combinators>`
+* the :doc:`parser generator decorator </ref/generating>`
+* the :doc:`builtin parser primitives </ref/primitives>`
+* the :doc:`method reference </ref/methods_and_combinators>`
 
 Other Python projects
 =====================
