@@ -22,10 +22,7 @@ class ParseError(RuntimeError):
         self.index = index
 
     def line_info(self):
-        try:
-            return '{}:{}'.format(*line_info_at(self.stream, self.index))
-        except ValueError:
-            return '<out of bounds index {!r}>'.format(self.index)
+        return '{}:{}'.format(*line_info_at(self.stream, self.index))
 
     def __str__(self):
         expected_list = sorted(repr(e) for e in self.expected)
@@ -87,9 +84,6 @@ class Parser(object):
         Return a tuple of the result and the rest of the string,
         or raise a ParseError.
         """
-        if not isinstance(string, str):
-            raise TypeError('parsy can only parse strings! got {!r}'.format(string))
-
         result = self(string, 0)
 
         if result.status:
@@ -200,9 +194,6 @@ class Parser(object):
         return self.times(other)
 
     def __or__(self, other):
-        if not isinstance(other, Parser):
-            raise TypeError('{!r} is not a parser!'.format(other))
-
         return alt(self, other)
 
     # haskelley operators, for fun #

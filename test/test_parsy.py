@@ -3,8 +3,8 @@ import unittest
 
 from parsy import test_char as parsy_test_char  # to stop pytest thinking this function is a test
 from parsy import (
-    ParseError, any_char, char_from, decimal_digit, digit, generate, letter, line_info_at, regex, seq, string,
-    string_from
+    ParseError, alt, any_char, char_from, decimal_digit, digit, generate, letter, line_info_at, regex, seq, string,
+    string_from, whitespace
 )
 
 
@@ -71,6 +71,13 @@ class TestParser(unittest.TestCase):
         self.assertEqual(xy.parse('xy'), 3)
         self.assertEqual(x, 'x')
         self.assertEqual(y, 'y')
+
+    def test_generate_return_parser(self):
+        @generate
+        def example():
+            yield string('x')
+            return string('y')
+        self.assertEqual(example.parse("xy"), "y")
 
     def test_mark(self):
         parser = (letter.many().mark() << string("\n")).many()
@@ -252,6 +259,39 @@ class TestParser(unittest.TestCase):
         self.assertRaises(ParseError, digit_list.parse, ',9')
         self.assertRaises(ParseError, digit_list.parse, '82')
         self.assertRaises(ParseError, digit_list.parse, '7.6')
+        self.assertEqual(digit.sep_by(string(","), max=0).parse(''),
+                         [])
+
+    def test_add(self):
+        self.assertEqual((letter + digit).parse("a1"),
+                         "a1")
+
+    def test_multiply(self):
+        self.assertEqual((letter * 3).parse("abc"),
+                         ['a', 'b', 'c'])
+
+    def test_multiply_range(self):
+        self.assertEqual((letter * range(1, 2)).parse("a"),
+                         ["a"])
+        self.assertRaises(ParseError, (letter * range(1, 2)).parse, "aa")
+
+    # Primitives
+    def test_alt(self):
+        self.assertRaises(ParseError, alt().parse, '')
+        self.assertEqual(alt(letter, digit).parse('a'),
+                         'a')
+        self.assertEqual(alt(letter, digit).parse('1'),
+                         '1')
+        self.assertRaises(ParseError, alt(letter, digit).parse, '.')
+
+    def test_seq(self):
+        self.assertEqual(seq().parse(''),
+                         [])
+        self.assertEqual(seq(letter).parse('a'),
+                         ['a'])
+        self.assertEqual(seq(letter, digit).parse('a1'),
+                         ['a', '1'])
+        self.assertRaises(ParseError, seq(letter, digit).parse, '1a')
 
     def test_test_char(self):
         ascii = parsy_test_char(lambda c: ord(c) < 128,
@@ -294,6 +334,20 @@ class TestParser(unittest.TestCase):
         self.assertEqual(any_char.parse("x"), "x")
         self.assertEqual(any_char.parse("\n"), "\n")
         self.assertRaises(ParseError, any_char.parse, "")
+
+    def test_whitespace(self):
+        self.assertEqual(whitespace.parse("\n"), "\n")
+        self.assertEqual(whitespace.parse(" "), " ")
+        self.assertRaises(ParseError, whitespace.parse, "x")
+
+    def test_letter(self):
+        self.assertEqual(letter.parse("a"), "a")
+        self.assertRaises(ParseError, letter.parse, "1")
+
+    def test_digit(self):
+        self.assertEqual(digit.parse("¹"), "¹")
+        self.assertEqual(digit.parse("2"), "2")
+        self.assertRaises(ParseError, digit.parse, "x")
 
     def test_decimal_digit(self):
         self.assertEqual(decimal_digit.at_least(1).map(''.join).parse("9876543210"),
