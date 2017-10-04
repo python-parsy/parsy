@@ -70,14 +70,13 @@ set of characters. For example, ``pancakes`` would be written ``8Hpancakes``.
 
 .. code:: python
 
-   from parsy import generate, regex, string
+   from parsy import generate, regex, string, any_char
 
    @generate
    def hollerith():
        num = yield regex(r'[0-9]+').map(int)
        yield string('H')
-       val = yield regex(".").times(num)
-       return ''.join(val)
+       return any_char.times(num).concat()
 
 (You may want to compare this with an `implementation of Hollerith constants
 <https://gist.github.com/spookylukey/591aa8a6a9af7cf0f1e22129b29288d6>`_ that
