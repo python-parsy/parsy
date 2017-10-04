@@ -73,23 +73,23 @@ class Parser(object):
     def __call__(self, stream, index):
         return self.wrapped_fn(stream, index)
 
-    def parse(self, string):
-        """Parse a string and return the result or raise a ParseError."""
-        (result, _) = (self << eof).parse_partial(string)
+    def parse(self, stream):
+        """Parse a string or list of tokens and return the result or raise a ParseError."""
+        (result, _) = (self << eof).parse_partial(stream)
         return result
 
-    def parse_partial(self, string):
+    def parse_partial(self, stream):
         """
         Parse the longest possible prefix of a given string.
         Return a tuple of the result and the rest of the string,
         or raise a ParseError.
         """
-        result = self(string, 0)
+        result = self(stream, 0)
 
         if result.status:
-            return (result.value, string[result.index:])
+            return (result.value, stream[result.index:])
         else:
-            raise ParseError(result.expected, string, result.furthest)
+            raise ParseError(result.expected, stream, result.furthest)
 
     def bind(self, bind_fn):
         @Parser
