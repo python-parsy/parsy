@@ -418,6 +418,31 @@ Parser combinators
       >>> x_bottles_of_y_on_the_z.parse("99 bottles of beer on the wall")
       [99, 'beer', 'wall']
 
+
+   In Python 3.6, you can also use ``seq`` with keyword arguments instead of positional
+   arguments. In this case, the produced value is a dictionary of the individual
+   values, rather than a sequence. This can make the produced value easier
+   to consume.
+
+   .. code-block:: python
+
+      >>> name = seq(first_name=regex("\S+") << whitespace,
+      ...            last_name=regex("\S+")
+      >>> name.parse("Jane Smith")
+      {'first_name': 'Jane',
+       'last_name': 'Smith'}
+
+   .. versionchanged:: 1.1
+      Added ``**kwargs`` option.
+
+   .. note::
+      The ``**kwargs`` feature is for Python 3.6 and later only, because keyword
+      arguments do not keep their order in earlier versions.
+
+      For earlier versions, see :meth:`Parser.tag` for a way of labelling parsed
+      components and producing dictionaries.
+
+
 Other combinators
 =================
 

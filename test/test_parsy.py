@@ -1,5 +1,6 @@
 # -*- code: utf8 -*-
 import re
+import sys
 import unittest
 
 from parsy import test_char as parsy_test_char  # to stop pytest thinking this function is a test
@@ -324,6 +325,18 @@ class TestParser(unittest.TestCase):
         self.assertEqual(seq(letter, digit).parse('a1'),
                          ['a', '1'])
         self.assertRaises(ParseError, seq(letter, digit).parse, '1a')
+
+    if sys.version_info >= (3, 6):
+        def test_seq_kwargs(self):
+            self.assertEqual(seq(first_name=regex("\S+") << whitespace,
+                                 last_name=regex("\S+"))
+                             .parse("Jane Smith"),
+                             {'first_name': 'Jane',
+                              'last_name': 'Smith'})
+
+        def test_seq_kwargs_error(self):
+            self.assertRaises(ValueError, lambda: seq(string("a"),
+                                                      b=string("b")))
 
     def test_test_char(self):
         ascii = parsy_test_char(lambda c: ord(c) < 128,

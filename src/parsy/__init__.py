@@ -2,9 +2,11 @@
 
 import operator
 import re
-from .version import __version__  # noqa: F401
-from functools import wraps
+import sys
 from collections import namedtuple
+from functools import wraps
+
+from .version import __version__  # noqa: F401
 
 
 def line_info_at(stream, index):
@@ -247,28 +249,72 @@ def alt(*parsers):
     return alt_parser
 
 
-def seq(*parsers):
-    """
-    Takes a list of list of parsers, runs them in order,
-    and collects their individuals results in a list
-    """
-    if not parsers:
-        return success([])
+if sys.version_info >= (3, 6):
+    # Only 3.6 and later supports kwargs that remember their order,
+    # so only have this kwarg signature on Python 3.6 and above
+    def seq(*parsers, **kw_parsers):
+        """
+        Takes a list of list of parsers, runs them in order,
+        and collects their individuals results in a list
+        """
+        if not parsers and not kw_parsers:
+            return success([])
 
-    @Parser
-    def seq_parser(stream, index):
-        result = None
-        values = []
-        for parser in parsers:
-            result = parser(stream, index).aggregate(result)
-            if not result.status:
-                return result
-            index = result.index
-            values.append(result.value)
+        if parsers and kw_parsers:
+            raise ValueError("Use either positional arguments or keyword arguments with seq, not both")
 
-        return Result.success(index, values).aggregate(result)
+        if parsers:
+            @Parser
+            def seq_parser(stream, index):
+                result = None
+                values = []
+                for parser in parsers:
+                    result = parser(stream, index).aggregate(result)
+                    if not result.status:
+                        return result
+                    index = result.index
+                    values.append(result.value)
+                return Result.success(index, values).aggregate(result)
 
-    return seq_parser
+            return seq_parser
+        else:
+            @Parser
+            def seq_kwarg_parser(stream, index):
+                result = None
+                values = {}
+                for name, parser in kw_parsers.items():
+                    result = parser(stream, index).aggregate(result)
+                    if not result.status:
+                        return result
+                    index = result.index
+                    values[name] = result.value
+                return Result.success(index, values).aggregate(result)
+
+            return seq_kwarg_parser
+
+else:
+    def seq(*parsers):
+        """
+        Takes a list of list of parsers, runs them in order,
+        and collects their individuals results in a list
+        """
+        if not parsers:
+            return success([])
+
+        @Parser
+        def seq_parser(stream, index):
+            result = None
+            values = []
+            for parser in parsers:
+                result = parser(stream, index).aggregate(result)
+                if not result.status:
+                    return result
+                index = result.index
+                values.append(result.value)
+
+            return Result.success(index, values).aggregate(result)
+
+        return seq_parser
 
 
 # combinator syntax
