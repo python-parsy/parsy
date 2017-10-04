@@ -61,24 +61,33 @@ These are the lowest level building blocks for creating parsers.
 
    Returns a parser that always fails with the provided error message.
 
+
+Prebuilt parsers
+================
+
+Some common, pre-built parsers (all of these are :class:`Parser` objects created
+using the primitives above):
+
+
 .. data:: any_char
 
    A parser that matches any single character.
 
 .. data:: whitespace
 
-   A parser that matches and returns one or more whitespace characters
+   A parser that matches and returns one or more whitespace characters.
 
 .. data:: letter
 
    A parser that matches and returns a single letter, as defined by
-   ``str.isalpha``.
+   `str.isalpha <https://docs.python.org/3/library/stdtypes.html#str.isalpha>`_.
 
 .. data:: digit
 
-   A parser that matches and returns a single digit, as defined by
-   ``str.isdigit``. Note that this includes various unicode characters
-   outside of the normal 0-9 range, such as ¹²³.
+   A parser that matches and returns a single digit, as defined by `str.isdigit
+   <https://docs.python.org/3/library/stdtypes.html#str.isdigit>`_. Note that
+   this includes various unicode characters outside of the normal 0-9 range,
+   such as ¹²³.
 
 .. data:: decimal_digit
 
