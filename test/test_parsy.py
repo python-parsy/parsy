@@ -2,7 +2,9 @@
 import unittest
 
 from parsy import test_char as parsy_test_char  # to stop pytest thinking this function is a test
-from parsy import ParseError, char_from, digit, generate, letter, line_info_at, regex, seq, string, string_from
+from parsy import (
+    ParseError, any_char, char_from, digit, generate, letter, line_info_at, regex, seq, string, string_from
+)
 
 
 class TestParser(unittest.TestCase):
@@ -275,6 +277,11 @@ class TestParser(unittest.TestCase):
 
         ex = err.exception
         self.assertEqual(str(ex), """expected one of 'Mr', 'Mr.', 'Mrs', 'Mrs.' at 0:0""")
+
+    def test_any_char(self):
+        self.assertEqual(any_char.parse("x"), "x")
+        self.assertEqual(any_char.parse("\n"), "\n")
+        self.assertRaises(ParseError, any_char.parse, "")
 
 
 class TestUtils(unittest.TestCase):

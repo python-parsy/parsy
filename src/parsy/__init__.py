@@ -355,6 +355,9 @@ def char_from(string):
     return test_char(lambda c: c in string, "[" + string + "]")
 
 
+any_char = test_char(lambda c: True, "any character")
+
+
 whitespace = regex(r'\s+')
 
 

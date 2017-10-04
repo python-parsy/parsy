@@ -61,6 +61,10 @@ These are the lowest level building blocks for creating parsers.
 
    Returns a parser that always fails with the provided error message.
 
+.. data:: any_char
+
+   A parser that matches any single character.
+
 .. data:: whitespace
 
    A parser that matches and returns one or more whitespace characters

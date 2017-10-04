@@ -14,7 +14,7 @@ History and release notes
 * Added :func:`test_char`
 * Added :func:`char_from`
 * Added :func:`string_from`
-
+* Added :data:`any_char`
 
 0.9.0 - 2017-09-28
 ------------------
