@@ -357,24 +357,11 @@ def char_from(string):
 
 any_char = test_char(lambda c: True, "any character")
 
-
 whitespace = regex(r'\s+')
 
+letter = test_char(lambda c: c.isalpha(), 'a letter')
 
-@Parser
-def letter(stream, index):
-    if index < len(stream) and stream[index].isalpha():
-        return Result.success(index + 1, stream[index])
-    else:
-        return Result.failure(index, 'a letter')
-
-
-@Parser
-def digit(stream, index):
-    if index < len(stream) and stream[index].isdigit():
-        return Result.success(index + 1, stream[index])
-    else:
-        return Result.failure(index, 'a digit')
+digit = test_char(lambda c: c.isdigit(), 'a digit')
 
 
 @Parser
