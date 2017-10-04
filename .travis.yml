@@ -4,7 +4,7 @@ python:
   - "3.4"
   - "3.5"
   - "3.6"
-env: SCRIPT=py.test
+env: SCRIPT=coverage run --source=parsy `which py.test` && coveralls
 matrix:
   include:
     - python: "3.5"
@@ -14,7 +14,7 @@ matrix:
     - python: "3.5"
       env: SCRIPT=check-manifest
 install:
-  - pip install pytest flake8 check-manifest isort
+  - pip install pytest flake8 check-manifest isort coverage coveralls
   - ./setup.py develop
 script:
   - $SCRIPT
