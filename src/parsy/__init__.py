@@ -110,6 +110,9 @@ class Parser(object):
     def combine(self, combine_fn):
         return self.bind(lambda res: success(combine_fn(*res)))
 
+    def concat(self):
+        return self.map(''.join)
+
     def then(self, other):
         return seq(self, other).map(lambda r: r[1])
 

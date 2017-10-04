@@ -57,6 +57,11 @@ class TestParser(unittest.TestCase):
         self.assertEqual(parser.parse('1A'),
                          ('1', 'A'))
 
+    def test_concat(self):
+        parser = letter.many().concat()
+        self.assertEqual(parser.parse(''), '')
+        self.assertEqual(parser.parse('abc'), 'abc')
+
     def test_generate(self):
         x = y = None
 
@@ -350,7 +355,7 @@ class TestParser(unittest.TestCase):
         self.assertRaises(ParseError, digit.parse, "x")
 
     def test_decimal_digit(self):
-        self.assertEqual(decimal_digit.at_least(1).map(''.join).parse("9876543210"),
+        self.assertEqual(decimal_digit.at_least(1).concat().parse("9876543210"),
                          "9876543210")
         self.assertRaises(ParseError, decimal_digit.parse, "¹")
 
