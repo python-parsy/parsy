@@ -336,7 +336,7 @@ def test_char(func, description):
     @Parser
     def test_char_parser(stream, index):
         if index < len(stream):
-            char = stream[index:index + 1]
+            char = stream[index]
             if func(char):
                 return Result.success(index + 1, char)
         return Result.failure(index, description)
