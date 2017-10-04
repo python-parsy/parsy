@@ -1,6 +1,8 @@
+# -*- code: utf8 -*-
 import unittest
 
-from parsy import ParseError, digit, generate, letter, line_info_at, regex, seq, string
+from parsy import test_char as parsy_test_char  # to stop pytest thinking this function is a test
+from parsy import ParseError, char_from, digit, generate, letter, line_info_at, regex, seq, string, string_from
 
 
 class TestParser(unittest.TestCase):
@@ -236,6 +238,43 @@ class TestParser(unittest.TestCase):
         self.assertRaises(ParseError, digit_list.parse, ',9')
         self.assertRaises(ParseError, digit_list.parse, '82')
         self.assertRaises(ParseError, digit_list.parse, '7.6')
+
+    def test_test_char(self):
+        ascii = parsy_test_char(lambda c: ord(c) < 128,
+                                "ascii character")
+        self.assertEqual(ascii.parse("a"), "a")
+        with self.assertRaises(ParseError) as err:
+            ascii.parse('☺')
+        ex = err.exception
+        self.assertEqual(str(ex), """expected 'ascii character' at 0:0""")
+
+        with self.assertRaises(ParseError) as err:
+            ascii.parse('')
+        ex = err.exception
+        self.assertEqual(str(ex), """expected 'ascii character' at 0:0""")
+
+    def test_char_from(self):
+        ab = char_from("ab")
+        self.assertEqual(ab.parse("a"), "a")
+        self.assertEqual(ab.parse("b"), "b")
+
+        with self.assertRaises(ParseError) as err:
+            ab.parse('x')
+
+        ex = err.exception
+        self.assertEqual(str(ex), """expected '[ab]' at 0:0""")
+
+    def test_string_from(self):
+        titles = string_from("Mr", "Mr.", "Mrs", "Mrs.")
+        self.assertEqual(titles.parse("Mr"), "Mr")
+        self.assertEqual(titles.parse("Mr."), "Mr.")
+        self.assertEqual((titles + string(" Hyde")).parse("Mr. Hyde"),
+                         "Mr. Hyde")
+        with self.assertRaises(ParseError) as err:
+            titles.parse('foo')
+
+        ex = err.exception
+        self.assertEqual(str(ex), """expected one of 'Mr', 'Mr.', 'Mrs', 'Mrs.' at 0:0""")
 
 
 class TestUtils(unittest.TestCase):

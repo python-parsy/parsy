@@ -332,6 +332,29 @@ def regex(exp, flags=0):
     return regex_parser
 
 
+def test_char(func, description):
+    @Parser
+    def test_char_parser(stream, index):
+        if index < len(stream):
+            char = stream[index:index + 1]
+            if func(char):
+                return Result.success(index + 1, char)
+        return Result.failure(index, description)
+
+    test_char_parser.__name__ = 'test_char_parser<%s>' % func.__name__
+
+    return test_char_parser
+
+
+def string_from(*strings):
+    # Sort longest first, so that overlapping options work correctly
+    return alt(*map(string, sorted(strings, key=len, reverse=True)))
+
+
+def char_from(string):
+    return test_char(lambda c: c in string, "[" + string + "]")
+
+
 whitespace = regex(r'\s+')
 
 
