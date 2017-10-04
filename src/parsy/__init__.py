@@ -347,8 +347,8 @@ def test_char(func, description):
 
 
 def string_from(*strings):
-    # Sort longest first, so that backtracking works correctly
-    return alt(*map(string, sorted(strings, key=lambda s: len(s), reverse=True)))
+    # Sort longest first, so that overlapping options work correctly
+    return alt(*map(string, sorted(strings, key=len, reverse=True)))
 
 
 def char_from(string):
