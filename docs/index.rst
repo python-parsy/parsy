@@ -11,6 +11,7 @@ Welcome to parsy's documentation!
    primitives
    methods_and_combinators
    generating
+   examples
    history
    contributing
 

@@ -29,7 +29,7 @@ can be used and manipulated as below.
       the string that was left over.
 
    The following methods are essentially **combinators** that produce new
-   parsers from existing ones. They are provided as methods on ``Parser`` for
+   parsers from the existing one. They are provided as methods on ``Parser`` for
    convenience. More combinators are documented below.
 
    .. function:: desc(string)
@@ -43,7 +43,7 @@ can be used and manipulated as below.
 
    .. function:: then(other_parser)
 
-      Returns a parser which, if ``parser`` succeeds, will continue parsing
+      Returns a parser which, if the initial parser succeeds, will continue parsing
       with ``other_parser``. This will produce the value produced by
       ``other_parser``.
 
@@ -68,9 +68,9 @@ can be used and manipulated as below.
 
    .. function:: many()
 
-      Returns a parser that expects ``parser`` 0 or more times, and produces a
-      list of the results. Note that this parser does not fail if nothing
-      matches, but instead consumes nothing and produces an empty list.
+      Returns a parser that expects the initial parser 0 or more times, and
+      produces a list of the results. Note that this parser does not fail if
+      nothing matches, but instead consumes nothing and produces an empty list.
 
       .. code:: python
 
@@ -82,24 +82,23 @@ can be used and manipulated as below.
 
    .. function:: times(min [, max=min])
 
-      Returns a parser that expects ``parser`` at least ``min`` times, and
-      at most ``max`` times, and produces a list of the results. If only
-      one argument is given, the parser is expected exactly that number of
-      times.
+      Returns a parser that expects the initial parser at least ``min`` times,
+      and at most ``max`` times, and produces a list of the results. If only one
+      argument is given, the parser is expected exactly that number of times.
 
    .. function:: at_most(n)
 
-      Returns a parser that expects ``parser`` at most ``n`` times, and
+      Returns a parser that expects the initial parser at most ``n`` times, and
       produces a list of the results.
 
    .. function:: at_least(n)
 
-      Returns a parser that expects ``parser`` at least ``n`` times, and
+      Returns a parser that expects the initial parser at least ``n`` times, and
       produces a list of the results.
 
    .. function:: map(fn)
 
-      Returns a parser that transforms the produced value of ``parser``
+      Returns a parser that transforms the produced value of the initial parser
       with ``fn``.
 
       .. code:: python
@@ -112,7 +111,7 @@ can be used and manipulated as below.
 
    .. function:: combine(fn)
 
-      Returns a parser that transforms the produced values of ``parser``
+      Returns a parser that transforms the produced values of the initial parser
       with ``fn``, passing the arguments using ``*args`` syntax.
 
       Where the current parser produces an interable of values, this can be a
@@ -159,7 +158,7 @@ can be used and manipulated as below.
 
    .. function:: result(val)
 
-      Returns a parser that, if ``parser`` succeeds, always produces
+      Returns a parser that, if the initial parser succeeds, always produces
       ``val``.
 
       .. code:: python
@@ -169,14 +168,14 @@ can be used and manipulated as below.
 
    .. function:: bind(fn)
 
-      Returns a parser which, if ``parser`` is successful, passes the
+      Returns a parser which, if the initial parser is successful, passes the
       result to ``fn``, and continues with the parser returned from ``fn``.
       This is the monadic binding operation.
 
    .. function:: sep_by(sep, min=0, max=inf)
 
       Like :meth:`Parser.times`, this returns a new parser that repeats
-      ``parser`` and collects the results in a list, but in this case separated
+      the intial parser and collects the results in a list, but in this case separated
       by the parser ``sep`` (whose return value is discarded). By default it
       repeats with no limit, but minimum and maximum values can be supplied.
 
