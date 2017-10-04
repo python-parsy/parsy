@@ -115,10 +115,10 @@ class Parser(object):
         return self.map(''.join)
 
     def then(self, other):
-        return seq(self, other).map(lambda r: r[1])
+        return seq(self, other).combine(lambda left, right: right)
 
     def skip(self, other):
-        return seq(self, other).map(lambda r: r[0])
+        return seq(self, other).combine(lambda left, right: left)
 
     def result(self, res):
         return self >> success(res)
