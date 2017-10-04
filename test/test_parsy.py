@@ -214,6 +214,17 @@ class TestParser(unittest.TestCase):
         self.assertRaises(ParseError, then_digit.parse, 'xyzwv1')
         self.assertRaises(ParseError, then_digit.parse, 'x1')
 
+    def test_at_most(self):
+        ab = string("ab")
+        self.assertEqual(ab.at_most(2).parse(""),
+                         [])
+        self.assertEqual(ab.at_most(2).parse("ab"),
+                         ["ab"])
+        self.assertEqual(ab.at_most(2).parse("abab"),
+                         ["ab", "ab"])
+        self.assertRaises(ParseError,
+                          ab.at_most(2).parse, "ababab")
+
     def test_sep_by(self):
         digit_list = digit.map(int).sep_by(string(','))
 
