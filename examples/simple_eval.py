@@ -1,17 +1,21 @@
-from parsy import *
+from parsy import digit, generate, regex, string, success, test_char
 
-match_one = lambda i1: item_matcher(lambda i2: i1 == i2)
+test_item = test_char
+
+match_one = lambda i1: test_item(lambda i2: i1 == i2, str(i1))
+
 
 def lexer(code):
     whitespace = regex(r'\s*')
     integer = digit.at_least(1).map(''.join).map(int)
     float_ = (
         digit.many() + string('.').result(['.']) + digit.many()
-        ).map(''.join).map(float)
+    ).map(''.join).map(float)
     parser = whitespace >> ((
         integer | float_ | regex(r'[()*/+-]')
-        ) << whitespace).many()
+    ) << whitespace).many()
     return parser.parse(code)
+
 
 def syntactic_analysis(tokens):
     lparen = match_one('(')
@@ -22,7 +26,7 @@ def syntactic_analysis(tokens):
         res = yield multiplicative
         sign = match_one('+') | match_one('-')
         while True:
-            operation = yield sign|success('')
+            operation = yield sign | success('')
             if not operation:
                 break
             operand = yield multiplicative
@@ -35,9 +39,9 @@ def syntactic_analysis(tokens):
     @generate
     def multiplicative():
         res = yield simple
-        sign = match_one('*') | match_one('/')
+        op = match_one('*') | match_one('/')
         while True:
-            operation = yield sign|success('')
+            operation = yield op | success('')
             if not operation:
                 break
             operand = yield simple
@@ -50,7 +54,7 @@ def syntactic_analysis(tokens):
     @generate
     def number():
         sign = yield match_one('+') | match_one('-') | success('+')
-        value = yield item_matcher(
+        value = yield test_item(
             lambda x: isinstance(x, (int, float)), 'number')
         return value if sign == '+' else -value
 
@@ -59,8 +63,10 @@ def syntactic_analysis(tokens):
 
     return expr.parse(tokens)
 
+
 def simple_eval(expr):
     return syntactic_analysis(lexer(expr))
+
 
 if __name__ == '__main__':
     print(simple_eval(input()))
