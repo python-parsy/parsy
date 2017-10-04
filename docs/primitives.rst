@@ -77,4 +77,10 @@ These are the lowest level building blocks for creating parsers.
 .. data:: digit
 
    A parser that matches and returns a single digit, as defined by
-   ``str.isdigit``.
+   ``str.isdigit``. Note that this includes various unicode characters
+   outside of the normal 0-9 range, such as ¹²³.
+
+.. data:: decimal_digit
+
+   A parser that matches and returns a single decimal digit, one of
+   "0123456789".

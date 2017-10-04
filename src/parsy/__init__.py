@@ -363,6 +363,8 @@ letter = test_char(lambda c: c.isalpha(), 'a letter')
 
 digit = test_char(lambda c: c.isdigit(), 'a digit')
 
+decimal_digit = char_from("0123456789")
+
 
 @Parser
 def eof(stream, index):

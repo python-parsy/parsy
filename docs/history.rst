@@ -15,6 +15,7 @@ History and release notes
 * Added :func:`char_from`
 * Added :func:`string_from`
 * Added :data:`any_char`
+* Added :data:`decimal_digit`
 
 0.9.0 - 2017-09-28
 ------------------
