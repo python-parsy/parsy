@@ -264,7 +264,7 @@ the + operator. This will only work if the results support the plus operator
 
 The plus operator is a convenient shortcut for:
 
-   >>> seq(parser1, parser2).map(lambda res: res[0] + res[1])
+   >>> seq(parser1, parser2).combine(lambda a, b: a + b)
 
 .. _parser-times:
 

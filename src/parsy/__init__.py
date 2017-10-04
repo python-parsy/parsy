@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*- #
 
+import operator
 import re
 from .version import __version__  # noqa: F401
 from functools import wraps
@@ -186,7 +187,7 @@ class Parser(object):
         return marked
 
     def __add__(self, other):
-        return seq(self, other).map(lambda res: res[0] + res[1])
+        return seq(self, other).combine(operator.add)
 
     def __mul__(self, other):
         if isinstance(other, range):
