@@ -22,7 +22,7 @@ have easily been using combinators:
 
    from parsy import generate
 
-   @generate
+   @generate("form")
    def form():
        """
        Parse an s-expression form, like (a b c).
@@ -33,10 +33,12 @@ have easily been using combinators:
        yield rparen
        return exprs
 
+In the example above, the parser was given a string name ``"form"``, which does
+the same as :meth:`Parser.desc`. This is not required, as per the examples below.
 
-Note that there is no guarantee that the entire function is executed: if
-any of the yielded parsers fails, parsy will try to backtrack to an
-alternative parser if there is one.
+Note that there is no guarantee that the entire function is executed: if any of
+the yielded parsers fails, the function will not complete, and parsy will try to
+backtrack to an alternative parser if there is one.
 
 The second example shows how you can use multiple parse results to build up a
 complex object:
