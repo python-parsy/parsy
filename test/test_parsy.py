@@ -5,8 +5,8 @@ import unittest
 from parsy import test_char as parsy_test_char  # to stop pytest thinking this function is a test
 from parsy import test_item as parsy_test_item  # to stop pytest thinking this function is a test
 from parsy import (
-    ParseError, alt, any_char, char_from, decimal_digit, digit, generate, letter, line_info_at, match_item, regex, seq,
-    string, string_from, whitespace
+    ParseError, alt, any_char, char_from, decimal_digit, digit, generate, index, letter, line_info, line_info_at,
+    match_item, regex, seq, string, string_from, whitespace
 )
 
 
@@ -366,6 +366,19 @@ class TestParser(unittest.TestCase):
                          "9876543210")
         self.assertRaises(ParseError, decimal_digit.parse, "¹")
 
+    def test_line_info(self):
+        @generate
+        def foo():
+            i = yield line_info
+            l = yield any_char
+            return (l, i)
+
+        self.assertEqual(foo.many().parse("AB\nCD"),
+                         [("A", (0, 0)), ("B", (0, 1)),
+                          ("\n", (0, 2)),
+                          ("C", (1, 0)), ("D", (1, 1)),
+                          ])
+
 
 class TestParserTokens(unittest.TestCase):
     """
@@ -408,6 +421,16 @@ class TestParserTokens(unittest.TestCase):
         stream = [self.START, "hello", 1, 2, "goodbye", self.STOP]
         result = bracketed.parse(stream)
         self.assertEqual(result, ["hello", 1, 2, "goodbye"])
+
+    def test_index(self):
+        @generate
+        def foo():
+            i = yield index
+            l = yield letter
+            return (l, i)
+
+        self.assertEqual(foo.many().parse(["A", "B"]),
+                         [("A", 0), ("B", 1)])
 
 
 class TestUtils(unittest.TestCase):

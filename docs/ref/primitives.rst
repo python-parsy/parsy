@@ -114,7 +114,6 @@ These are the lowest level building blocks for creating parsers.
 
    Returns a parser that always fails with the provided error message.
 
-
 Prebuilt parsers
 ================
 
@@ -146,3 +145,16 @@ using the primitives above):
 
    A parser that matches and returns a single decimal digit, one of
    "0123456789".
+
+.. data:: line_info
+
+   A parser that consumes no input and always just returns the current line
+   information, a tuple of (line, column), zero-indexed, where lines are
+   terminated by ``\n``. This is normally useful when wanting to build more
+   debugging information into parse failure error messages.
+
+.. data:: index
+
+   A parser that consumes no input and always just returns the current stream
+   index. This is normally useful when wanting to build more debugging
+   information into parse failure error messages.
