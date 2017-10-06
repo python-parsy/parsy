@@ -5,15 +5,20 @@ Generating a parser
 .. currentmodule:: parsy
 .. function:: generate
 
+``generate`` converts a generator function (one that uses the ``yield`` keyword)
+into a parser. The generator function must yield parsers. These parsers are
+applied successively and their results are sent back to the generator using the
+``.send()`` protocol. The generator function should return the final result of
+the parsing. Alternatively it can return another parser, which is equivalent to
+applying it and returning its result.
+
+Motivation and examples
+=======================
+
 Constructing parsers by using combinators and :class:`Parser` methods to make
 larger parsers works well for many simpler cases. However, for more complex
-caseses the ``generate`` function decorator is both more readable and more powerful.
-
-``parsy.generate`` creates a parser from a generator function that should yield
-parsers. These parsers are applied successively and their results are sent back
-to the generator using the ``.send()`` protocol. The generator should return the
-final result of the parsing. Alternatively it can return another parser, which
-is equivalent to applying it and returning its result.
+cases the ``generate`` function decorator is both more readable and more
+powerful.
 
 The first example just shows a different way of building a parser that could
 have easily been using combinators:

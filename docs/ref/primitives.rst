@@ -100,7 +100,6 @@ These are the lowest level building blocks for creating parsers.
 
    Parsing a list of tokens:
 
-   >>> class SPACE: pass
    >>> hello = match_item('hello')
    >>> hello.parse_partial(["hello", "how", "are", "you"])
    ('hello', ['how', 'are', 'you'])

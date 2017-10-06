@@ -1,7 +1,8 @@
 Contributing to parsy
 =====================
 
-Please contribute by making a fork, and submitting a PR on `GitHub
+Contributions to parsy, whether code or docs, are very welcome. Please
+contribute by making a fork, and submitting a PR on `GitHub
 <https://github.com/python-parsy/parsy>`_.
 
 All contributions will need to be fully covered by unit tests and documentation.
@@ -27,3 +28,16 @@ To build the docs, do::
 
 We also require that flake8, isort and checkmanifest report zero errors (these
 are run by tox).
+
+When writing documentation, please keep in mind Daniele Procida's `great article
+on documentation <https://www.divio.com/en/blog/documentation/>`_. To summarise,
+there are 4 types of docs:
+
+* Tutorials
+* How-to guides
+* Discussions
+* Reference
+
+We do not (yet) have documentation that fits into the "Discussions" category,
+but we do have the others, and when adding new features, documentation of the
+right sort(s) should be added.
