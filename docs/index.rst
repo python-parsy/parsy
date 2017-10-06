@@ -9,7 +9,7 @@ Welcome to parsy's documentation!
    overview
    tutorial
    ref/index
-   examples
+   howto/index
    history
    contributing
 

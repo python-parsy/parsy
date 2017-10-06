@@ -3,9 +3,10 @@ import re
 import unittest
 
 from parsy import test_char as parsy_test_char  # to stop pytest thinking this function is a test
+from parsy import test_item as parsy_test_item  # to stop pytest thinking this function is a test
 from parsy import (
-    ParseError, alt, any_char, char_from, decimal_digit, digit, generate, letter, line_info_at,
-    regex, seq, string, string_from, whitespace
+    ParseError, alt, any_char, char_from, decimal_digit, digit, generate, letter, line_info_at, match_item, regex, seq,
+    string, string_from, whitespace
 )
 
 
@@ -364,6 +365,49 @@ class TestParser(unittest.TestCase):
         self.assertEqual(decimal_digit.at_least(1).concat().parse("9876543210"),
                          "9876543210")
         self.assertRaises(ParseError, decimal_digit.parse, "¹")
+
+
+class TestParserTokens(unittest.TestCase):
+    """
+    Tests that ensure that `.parse` can handle an arbitrary list of tokens,
+    rather than a string.
+    """
+    # Some opaque objects we will use in our stream:
+    class START:
+        pass
+
+    class STOP:
+        pass
+
+    def test_test_item(self):
+        start_stop = parsy_test_item(lambda i: i in [self.START, self.STOP], "START/STOP")
+        self.assertEqual(start_stop.parse([self.START]),
+                         self.START)
+        self.assertEqual(start_stop.parse([self.STOP]),
+                         self.STOP)
+        with self.assertRaises(ParseError) as err:
+            start_stop.many().parse([self.START, "hello"])
+
+        ex = err.exception
+        self.assertEqual(str(ex),
+                         "expected one of 'EOF', 'START/STOP' at 1")
+        self.assertEqual(ex.expected,
+                         frozenset({'EOF', 'START/STOP'}))
+        self.assertEqual(ex.index,
+                         1)
+
+    def test_match_item(self):
+        self.assertEqual(match_item(self.START).parse([self.START]),
+                         self.START)
+
+    def test_parse_tokens(self):
+        other_vals = parsy_test_item(lambda i: i not in [self.START, self.STOP],
+                                     "not START/STOP")
+
+        bracketed = match_item(self.START) >> other_vals.many() << match_item(self.STOP)
+        stream = [self.START, "hello", 1, 2, "goodbye", self.STOP]
+        result = bracketed.parse(stream)
+        self.assertEqual(result, ["hello", 1, 2, "goodbye"])
 
 
 class TestUtils(unittest.TestCase):

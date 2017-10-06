@@ -46,6 +46,23 @@ These are the lowest level building blocks for creating parsers.
       >>> ascii.parse("A")
       'A'
 
+.. function:: test_item(func, description)
+
+   Returns a parser that tests a single item from the list of items being
+   consumed, using the callable ``func``. If ``func`` returns ``True``, the
+   parse succeeds, otherwise the parse fails with the description
+   ``description``.
+
+   If you are parsing a string, i.e. a list of characters, you can use
+   :func:`test_char` instead. (In fact the implementations are identical, these
+   functions are aliases for the sake of clear code).
+
+   .. code-block:: python
+
+      >>> numeric = test_item(lambda i: str.isnumeric(i), "numeric")
+      >>> numeric.many().parse(["123", "456"])
+      ['123', '456']
+
 .. function:: char_from(characters)
 
    Accepts a string and returns a parser that matches and returns one character
@@ -67,6 +84,26 @@ These are the lowest level building blocks for creating parsers.
 
       >>> string_from("y", "yes").parse("yes")
       'yes'
+
+
+.. function:: match_item(item, description=None)
+
+   Returns a parser that tests the next item (or character) from the stream (or
+   string) for equality against the provided item. Optionally a string
+   description can be passed.
+
+   Parsing a string:
+
+   >>> letter_A = match_item('A')
+   >>> letter_A.parse_partial("ABC")
+   ('A', 'BC')
+
+   Parsing a list of tokens:
+
+   >>> class SPACE: pass
+   >>> hello = match_item('hello')
+   >>> hello.parse_partial(["hello", "how", "are", "you"])
+   ('hello', ['how', 'are', 'you'])
 
 .. function:: success(val)
 

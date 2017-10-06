@@ -1,8 +1,4 @@
-from parsy import digit, generate, regex, string, success, test_char
-
-test_item = test_char
-
-match_one = lambda i1: test_item(lambda i2: i1 == i2, str(i1))
+from parsy import digit, generate, regex, string, success, test_item, match_item
 
 
 def lexer(code):
@@ -17,14 +13,15 @@ def lexer(code):
     return parser.parse(code)
 
 
-def syntactic_analysis(tokens):
-    lparen = match_one('(')
-    rparen = match_one(')')
+def eval_tokens(tokens):
+    # parse and evaluate at the same time.
+    lparen = match_item('(')
+    rparen = match_item(')')
 
     @generate
     def additive():
         res = yield multiplicative
-        sign = match_one('+') | match_one('-')
+        sign = match_item('+') | match_item('-')
         while True:
             operation = yield sign | success('')
             if not operation:
@@ -39,7 +36,7 @@ def syntactic_analysis(tokens):
     @generate
     def multiplicative():
         res = yield simple
-        op = match_one('*') | match_one('/')
+        op = match_item('*') | match_item('/')
         while True:
             operation = yield op | success('')
             if not operation:
@@ -53,7 +50,7 @@ def syntactic_analysis(tokens):
 
     @generate
     def number():
-        sign = yield match_one('+') | match_one('-') | success('+')
+        sign = yield match_item('+') | match_item('-') | success('+')
         value = yield test_item(
             lambda x: isinstance(x, (int, float)), 'number')
         return value if sign == '+' else -value
@@ -65,7 +62,7 @@ def syntactic_analysis(tokens):
 
 
 def simple_eval(expr):
-    return syntactic_analysis(lexer(expr))
+    return eval_tokens(lexer(expr))
 
 
 if __name__ == '__main__':
