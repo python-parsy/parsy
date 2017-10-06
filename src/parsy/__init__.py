@@ -23,7 +23,10 @@ class ParseError(RuntimeError):
         self.index = index
 
     def line_info(self):
-        return '{}:{}'.format(*line_info_at(self.stream, self.index))
+        try:
+            return '{}:{}'.format(*line_info_at(self.stream, self.index))
+        except (TypeError, AttributeError):  # not a str
+            return str(self.index)
 
     def __str__(self):
         expected_list = sorted(repr(e) for e in self.expected)
@@ -74,23 +77,23 @@ class Parser(object):
     def __call__(self, stream, index):
         return self.wrapped_fn(stream, index)
 
-    def parse(self, string):
-        """Parse a string and return the result or raise a ParseError."""
-        (result, _) = (self << eof).parse_partial(string)
+    def parse(self, stream):
+        """Parse a string or list of tokens and return the result or raise a ParseError."""
+        (result, _) = (self << eof).parse_partial(stream)
         return result
 
-    def parse_partial(self, string):
+    def parse_partial(self, stream):
         """
         Parse the longest possible prefix of a given string.
         Return a tuple of the result and the rest of the string,
         or raise a ParseError.
         """
-        result = self(string, 0)
+        result = self(stream, 0)
 
         if result.status:
-            return (result.value, string[result.index:])
+            return (result.value, stream[result.index:])
         else:
-            raise ParseError(result.expected, string, result.furthest)
+            raise ParseError(result.expected, stream, result.furthest)
 
     def bind(self, bind_fn):
         @Parser
@@ -327,18 +330,31 @@ def regex(exp, flags=0):
     return regex_parser
 
 
-def test_char(func, description):
+def test_item(func, description):
     @Parser
-    def test_char_parser(stream, index):
+    def test_item_parser(stream, index):
         if index < len(stream):
-            char = stream[index]
-            if func(char):
-                return Result.success(index + 1, char)
+            item = stream[index]
+            if func(item):
+                return Result.success(index + 1, item)
         return Result.failure(index, description)
 
-    test_char_parser.__name__ = 'test_char_parser<%s>' % func.__name__
+    test_item_parser.__name__ = 'test_item_parser<%s>' % func.__name__
 
-    return test_char_parser
+    return test_item_parser
+
+
+def test_char(func, description):
+    # Implementation is identical to test_item
+    parser = test_item(func, description)
+    parser.__name__ = 'test_char_parser<%s>' % func.__name__
+    return parser
+
+
+def match_item(item, description=None):
+    if description is None:
+        description = str(item)
+    return test_item(lambda i: item == i, description)
 
 
 def string_from(*strings):

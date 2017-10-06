@@ -15,18 +15,25 @@ can be used and manipulated as below.
    The following methods are for actually **using** the parsers that you have
    created:
 
-   .. method:: parse(string)
+   .. method:: parse(string_or_list)
 
-      Attempts to parse the given ``string``. If the parse is successful
+      Attempts to parse the given string (or list). If the parse is successful
       and consumes the entire string, the result is returned - otherwise, a
       ``ParseError`` is raised.
 
-   .. function:: parse_partial(string)
+      Instead of passing a string, you can in fact pass a list of tokens. Almost
+      all the examples assume strings for simplicity. Some of the primitives are
+      also clearly string specific, and a few of the combinators (such as
+      :meth:`Parser.concat`) are string specific, but most of the rest of the
+      library will work with tokens just as well. See :doc:`/howto/lexing` for
+      more information.
+
+   .. function:: parse_partial(string_or_list)
 
       Similar to ``parse``, except that it does not require the entire
-      string to be consumed. Returns a tuple of
-      ``(result, rest_of_string)``, where ``rest_of_string`` is the part of
-      the string that was left over.
+      string (or list) to be consumed. Returns a tuple of
+      ``(result, remainder)``, where ``remainder`` is the part of
+      the string (or list) that was left over.
 
    The following methods are essentially **combinators** that produce new
    parsers from the existing one. They are provided as methods on ``Parser`` for
