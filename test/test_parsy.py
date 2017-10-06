@@ -412,6 +412,12 @@ class TestParserTokens(unittest.TestCase):
     def test_match_item(self):
         self.assertEqual(match_item(self.START).parse([self.START]),
                          self.START)
+        with self.assertRaises(ParseError) as err:
+            match_item(self.START, "START").parse([])
+
+        ex = err.exception
+        self.assertEqual(str(ex),
+                         "expected 'START' at 0")
 
     def test_parse_tokens(self):
         other_vals = parsy_test_item(lambda i: i not in [self.START, self.STOP],
