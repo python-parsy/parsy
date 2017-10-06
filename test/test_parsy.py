@@ -1,10 +1,11 @@
 # -*- code: utf8 -*-
+import re
 import unittest
 
 from parsy import test_char as parsy_test_char  # to stop pytest thinking this function is a test
 from parsy import (
-    ParseError, alt, any_char, char_from, decimal_digit, digit, generate, letter, line_info_at, regex, seq, string,
-    string_from, whitespace
+    ParseError, alt, any_char, char_from, decimal_digit, digit, generate, letter, line_info_at,
+    regex, seq, string, string_from, whitespace
 )
 
 
@@ -22,6 +23,11 @@ class TestParser(unittest.TestCase):
         self.assertEqual(parser.parse('1'), '1')
         self.assertEqual(parser.parse('4'), '4')
 
+        self.assertRaises(ParseError, parser.parse, 'x')
+
+    def test_regex_compiled(self):
+        parser = regex(re.compile(r'[0-9]'))
+        self.assertEqual(parser.parse('1'), '1')
         self.assertRaises(ParseError, parser.parse, 'x')
 
     def test_then(self):
