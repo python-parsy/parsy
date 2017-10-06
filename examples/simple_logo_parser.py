@@ -1,4 +1,4 @@
-from parsy import match_item, test_item, generate
+from parsy import generate, match_item, test_item
 
 
 class Command(object):

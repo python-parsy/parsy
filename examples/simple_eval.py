@@ -1,4 +1,4 @@
-from parsy import digit, generate, regex, string, success, test_item, match_item
+from parsy import digit, generate, match_item, regex, string, success, test_item
 
 
 def lexer(code):

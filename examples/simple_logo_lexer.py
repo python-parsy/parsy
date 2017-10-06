@@ -8,7 +8,7 @@ Stripped down logo lexer, for tokenizing Turtle Logo programs like:
 etc.
 """
 
-from parsy import string, string_from, regex, whitespace, generate, eof
+from parsy import eof, generate, regex, string, string_from, whitespace
 
 command = string_from("fd", "bk", "rt", "lt")
 number = regex(r'[0-9]+').map(int)
