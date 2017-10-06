@@ -8,23 +8,14 @@ Stripped down logo lexer, for tokenizing Turtle Logo programs like:
 etc.
 """
 
-from parsy import eof, generate, regex, string, string_from, whitespace
+from parsy import eof, regex, seq, string, string_from, whitespace
 
 command = string_from("fd", "bk", "rt", "lt")
 number = regex(r'[0-9]+').map(int)
 optional_whitespace = regex(r'\s*')
 eol = string("\n")
-
-
-@generate
-def line():
-    yield optional_whitespace
-    c = yield command
-    yield whitespace
-    n = yield number
-    yield eof | eol | (whitespace >> eol)
-    return [c, n, "\n"]
-
-
+line = seq(optional_whitespace >> command,
+           whitespace >> number,
+           (eof | eol | (whitespace >> eol)).result("\n"))
 flatten_list = lambda ls: sum(ls, [])
 lexer = line.many().map(flatten_list)

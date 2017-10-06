@@ -45,8 +45,9 @@ simple list of tokens. We also chose to convert the parameters to integers while
 we were at it, so in this case our list of tokens is not a list of strings, but
 heterogeneous.
 
-The next step is the parser, which is very simple because are looking a very
-limited language:
+The next step is the parser. We create some classes to represent different
+commands, and then use parsy again to create a parser which is very simple
+because this is a very limited language:
 
 .. literalinclude:: ../../examples/simple_logo_parser.py
    :language: python
