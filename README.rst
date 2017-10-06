@@ -1,7 +1,7 @@
 parsy
 =====
 
-|Documentation Status| |Build Status|
+|Documentation Status| |Build Status| |Coveralls|
 
 Parsy is an easy way to combine simple, small parsers into complex, larger
 parsers. If it means anything to you, it's a monadic parser combinator library
@@ -28,3 +28,5 @@ with contributions by other people as can be found in the git commit history.
    :target: http://parsy.readthedocs.io/en/latest/?badge=latest
 .. |Build Status| image:: https://travis-ci.org/python-parsy/parsy.svg?branch=master
    :target: https://travis-ci.org/python-parsy/parsy
+.. |Coveralls| image:: https://coveralls.io/repos/github/python-parsy/parsy/badge.svg?branch=master
+   :target: https://coveralls.io/github/python-parsy/parsy?branch=master

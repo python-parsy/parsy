@@ -4,17 +4,17 @@ python:
   - "3.4"
   - "3.5"
   - "3.6"
-env: SCRIPT=py.test
+env: SCRIPT=./travis_tests.sh
 matrix:
   include:
     - python: "3.5"
       env: SCRIPT=flake8
     - python: "3.5"
-      env: SCRIPT=isort -c
+      env: SCRIPT="isort -c"
     - python: "3.5"
       env: SCRIPT=check-manifest
 install:
-  - pip install pytest flake8 check-manifest isort
+  - pip install pytest flake8 check-manifest isort coverage coveralls
   - ./setup.py develop
 script:
   - $SCRIPT

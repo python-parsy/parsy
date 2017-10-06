@@ -17,6 +17,22 @@ These are the lowest level building blocks for creating parsers.
    matched string. ``exp`` can be a compiled regular expression, or a
    string which will be compiled with the given ``flags``.
 
+   Using a regex parser for small building blocks, instead of building up
+   parsers from primitives like :func:`string`, :func:`test_char` and
+   :meth:`Parser.times` combinators etc., can have several advantages,
+   including:
+
+   * It can be more succinct e.g. compare:
+
+     .. code-block:: python
+
+        >>> (string("a") | string("b")).times(1, 4)
+        >>> regex("[ab]{1,4}")
+
+   * It will return the entire matched string as a single item,
+     so you don't need to use :meth:`Parser.concat`.
+   * It can be much faster.
+
 .. function:: test_char(func, description)
 
    Returns a parser that tests a single character with the callable

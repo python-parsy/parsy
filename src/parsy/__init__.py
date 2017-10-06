@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*- #
 
+import operator
 import re
 from .version import __version__  # noqa: F401
 from functools import wraps
@@ -110,11 +111,14 @@ class Parser(object):
     def combine(self, combine_fn):
         return self.bind(lambda res: success(combine_fn(*res)))
 
+    def concat(self):
+        return self.map(''.join)
+
     def then(self, other):
-        return seq(self, other).map(lambda r: r[1])
+        return seq(self, other).combine(lambda left, right: right)
 
     def skip(self, other):
-        return seq(self, other).map(lambda r: r[0])
+        return seq(self, other).combine(lambda left, right: left)
 
     def result(self, res):
         return self >> success(res)
@@ -186,7 +190,7 @@ class Parser(object):
         return marked
 
     def __add__(self, other):
-        return seq(self, other).map(lambda res: res[0] + res[1])
+        return seq(self, other).combine(operator.add)
 
     def __mul__(self, other):
         if isinstance(other, range):
