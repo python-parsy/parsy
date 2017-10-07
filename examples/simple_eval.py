@@ -3,10 +3,10 @@ from parsy import digit, generate, match_item, regex, string, success, test_item
 
 def lexer(code):
     whitespace = regex(r'\s*')
-    integer = digit.at_least(1).map(''.join).map(int)
+    integer = digit.at_least(1).concat().map(int)
     float_ = (
         digit.many() + string('.').result(['.']) + digit.many()
-    ).map(''.join).map(float)
+    ).concat().map(float)
     parser = whitespace >> ((
         float_ | integer  | regex(r'[()*/+-]')
     ) << whitespace).many()
@@ -14,7 +14,8 @@ def lexer(code):
 
 
 def eval_tokens(tokens):
-    # parse and evaluate at the same time.
+    # This function parses and evaluates at the same time.
+
     lparen = match_item('(')
     rparen = match_item(')')
 

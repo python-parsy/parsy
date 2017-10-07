@@ -386,11 +386,8 @@ class TestParserTokens(unittest.TestCase):
     rather than a string.
     """
     # Some opaque objects we will use in our stream:
-    class START:
-        pass
-
-    class STOP:
-        pass
+    START = object()
+    STOP = object()
 
     def test_test_item(self):
         start_stop = parsy_test_item(lambda i: i in [self.START, self.STOP], "START/STOP")
@@ -405,7 +402,7 @@ class TestParserTokens(unittest.TestCase):
         self.assertEqual(str(ex),
                          "expected one of 'EOF', 'START/STOP' at 1")
         self.assertEqual(ex.expected,
-                         frozenset({'EOF', 'START/STOP'}))
+                         {'EOF', 'START/STOP'})
         self.assertEqual(ex.index,
                          1)
 

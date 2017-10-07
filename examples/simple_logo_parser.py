@@ -1,7 +1,7 @@
 from parsy import generate, match_item, test_item
 
 
-class Command(object):
+class Command:
     def __init__(self, parameter):
         self.parameter = parameter
 

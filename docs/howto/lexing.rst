@@ -67,10 +67,11 @@ Calculator
 ==========
 
 Our second example illustrates lexing and then parsing a sequence of
-mathematical operations, e.g "1 + 2 * 3 + 4", with precedence.
+mathematical operations, e.g "1 + 2 * (3 - 4.5)", with precedence.
 
 In this case, while doing the parsing stage, instead of building up an AST of
-objects representing the operations, it actually evaluates the expression.
+objects representing the operations, the parser actually evaluates the
+expression.
 
 .. literalinclude:: ../../examples/simple_eval.py
    :language: python

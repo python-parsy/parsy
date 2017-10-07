@@ -26,8 +26,8 @@ These are the lowest level building blocks for creating parsers.
 
      .. code-block:: python
 
-        >>> (string("a") | string("b")).times(1, 4)
-        >>> regex("[ab]{1,4}")
+        >>> (string('a') | string('b')).times(1, 4)
+        >>> regex(r'[ab]{1,4}')
 
    * It will return the entire matched string as a single item,
      so you don't need to use :meth:`Parser.concat`.
@@ -42,8 +42,8 @@ These are the lowest level building blocks for creating parsers.
    .. code-block:: python
 
       >>> ascii = test_char(lambda c: ord(c) < 128,
-                            "ascii character")
-      >>> ascii.parse("A")
+                            'ascii character')
+      >>> ascii.parse('A')
       'A'
 
 .. function:: test_item(func, description)
@@ -59,8 +59,8 @@ These are the lowest level building blocks for creating parsers.
 
    .. code-block:: python
 
-      >>> numeric = test_item(lambda i: str.isnumeric(i), "numeric")
-      >>> numeric.many().parse(["123", "456"])
+      >>> numeric = test_item(str.isnumeric, 'numeric')
+      >>> numeric.many().parse(['123', '456'])
       ['123', '456']
 
 .. function:: char_from(characters)
@@ -70,7 +70,7 @@ These are the lowest level building blocks for creating parsers.
 
    .. code-block:: python
 
-      >>> char_from("abc").parse("a")
+      >>> char_from('abc').parse('a')
       'a'
 
 .. function:: string_from(*strings)
@@ -82,7 +82,7 @@ These are the lowest level building blocks for creating parsers.
 
    .. code-block:: python
 
-      >>> string_from("y", "yes").parse("yes")
+      >>> string_from('y', 'yes').parse('yes')
       'yes'
 
 
@@ -95,13 +95,13 @@ These are the lowest level building blocks for creating parsers.
    Parsing a string:
 
    >>> letter_A = match_item('A')
-   >>> letter_A.parse_partial("ABC")
+   >>> letter_A.parse_partial('ABC')
    ('A', 'BC')
 
    Parsing a list of tokens:
 
    >>> hello = match_item('hello')
-   >>> hello.parse_partial(["hello", "how", "are", "you"])
+   >>> hello.parse_partial(['hello', 'how', 'are', 'you'])
    ('hello', ['how', 'are', 'you'])
 
 .. function:: success(val)
