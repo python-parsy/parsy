@@ -17,6 +17,10 @@ History and release notes
 * Added :data:`any_char`
 * Added :data:`decimal_digit`
 * Added :meth:`Parser.concat`
+* Fixed parsy so that it can again work with tokens as well as strings, allowing it to
+  be used as both a :doc:`lexer or parser or both <howto/lexing>`, with docs and tests.
+* Added :func:`test_item`
+* Added :func:`match_item`
 
 0.9.0 - 2017-09-28
 ------------------
