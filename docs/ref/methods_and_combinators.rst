@@ -173,6 +173,30 @@ can be used and manipulated as below.
          >>> string('foo').result(42).parse('foo')
          42
 
+   .. method:: should_fail(description)
+
+      Returns a parser that fails when the initial parser succeeds, and succeeds
+      when the initial parser fails (consuming no input). A description must
+      be passed which is used in parse failure messages.
+
+      This is essentially a negative lookahead:
+      .. code:: python
+
+         >>> p = letter << string(" ").should_fail("not space")
+         >>> p.parse('A')
+         'A'
+         >>> p.parse('A ')
+         ParseError: expected 'not space' at 0:1
+
+      It is also useful for implementing things like parsing repeatedly until a
+      marker:
+
+      .. code:: python
+
+         >>> end = string(";")
+         >>> (end.should_fail("not ;") >> letter).many().concat().parse_partial('ABC;')
+         ('ABC', ';')
+
    .. method:: bind(fn)
 
       Returns a parser which, if the initial parser is successful, passes the
