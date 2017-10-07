@@ -8,7 +8,7 @@ def lexer(code):
         digit.many() + string('.').result(['.']) + digit.many()
     ).map(''.join).map(float)
     parser = whitespace >> ((
-        integer | float_ | regex(r'[()*/+-]')
+        float_ | integer  | regex(r'[()*/+-]')
     ) << whitespace).many()
     return parser.parse(code)
 
