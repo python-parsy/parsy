@@ -21,6 +21,7 @@ History and release notes
   be used as both a :doc:`lexer or parser or both <howto/lexing>`, with docs and tests.
 * Added :func:`test_item`
 * Added :func:`match_item`
+* Added :meth:`Parser.should_fail`
 
 0.9.0 - 2017-09-28
 ------------------

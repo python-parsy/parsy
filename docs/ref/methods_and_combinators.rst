@@ -180,6 +180,7 @@ can be used and manipulated as below.
       be passed which is used in parse failure messages.
 
       This is essentially a negative lookahead:
+
       .. code:: python
 
          >>> p = letter << string(" ").should_fail("not space")
@@ -193,8 +194,7 @@ can be used and manipulated as below.
 
       .. code:: python
 
-         >>> end = string(";")
-         >>> (end.should_fail("not ;") >> letter).many().concat().parse_partial('ABC;')
+         >>> (string(";").should_fail("not ;") >> letter).many().concat().parse_partial('ABC;')
          ('ABC', ';')
 
    .. method:: bind(fn)
