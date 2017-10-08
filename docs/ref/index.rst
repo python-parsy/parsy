@@ -9,3 +9,4 @@
    primitives
    methods_and_combinators
    generating
+   parser_instances

@@ -12,6 +12,14 @@ can be used and manipulated as below.
 
 .. class:: Parser
 
+   .. method:: __init__(wrapped_fn)
+
+      This is a low level function to create new parsers that is used internally
+      but is rarely needed by users of the parsy library. It should be passed a
+      parsing function, which takes two arguments - a string/list to be parsed
+      and the current index into the list - and returns a :class:`Result` object,
+      as described in :doc:`/ref/parser_instances`.
+
    The following methods are for actually **using** the parsers that you have
    created:
 
