@@ -42,7 +42,7 @@ These are the lowest level building blocks for creating parsers.
    .. code-block:: python
 
       >>> ascii = test_char(lambda c: ord(c) < 128,
-                            'ascii character')
+      ...                   'ascii character')
       >>> ascii.parse('A')
       'A'
 

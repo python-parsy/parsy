@@ -63,7 +63,7 @@ Example 2 - Parsing a dd-mm-yy date:
    >>> from parsy import string, regex
    >>> from datetime import date
    >>> ddmmyy = regex(r'[0-9]{2}').map(int).sep_by(string("-"), min=3, max=3).combine(
-                      lambda d, m, y: date(2000 + y, m, d))
+   ...                lambda d, m, y: date(2000 + y, m, d))
    >>> ddmmyy.parse('06-05-14')
    datetime.date(2014, 5, 6)
 

@@ -138,8 +138,8 @@ can be used and manipulated as below.
 
          >>> from datetime import date
          >>> yyyymmdd = seq(regex(r'[0-9]{4}').map(int),
-                            regex(r'[0-9]{2}').map(int),
-                            regex(r'[0-9]{2}').map(int)).combine(date)
+         ...                regex(r'[0-9]{2}').map(int),
+         ...                regex(r'[0-9]{2}').map(int)).combine(date)
          >>> yyyymmdd.parse('20140506')
          datetime.date(2014, 5, 6)
 
@@ -149,7 +149,7 @@ can be used and manipulated as below.
       .. code:: python
 
          >>> ddmmyy = regex(r'[0-9]{2}').map(int).times(3).combine(
-                            lambda d, m, y: date(2000 + y, m, d))
+         ...                lambda d, m, y: date(2000 + y, m, d))
          >>> ddmmyy.parse('060514')
          datetime.date(2014, 5, 6)
 
@@ -345,9 +345,9 @@ Parser combinators
 
       >>> x_bottles_of_y_on_the_z = \
       ...    seq(regex(r"[0-9]+").map(int) << string(" bottles of "),
-                 regex(r"\S+") << string(" on the "),
-                 regex(r"\S+")
-                 )
+      ...        regex(r"\S+") << string(" on the "),
+      ...        regex(r"\S+")
+      ...        )
       >>> x_bottles_of_y_on_the_z.parse("99 bottles of beer on the wall")
       [99, 'beer', 'wall']
 
