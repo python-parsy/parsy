@@ -20,6 +20,9 @@ larger parsers works well for many simpler cases. However, for more complex
 cases the ``generate`` function decorator is both more readable and more
 powerful.
 
+Alternative syntax to combinators
+---------------------------------
+
 The first example just shows a different way of building a parser that could
 have easily been using combinators:
 
@@ -45,6 +48,9 @@ Note that there is no guarantee that the entire function is executed: if any of
 the yielded parsers fails, the function will not complete, and parsy will try to
 backtrack to an alternative parser if there is one.
 
+Building complex objects
+------------------------
+
 The second example shows how you can use multiple parse results to build up a
 complex object:
 
@@ -66,6 +72,11 @@ complex object:
        day = yield regex("[0-9]{2}").map(int)
 
        return date(year, month, day)
+
+This could also have been achieved using :func:`seq` and :meth:`Parser.combine`.
+
+Using values already parsed
+---------------------------
 
 The third example shows how we can use an earlier parsed value to influence the
 subsequent parsing. This example parses Hollerith constants. Holerith constants
@@ -92,3 +103,43 @@ Shipman from his `pyparsing docs
 There are also more complex examples in the :ref:`tutorial
 <using-previous-values>` of using the ``generate`` decorator to create parsers
 where there is logic that is conditional upon earlier parsed values.
+
+Implementing recursive definitions
+----------------------------------
+
+A fourth examples shows how you can use this syntax for grammars that you would
+like to define recursively (or mutually recursively).
+
+Say we want to be able to pass an s-expression like syntax which uses
+parenthesis for grouping items into a tree structure, like the following::
+
+     (0 1 (2 3) (4 5 6) 7 8)
+
+A naive approach would be:
+
+.. code-block:: python
+
+   simple = regex('[0-9]+').map(int)
+   group = string('(') >> expr.sep_by(string(' ')) << string(')')
+   expr = simple | group
+
+The problem is that the second line will get a ``NameError`` because ``expr`` is
+not defined yet.
+
+Using the ``@generate`` syntax will introduce a level of laziness in resolving
+``expr`` that allow things to work:
+
+.. code-block:: python
+
+   simple = regex('[0-9]+').map(int)
+
+   @generate
+   def group():
+       return (yield string('(') >> expr.sep_by(string(' ')) << string(')'))
+
+   expr = simple | group
+
+.. code-block:: python
+
+   >>> expr.parse("(0 1 (2 3) (4 5 6) 7 8)")
+   [0, 1, [2, 3], [4, 5, 6], 7, 8]
