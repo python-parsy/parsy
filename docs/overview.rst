@@ -29,7 +29,7 @@ Parsy differentiates itself from other solutions with the following:
 
   * we can easily handle cases where later parsing depends on the value of
     something parsed earlier e.g. Hollerith constants.
-  * it's easy to build up complex result objects, rather than having list of
+  * it's easy to build up complex result objects, rather than having lists of
     lists etc.
   * there is no need for things like `pyparsing's Forward class
     <http://infohost.nmt.edu/tcc/help/pubs/pyparsing/web/class-Forward.html>`_ .
@@ -74,7 +74,7 @@ To learn how to use parsy, you should continue with:
   type of parser library.
 * the :doc:`parser generator decorator </ref/generating>`
 * the :doc:`builtin parser primitives </ref/primitives>`
-* the :doc:`method reference </ref/methods_and_combinators>`
+* the :doc:`method and combinator reference </ref/methods_and_combinators>`
 
 Other Python projects
 =====================
