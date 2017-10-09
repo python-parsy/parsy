@@ -113,8 +113,8 @@ These are the lowest level building blocks for creating parsers.
 
    Returns a parser that always fails with the provided error message.
 
-Prebuilt parsers
-================
+Pre-built parsers
+=================
 
 Some common, pre-built parsers (all of these are :class:`Parser` objects created
 using the primitives above):

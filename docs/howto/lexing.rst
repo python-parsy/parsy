@@ -61,7 +61,7 @@ To use it, we pass the the list of tokens generated above into
    [Forward(1), Backward(2)]
 
 In a real implementation, we could then have ``execute`` methods on the
-``Command`` subclasses if we wanted to implement an interpreter, for example.
+``Command`` sub-classes if we wanted to implement an interpreter, for example.
 
 Calculator
 ==========

@@ -5,7 +5,7 @@ Parser methods, operators and combinators
 Parser methods
 ==============
 
-Parser objects are returned by any of the builtin parser :doc:`primitives`. They
+Parser objects are returned by any of the built-in parser :doc:`primitives`. They
 can be used and manipulated as below.
 
 .. currentmodule:: parsy
@@ -129,7 +129,7 @@ can be used and manipulated as below.
       Returns a parser that transforms the produced values of the initial parser
       with ``fn``, passing the arguments using ``*args`` syntax.
 
-      Where the current parser produces an interable of values, this can be a
+      Where the current parser produces an iterable of values, this can be a
       more convenient way to combine them than :meth:`~Parser.map`.
 
       Example 1 - the argument order of our callable already matches:
@@ -190,7 +190,7 @@ can be used and manipulated as below.
    .. function:: sep_by(sep, min=0, max=inf)
 
       Like :meth:`Parser.times`, this returns a new parser that repeats
-      the intial parser and collects the results in a list, but in this case separated
+      the initial parser and collects the results in a list, but in this case separated
       by the parser ``sep`` (whose return value is discarded). By default it
       repeats with no limit, but minimum and maximum values can be supplied.
 
@@ -313,7 +313,7 @@ You can also set both upper and lower bounds by multiplying by a range:
    >>> (string("x") * range(0, 3)).parse("xxx")
    ParseError: expected EOF at 0:2
 
-(Note the normal sematics of ``range`` are respected - the second number is an
+(Note the normal semantics of ``range`` are respected - the second number is an
 *exclusive* upper bound, not inclusive).
 
 Parser combinators
@@ -355,6 +355,6 @@ Other combinators
 =================
 
 Parsy does not try to include every possible combinator - there is no reason why
-you cannot create your own for your needs using the builtin combinators and
+you cannot create your own for your needs using the built-in combinators and
 primitives. If you find something that is very generic and would be very useful
-to have as a builtin, please :doc:`submit </contributing>`: as a PR!
+to have as a built-in, please :doc:`submit </contributing>`: as a PR!

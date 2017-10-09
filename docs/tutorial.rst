@@ -22,7 +22,7 @@ With parsy, you start by breaking the problem down into the smallest components.
 So we need first to match the 4 digit year at the beginning.
 
 There are various ways we can do this, but a regex works nicely, and
-:func:`regex` is a builtin primitive of the parsy library:
+:func:`regex` is a built-in primitive of the parsy library:
 
 .. code-block:: python
 
@@ -176,7 +176,7 @@ At this point, we could also convert this to a date object if we wanted using
    >>> fulldate = seq(year, dash >> month, dash >> day).combine(date)
 
 We could have used :meth:`Parser.map` here, but :meth:`Parser.combine` is a bit
-nicer. It's especially succint because the argument order to ``date`` matches
+nicer. It's especially succinct because the argument order to ``date`` matches
 the order of the values parsed (year, month, day), otherwise we could pass a
 ``lambda`` to ``combine``.
 
@@ -265,7 +265,7 @@ optional dash, and then we then check the length of what was produced to see if
 a dash was present.
 
 We also need to do checking on the month and the day. We'll take a shortcut and
-use the builtin ``datetime.date`` class to do the validation for us. However,
+use the built-in ``datetime.date`` class to do the validation for us. However,
 rather than allow exceptions to be raised, we convert the exception into a
 parsing failure.
 

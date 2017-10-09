@@ -34,7 +34,7 @@ Parsy differentiates itself from other solutions with the following:
   * there is no need for things like `pyparsing's Forward class
     <http://infohost.nmt.edu/tcc/help/pubs/pyparsing/web/class-Forward.html>`_ .
 
-* it has a minimalist philopsophy. It doesn't include builtin helpers for any
+* it has a minimalist philosophy. It doesn't include built-in helpers for any
   specific grammars or languages, but provides building blocks for making these.
 
 Basic usage looks like this:
@@ -90,6 +90,6 @@ Other Python projects
   annotations.
 
 * `Lark <https://github.com/erezsh/lark>`_. With Lark you write a grammar
-  definition in a separate mini-langauge as a string, and have a parser
+  definition in a separate mini-language as a string, and have a parser
   generated for you, rather than writing the grammar in Python. It has the
   advantage of speed and being able to use different parsing algorithms.
