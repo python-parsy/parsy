@@ -37,9 +37,6 @@ like ``any_char.times(n).concat()`` but the following will be more efficient:
            else:
                return Result.failure(index, "{0} items".format(n))
 
-       # This is optional, can help debugging:
-       consumer.__name__ = 'consumer<{0}>'.format(n)
-
        return consumer
 
 

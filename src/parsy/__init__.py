@@ -260,8 +260,8 @@ def generate(fn):
     if isinstance(fn, str):
         return lambda f: generate(f).desc(fn)
 
-    @wraps(fn)
     @Parser
+    @wraps(fn)
     def generated(stream, index):
         # start up the generator
         iterator = fn()
@@ -308,8 +308,6 @@ def string(s):
         else:
             return Result.failure(index, s)
 
-    string_parser.__name__ = 'string_parser<%s>' % s
-
     return string_parser
 
 
@@ -325,8 +323,6 @@ def regex(exp, flags=0):
         else:
             return Result.failure(index, exp.pattern)
 
-    regex_parser.__name__ = 'regex_parser<%s>' % exp.pattern
-
     return regex_parser
 
 
@@ -339,16 +335,12 @@ def test_item(func, description):
                 return Result.success(index + 1, item)
         return Result.failure(index, description)
 
-    test_item_parser.__name__ = 'test_item_parser<%s>' % func.__name__
-
     return test_item_parser
 
 
 def test_char(func, description):
     # Implementation is identical to test_item
-    parser = test_item(func, description)
-    parser.__name__ = 'test_char_parser<%s>' % func.__name__
-    return parser
+    return test_item(func, description)
 
 
 def match_item(item, description=None):
