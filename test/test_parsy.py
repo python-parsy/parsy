@@ -379,6 +379,20 @@ class TestParser(unittest.TestCase):
                           ("C", (1, 0)), ("D", (1, 1)),
                           ])
 
+    def test_should_fail(self):
+        not_a_digit = digit.should_fail('not a digit') >> regex(r'.*')
+
+        self.assertEqual(not_a_digit.parse('a'), 'a')
+        self.assertEqual(not_a_digit.parse('abc'), 'abc')
+        self.assertEqual(not_a_digit.parse('a10'), 'a10')
+        self.assertEqual(not_a_digit.parse(''), '')
+
+        with self.assertRaises(ParseError) as err:
+            not_a_digit.parse('8')
+        self.assertEqual(str(err.exception), "expected 'not a digit' at 0:0")
+
+        self.assertRaises(ParseError, not_a_digit.parse, '8ab')
+
 
 class TestParserTokens(unittest.TestCase):
     """

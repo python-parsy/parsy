@@ -192,6 +192,16 @@ class Parser(object):
 
         return marked
 
+    def should_fail(self, description):
+        @Parser
+        def fail_parser(stream, index):
+            res = self(stream, index)
+            if res.status:
+                return Result.failure(index, description)
+            return Result.success(index, res)
+
+        return fail_parser
+
     def __add__(self, other):
         return seq(self, other).combine(operator.add)
 
