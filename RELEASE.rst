@@ -8,7 +8,7 @@ How to do releases
 
 * Change docs/history.rst to remove " - unreleased"
 
-* Update the version number (removing the ``.dev1`` part):
+* Update the version number (removing the ``-dev1`` part):
 
   * src/parsy/version.py
   * docs/conf.py
