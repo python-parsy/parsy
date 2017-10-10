@@ -27,10 +27,11 @@ setup(
     url="https://github.com/python-parsy/parsy",
     license="MIT",
     classifiers=[
-        "Development Status :: 3 - Alpha",
-        "Environment :: Other Environment",
+        "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
         "Topic :: Software Development :: Compilers",
+        "Topic :: Software Development :: Interpreters",
+        "Topic :: Text Processing",
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.3",
