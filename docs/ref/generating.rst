@@ -79,7 +79,7 @@ Using values already parsed
 ---------------------------
 
 The third example shows how we can use an earlier parsed value to influence the
-subsequent parsing. This example parses Hollerith constants. Holerith constants
+subsequent parsing. This example parses Hollerith constants. Hollerith constants
 are a way of specifying an arbitrary set of characters by first writing the
 integer that specifies the length, followed by the character H, followed by the
 set of characters. For example, ``pancakes`` would be written ``8Hpancakes``.
