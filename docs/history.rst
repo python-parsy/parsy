@@ -4,7 +4,11 @@ History and release notes
 
 .. currentmodule:: parsy
 
-1.0.0 - unreleased
+1.0.1 - unreleased
+------------------
+
+
+1.0.0 - 2017-10-10
 ------------------
 
 * Improved parse failure messages of ``@generate`` parsers. Previously
