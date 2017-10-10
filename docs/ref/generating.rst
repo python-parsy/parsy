@@ -127,7 +127,7 @@ The problem is that the second line will get a ``NameError`` because ``expr`` is
 not defined yet.
 
 Using the ``@generate`` syntax will introduce a level of laziness in resolving
-``expr`` that allow things to work:
+``expr`` that allows things to work:
 
 .. code-block:: python
 
