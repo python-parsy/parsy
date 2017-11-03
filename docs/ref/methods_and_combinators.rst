@@ -193,10 +193,8 @@ can be used and manipulated as below.
 
       .. code:: python
 
-         >>> parser = alt(seq(day << whitespace, month),
-         ...              seq(month << whitespace, day)).map(dict)
-         >>> parser.parse("1 January")
-         {'day': 1, 'month': 'January'}
+         >>> seq(day << whitespace, month).map(dict).parse("10 September")
+         {'day': 10, 'month': 'September'}
 
    .. method:: concat()
 
