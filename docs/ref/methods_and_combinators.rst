@@ -173,17 +173,17 @@ can be used and manipulated as below.
    .. method:: combine_dict(fn)
 
       Returns a parser that transforms the value produced by the initial parser
-      (which must be a mapping/dictionary), passing the arguments using the
-      ``**kwargs`` syntax.
+      (which must be a mapping/dictionary) using the supplied function/callable,
+      passing the arguments using the ``**kwargs`` syntax.
 
       Where the initial parser produces a dictionary of values, this can be a
       more convenient way to combine them than :meth:`~Parser.map`.
 
       This is similar to :meth:`combine`, but used for with a callable that
       accepts keyword arguments. Compared to using :meth:`combine`, by using
-      keyword arguments instead of positional arguments we are can avoid a
+      keyword arguments instead of positional arguments we can avoid a
       dependence on the order of components in the string being parsed (and in
-      the constructors of callables being used) and therefore improve
+      the argument order of callables being used) and therefore improve
       flexibility, and readability.
 
       Example using Python 3.5 and below, using :meth:`tag` and :meth:`map`
