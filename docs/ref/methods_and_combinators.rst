@@ -453,7 +453,7 @@ Parser combinators
 
    (In this case you would be better off using :func:`char_from`)
 
-.. function:: seq(*parsers)
+.. function:: seq(*parsers, **kw_parsers)
 
    Creates a parser that runs a sequence of parsers in order and combines
    their results in a list.
