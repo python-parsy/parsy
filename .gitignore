@@ -1,5 +1,6 @@
 /build
 /dist
+/todo
 .tox
 src/parsy.egg-info
 docs/_build
