@@ -195,6 +195,9 @@ class Parser(object):
 
         return marked
 
+    def tag(self, name):
+        return self.map(lambda v: (name, v))
+
     def should_fail(self, description):
         @Parser
         def fail_parser(stream, index):

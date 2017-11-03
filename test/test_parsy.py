@@ -108,6 +108,21 @@ class TestParser(unittest.TestCase):
         self.assertEqual(letters, ['q', 'w', 'e', 'r'])
         self.assertEqual(end, (1, 4))
 
+    def test_tag(self):
+        parser = letter.many().concat().tag("word")
+        self.assertEqual(parser.sep_by(string(",")).parse("this,is,a,list"),
+                         [("word", "this"),
+                          ("word", "is"),
+                          ("word", "a"),
+                          ("word", "list")])
+
+    def test_tag_map_dict(self):
+        parser = seq(letter.tag("first_letter"),
+                     letter.many().concat().tag("remainder")).map(dict)
+        self.assertEqual(parser.parse("Hello"),
+                         {'first_letter': 'H',
+                          'remainder': 'ello'})
+
     def test_generate_desc(self):
         @generate('a thing')
         def thing():

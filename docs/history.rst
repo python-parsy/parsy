@@ -8,6 +8,7 @@ History and release notes
 ------------------
 
 * Added :meth:`Parser.optional`.
+* Added :meth:`Parser.tag`.
 * Documentation improvements.
 
 
