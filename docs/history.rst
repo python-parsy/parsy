@@ -4,7 +4,7 @@ History and release notes
 
 .. currentmodule:: parsy
 
-1.0.1 - unreleased
+1.1.0 - unreleased
 ------------------
 
 * Added :meth:`Parser.optional`.
