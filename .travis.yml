@@ -14,7 +14,7 @@ matrix:
     - python: "3.5"
       env: SCRIPT=check-manifest
 install:
-  - pip install pytest flake8 check-manifest isort coverage coveralls
+  - pip install pytest flake8 check-manifest isort coverage coveralls codecov
   - ./setup.py develop
 script:
   - $SCRIPT
