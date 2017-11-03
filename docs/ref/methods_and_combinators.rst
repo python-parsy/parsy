@@ -173,7 +173,7 @@ can be used and manipulated as below.
    .. method:: tag(name)
 
       Returns a parser that wraps the produced value of the initial parser in a
-      2 tuple containing `(name, value)`. This is provides a very simple way to
+      2 tuple containing ``(name, value)``. This is provides a very simple way to
       label parsed components. e.g.:
 
       .. code:: python
