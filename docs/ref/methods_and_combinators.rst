@@ -111,6 +111,18 @@ can be used and manipulated as below.
       Returns a parser that expects the initial parser at least ``n`` times, and
       produces a list of the results.
 
+   .. method:: optional()
+
+      Returns a parser that expects the initial parser zero or once, and maps
+      the result to ``None`` in the case of no match.
+
+      .. code:: python
+
+         >>> string('A').optional().parse('A')
+         'A'
+         >>> string('A').optional().parse('')
+         None
+
    .. method:: map(fn)
 
       Returns a parser that transforms the produced value of the initial parser

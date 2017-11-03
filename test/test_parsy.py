@@ -244,6 +244,11 @@ class TestParser(unittest.TestCase):
         self.assertRaises(ParseError,
                           ab.at_most(2).parse, "ababab")
 
+    def test_optional(self):
+        p = string("a").optional()
+        self.assertEqual(p.parse("a"), "a")
+        self.assertEqual(p.parse(""), None)
+
     def test_sep_by(self):
         digit_list = digit.map(int).sep_by(string(','))
 

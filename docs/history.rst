@@ -7,6 +7,9 @@ History and release notes
 1.0.1 - unreleased
 ------------------
 
+* Added :meth:`Parser.optional`.
+* Documentation improvements.
+
 
 1.0.0 - 2017-10-10
 ------------------

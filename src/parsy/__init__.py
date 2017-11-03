@@ -162,6 +162,9 @@ class Parser(object):
     def at_least(self, n):
         return self.times(n) + self.many()
 
+    def optional(self):
+        return self.times(0, 1).map(lambda v: v[0] if v else None)
+
     def sep_by(self, sep, *, min=0, max=float('inf')):
         zero_times = success([])
         if max == 0:
