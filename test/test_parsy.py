@@ -344,6 +344,9 @@ class TestParser(unittest.TestCase):
                              {'first_name': 'Jane',
                               'last_name': 'Smith'})
 
+        def test_seq_kwargs_fail(self):
+            self.assertRaises(ParseError, seq(a=string("a")).parse, "b")
+
         def test_seq_kwargs_error(self):
             self.assertRaises(ValueError, lambda: seq(string("a"),
                                                       b=string("b")))
