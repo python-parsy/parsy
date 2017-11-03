@@ -2,6 +2,7 @@
 import re
 import sys
 import unittest
+from datetime import date
 
 from parsy import test_char as parsy_test_char  # to stop pytest thinking this function is a test
 from parsy import test_item as parsy_test_item  # to stop pytest thinking this function is a test
@@ -64,6 +65,15 @@ class TestParser(unittest.TestCase):
                   .combine(lambda d, l: (d, l)))
         self.assertEqual(parser.parse('1A'),
                          ('1', 'A'))
+
+    def test_combine_dict(self):
+        ddmmyyyy = seq(
+            regex(r'[0-9]{2}').map(int).tag('day'),
+            regex(r'[0-9]{2}').map(int).tag('month'),
+            regex(r'[0-9]{4}').map(int).tag('year'),
+        ).map(dict).combine_dict(date)
+        self.assertEqual(ddmmyyyy.parse('05042003'),
+                         date(2003, 4, 5))
 
     def test_concat(self):
         parser = letter.many().concat()
