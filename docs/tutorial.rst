@@ -29,6 +29,9 @@ There are various ways we can do this, but a regex works nicely, and
    >>> from parsy import regex
    >>> year = regex(r'[0-9]{4}')
 
+(For those who don't know regular expressions, the regex ``[0-9]{4}`` means
+“match any character from 0123456789 exactly 4 times”.)
+
 This has produced a :class:`Parser` object which has various methods. We can
 immediately check that it works using the :meth:`Parser.parse` method:
 
@@ -46,14 +49,18 @@ all parsers.
 
 If there is no match, it raises a ``ParseError``.
 
-Notice as well that the parser expects to consume all the input, so if there are
-extra characters at the end, even if it is just whitespace, parsing will fail
-with a message saying it expected EOF (End Of File/Data):
+Notice as well that the :meth:`Parser.parse` method expects to consume all the
+input, so if there are extra characters at the end, even if it is just
+whitespace, parsing will fail with a message saying it expected EOF (End Of
+File/Data):
 
 .. code-block:: python
 
    >>> year.parse('2017 ')
    ParseError: expected 'EOF' at 0:4
+
+You can use :meth:`Parser.parse_partial` if you want to just keep parsing as far
+as possible and not throw an exception.
 
 To parse the data, we need to parse months, days, and the dash symbol, so we'll
 add those:
@@ -186,7 +193,7 @@ Using previously parsed values
 ==============================
 
 Now, sometimes we might want to do more complex logic with the values that are
-collected as parse results, and do while we are still parsing.
+collected as parse results, and do so while we are still parsing.
 
 To continue our example, the above parser has a problem that it will raise an
 exception if the day and month values are not valid. We'd like to be able to
@@ -202,33 +209,12 @@ their leading dashes) are missing - that is, we need to express optional
 components, and we need a way to be able to test earlier values while in the
 middle of parsing, to see if we should continue looking for another component.
 
-The :meth:`Parser.bind` method provides one way to do it (yay monads!). You pass
-it a function that takes the output value from one parser as its input, and
-returns another parser as its output. (An example will help!) By appropriate use
-of closures, plus the :func:`success` primitive to return our values as a tuple,
-we can put together a parser.
+The :meth:`Parser.bind` method provides one way to do it (yay monads!).
+Unfortunately, it gets ugly pretty fast, and in Python we don't have Haskell's
+``do`` notation to tidy it up. But thankfully we can use generators and the
+``yield`` keyword to great effect.
 
-For our first attempt, we'll make a parser that is similar to the previous ones
-and requires the full date to be present. It might look like this:
-
-.. code-block:: python
-
-   fulldate = \
-       year.skip(dash).bind(lambda y:
-           month.skip(dash).bind(lambda m:
-               day.bind(lambda d:
-                   success((y, m, d)))))
-
-That is not a pretty sight, and it will get even worse if we want to use
-statements that are not allowed inside a lambda, and therefore need to define
-the callables using ``def``. Can we do better?
-
-In Haskell, there is ``do`` notation that eliminates the lambdas. We don't have
-that in Python, but instead we can use generators and the ``yield`` keyword to
-great effect.
-
-Instead of wrangling lambdas or having to create many little functions, we use
-use a generator function and convert it into a parser by using the
+We use a generator function and convert it into a parser by using the
 :func:`generate` decorator. The idea is that you ``yield`` every parser that you
 want to run, and receive the result of that parser as the value of the yield
 expression. You can then put parsers together using any logic you like, and
@@ -247,8 +233,8 @@ An equivalent parser to the one above can be written like this:
        d = yield day
        return (y, m, d)
 
-This is much better, and provides a good starting point for our next set of
-requirements.
+This is more verbose than before, but provides a good starting point for our
+next set of requirements.
 
 First of all, we need to express optional components - that is we need to be
 able to handle missing dashes, and return what we've got so far rather than

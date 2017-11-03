@@ -18,13 +18,14 @@ Motivation and examples
 Constructing parsers by using combinators and :class:`Parser` methods to make
 larger parsers works well for many simpler cases. However, for more complex
 cases the ``generate`` function decorator is both more readable and more
-powerful.
+powerful. (For those coming from Haskell/Parsec, this method provides an
+acceptable substitute for ``do`` notation).
 
 Alternative syntax to combinators
 ---------------------------------
 
 The first example just shows a different way of building a parser that could
-have easily been using combinators:
+have easily been built using combinators:
 
 .. code:: python
 

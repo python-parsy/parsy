@@ -220,8 +220,11 @@ can be used and manipulated as below.
    .. method:: bind(fn)
 
       Returns a parser which, if the initial parser is successful, passes the
-      result to ``fn``, and continues with the parser returned from ``fn``.
-      This is the monadic binding operation.
+      result to ``fn``, and continues with the parser returned from ``fn``. This
+      is the monadic binding operation. However, since we don't have Haskell's
+      ``do`` notation in Python, using this is very awkward. Instead, you should
+      look at :doc:`/ref/generating/` which provides a much nicer syntax for that
+      cases where you would have needed ``do`` notation in Parsec.
 
    .. method:: sep_by(sep, min=0, max=inf)
 

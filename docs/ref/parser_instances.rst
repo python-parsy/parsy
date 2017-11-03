@@ -10,8 +10,8 @@ Normally you will create Parser instances using the provided :doc:`primitives
 However it is also possible to create them manually, as below.
 
 The :class:`Parser` constructor should be passed a function that takes the
-string/list to be parsed, and returns a and returns a :class:`Result` object.
-The ``Result`` object will be created either using :meth:`Result.success` or
+string/list to be parsed, and returns a :class:`Result` object. The ``Result``
+object will be created either using :meth:`Result.success` or
 :meth:`Result.failure` to indicate success or failure respectively.
 :meth:`Result.success` should be passed the next index to continue parsing with,
 and the value that is returned from the parsing. :meth:`Result.failure` should
