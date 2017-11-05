@@ -43,4 +43,4 @@ there are 4 types of docs:
 We do not (yet) have documentation that fits into the "Discussions" category,
 but we do have the others, and when adding new features, documentation of the
 right sort(s) should be added. With parsy, where code is often very succinct,
-this often takes several times longer than righting the code.
+writing good docs often takes several times longer than writing the code.
