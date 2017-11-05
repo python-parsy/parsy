@@ -11,6 +11,7 @@ History and release notes
 * Added :meth:`Parser.tag`.
 * Added :func:`seq` keyword argument version (Python 3.6)
 * Added :meth:`Parser.combine_dict`.
+* Documented :meth:`Parser.mark`.
 * Documentation improvements.
 
 

@@ -318,6 +318,23 @@ can be used and manipulated as below.
          >>> csv.parse("abc,def")
          ['abc', 'def']
 
+   .. method:: mark()
+
+      Returns a parser that wraps the initial parser's result in a value
+      containing column and line information of the match, as well as the
+      original value. The new value is a 3-tuple:
+
+      .. code:: python
+
+         ((start_row, start_column),
+          original_value,
+          (end_row, end_column))
+
+      This is useful for being able to report problems with parsing more
+      accurately, especially if you are using parsy as a :doc:`lexer
+      </howto/lexing/>` and want subsequent parsing of the token stream to be
+      able to report original positions in error messages etc.
+
 .. _operators:
 
 Parser operators
