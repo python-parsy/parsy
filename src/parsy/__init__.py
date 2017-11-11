@@ -9,6 +9,9 @@ from functools import wraps
 from .version import __version__  # noqa: F401
 
 
+noop = lambda x: x
+
+
 def line_info_at(stream, index):
     if index > len(stream):
         raise ValueError("invalid index")
@@ -363,12 +366,13 @@ def fail(expected):
     return Parser(lambda _, index: Result.failure(index, expected))
 
 
-def string(s):
+def string(s, transform=noop):
     slen = len(s)
+    transformed_s = transform(s)
 
     @Parser
     def string_parser(stream, index):
-        if stream[index:index + slen] == s:
+        if transform(stream[index:index + slen]) == transformed_s:
             return Result.success(index + slen, s)
         else:
             return Result.failure(index, s)
@@ -414,9 +418,9 @@ def match_item(item, description=None):
     return test_item(lambda i: item == i, description)
 
 
-def string_from(*strings):
+def string_from(*strings, transform=noop):
     # Sort longest first, so that overlapping options work correctly
-    return alt(*map(string, sorted(strings, key=len, reverse=True)))
+    return alt(*[string(s, transform) for s in sorted(strings, key=len, reverse=True)])
 
 
 def char_from(string):

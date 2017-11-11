@@ -20,6 +20,21 @@ class TestParser(unittest.TestCase):
 
         self.assertRaises(ParseError, parser.parse, 'y')
 
+    def test_string_transform(self):
+        parser = string("x", transform=lambda s: s.lower())
+        self.assertEqual(parser.parse('x'), 'x')
+        self.assertEqual(parser.parse('X'), 'x')
+
+        self.assertRaises(ParseError, parser.parse, 'y')
+
+    def test_string_transform_2(self):
+        parser = string("Cat", transform=lambda s: s.lower())
+        self.assertEqual(parser.parse('cat'), 'Cat')
+        self.assertEqual(parser.parse('CAT'), 'Cat')
+        self.assertEqual(parser.parse('CaT'), 'Cat')
+
+        self.assertRaises(ParseError, parser.parse, 'dog')
+
     def test_regex(self):
         parser = regex(r'[0-9]')
 
@@ -387,6 +402,14 @@ class TestParser(unittest.TestCase):
 
         ex = err.exception
         self.assertEqual(str(ex), """expected one of 'Mr', 'Mr.', 'Mrs', 'Mrs.' at 0:0""")
+
+    def test_string_from_transform(self):
+        titles = string_from("Mr", "Mr.", "Mrs", "Mrs.",
+                             transform=lambda s: s.lower())
+        self.assertEqual(titles.parse("mr"), "Mr")
+        self.assertEqual(titles.parse("mr."), "Mr.")
+        self.assertEqual(titles.parse("MR"), "Mr")
+        self.assertEqual(titles.parse("MR."), "Mr.")
 
     def test_any_char(self):
         self.assertEqual(any_char.parse("x"), "x")

@@ -7,6 +7,7 @@ History and release notes
 1.2.0 - unreleased
 ------------------
 
+* Added ``transform`` argument to :func:`string` and :func:`string_from`.
 
 1.1.0 - 2017-11-05
 ------------------

@@ -6,10 +6,29 @@ These are the lowest level building blocks for creating parsers.
 
 .. module:: parsy
 
-.. function:: string(expected_string)
+.. function:: string(expected_string, transform=None)
 
    Returns a parser that expects the ``expected_string`` and produces
    that string value.
+
+   Optionally, a transform function can be passed, which will be used on both
+   the expected string and tested string. This allows things like case
+   insensitive matches to be done. This function must not change the length of
+   the string (as determined by ``len``). The returned value of the parser will
+   always be ``expected_string`` in its un-transformed state.
+
+     .. code-block:: python
+
+        >>> parser = string("Hello", transform=lambda s: s.upper())
+        >>> parser.parse("Hello")
+        'Hello'
+        >>> parser.parse("hello")
+        'Hello'
+        >>> parser.parse("HELLO")
+        'Hello'
+
+   .. versionchanged:: 1.2
+      Added ``transform`` argument.
 
 .. function:: regex(exp, flags=0)
 
@@ -73,7 +92,7 @@ These are the lowest level building blocks for creating parsers.
       >>> char_from('abc').parse('a')
       'a'
 
-.. function:: string_from(*strings)
+.. function:: string_from(*strings, transform=None)
 
    Accepts a sequence of strings as positional arguments, and returns a parser
    that matches and returns one string from the list. The list is first sorted
@@ -84,6 +103,12 @@ These are the lowest level building blocks for creating parsers.
 
       >>> string_from('y', 'yes').parse('yes')
       'yes'
+
+   Optionally accepts ``tranform``, which is passed to :func:`string` (see the
+   documentation there).
+
+   .. versionchanged:: 1.2
+      Added ``transform`` argument.
 
 
 .. function:: match_item(item, description=None)
