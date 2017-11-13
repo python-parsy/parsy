@@ -49,7 +49,7 @@ can be used and manipulated as below.
 
    .. method:: desc(string)
 
-      Adds a desciption to the parser, which is used in the error message
+      Adds a description to the parser, which is used in the error message
       if parsing fails.
 
       >>> year = regex(r'[0-9]{4}').desc('4 digit year')
@@ -265,7 +265,7 @@ can be used and manipulated as below.
    .. method:: tag(name)
 
       Returns a parser that wraps the produced value of the initial parser in a
-      2 tuple containing ``(name, value)``. This is provides a very simple way to
+      2 tuple containing ``(name, value)``. This provides a very simple way to
       label parsed components. e.g.:
 
       .. code:: python
