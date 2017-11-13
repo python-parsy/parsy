@@ -173,32 +173,42 @@ can be used and manipulated as below.
    .. method:: combine_dict(fn)
 
       Returns a parser that transforms the value produced by the initial parser
-      (which must be a mapping/dictionary) using the supplied function/callable,
-      passing the arguments using the ``**kwargs`` syntax.
+      using the supplied function/callable, passing the arguments using the
+      ``**kwargs`` syntax.
 
-      Where the initial parser produces a dictionary of values, this can be a
-      more convenient way to combine them than :meth:`~Parser.map`.
+      The value produced by the initial parser must be a mapping/dictionary from
+      names to values, or a list of two-tuples, or something else that can be
+      passed to the ``dict`` constructor.
 
-      This is similar to :meth:`combine`, but used for with a callable that
+      If ``None`` is present as a key in the dictionary it will be removed before
+      passing to ``fn``.
+
+      Motiviation:
+
+      Where the initial parser produces a dictionary of values (or a list of
+      name-value pairs), this can be a more convenient way to combine them than
+      :meth:`~Parser.map`.
+
+      It is similar to :meth:`combine`, but used for with a callable that
       accepts keyword arguments. Compared to using :meth:`combine`, by using
       keyword arguments instead of positional arguments we can avoid a
       dependence on the order of components in the string being parsed (and in
       the argument order of callables being used) and therefore improve
       flexibility, and readability.
 
-      Example using Python 3.5 and below, using :meth:`tag` and :meth:`map`
-      to produce the dictionary:
+      Example using Python 3.5 and below, using :meth:`tag`
+      to produce a list of name-value pairs:
 
       .. code:: python
 
-         >>> from datetime import date
          >>> ddmmyyyy = seq(
          ...     regex(r'[0-9]{2}').map(int).tag('day'),
          ...     regex(r'[0-9]{2}').map(int).tag('month'),
          ...     regex(r'[0-9]{4}').map(int).tag('year'),
-         ... ).map(dict).combine_dict(date)
+         ... ).combine_dict(date)
          >>> ddmmyyyy.parse('04052003')
          datetime.date(2003, 5, 4)
+
 
       With Python 3.6, we can make use of the ``**kwargs`` version of
       :func:`seq` to make this more readable:
@@ -219,6 +229,38 @@ can be used and manipulated as below.
       <https://attrs.readthedocs.io/en/stable/>`_. You can also use `namedtuple
       <https://docs.python.org/3.6/library/collections.html#collections.namedtuple>`_
       from the standard library for simple cases.
+
+      The following example shows the use of ``tag(None)`` to remove things
+      elements you are not interested in, and the use of ``namedtuple`` to
+      create a simple data-structure.
+
+      .. code-block:: python
+
+         >>> from collections import namedtuple
+         >>> Pair = Pair = namedtuple('Pair', ['name', 'value'])
+         >>> name = regex("[A-Z]+")
+         >>> int_value = regex("[0-9]+").map(int)
+         >>> bool_value = string("true").result(True) | string("false").result(False)
+         >>> pair = seq(
+         ...    name.tag('name'),
+         ...    string('=').tag(None),
+         ...    (int_value | bool_value).tag('value'),
+         ...    string(';').tag(None),
+         ... ).combine_dict(Pair)
+         >>> pair.parse("foo=123;")
+         Pair(name='foo', value=123)
+
+      (You could also use ``<<`` for the unwanted parts instead of ``.tag(None)``:
+
+      .. code-block:: python
+
+         >>> pair = seq(
+         ...    name.tag('name') << string('='),
+         ...    (int_value | bool_value).tag('value') << string(';')
+         ... ).combine_dict(Pair)
+
+      .. versionchanged:: 1.2
+         Allow lists as well as dicts to be consumed, and filter out ``None``.
 
    .. method:: tag(name)
 
@@ -246,8 +288,7 @@ can be used and manipulated as below.
          >>> seq(day << whitespace, month).map(dict).parse("10 September")
          {'day': 10, 'month': 'September'}
 
-      See also :meth:`combine_dict` for building objects from these
-      dictionaries.
+      ... and with :meth:`combine_dict` to build other objects.
 
    .. method:: concat()
 

@@ -29,8 +29,8 @@ Parsy differentiates itself from other solutions with the following:
 
   * we can easily handle cases where later parsing depends on the value of
     something parsed earlier e.g. Hollerith constants.
-  * it's easy to build up complex result objects, rather than having lists of
-    lists etc.
+  * it's easy to build up complex result objects, rather than returning lists of
+    lists etc. which then need to be further processed.
   * there is no need for things like `pyparsing's Forward class
     <http://infohost.nmt.edu/tcc/help/pubs/pyparsing/web/class-Forward.html>`_ .
 

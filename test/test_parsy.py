@@ -2,6 +2,7 @@
 import re
 import sys
 import unittest
+from collections import namedtuple
 from datetime import date
 
 from parsy import test_char as parsy_test_char  # to stop pytest thinking this function is a test
@@ -89,6 +90,25 @@ class TestParser(unittest.TestCase):
         ).map(dict).combine_dict(date)
         self.assertEqual(ddmmyyyy.parse('05042003'),
                          date(2003, 4, 5))
+
+    def test_combine_dict_list(self):
+        Pair = namedtuple('Pair', ['word', 'number'])
+        parser = seq(
+            regex(r'[A-Z]+').tag('word'),
+            regex(r'[0-9]+').map(int).tag('number'),
+        ).combine_dict(Pair)
+        self.assertEqual(parser.parse('ABC123'),
+                         Pair(word='ABC', number=123))
+
+    def test_combine_dict_skip(self):
+        Pair = namedtuple('Pair', ['word', 'number'])
+        parser = seq(
+            regex(r'[A-Z]+').tag('word'),
+            whitespace.tag(None),
+            regex(r'[0-9]+').map(int).tag('number'),
+        ).combine_dict(Pair)
+        self.assertEqual(parser.parse('ABC   123'),
+                         Pair(word='ABC', number=123))
 
     def test_concat(self):
         parser = letter.many().concat()
