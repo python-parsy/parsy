@@ -185,7 +185,7 @@ At this point, we could also convert this to a date object if we wanted using
 We could have used :meth:`Parser.map` here, but :meth:`Parser.combine` is a bit
 nicer. It's especially succinct because the argument order to ``date`` matches
 the order of the values parsed (year, month, day), otherwise we could pass a
-``lambda`` to ``combine``.
+``lambda`` to ``combine``, or used :meth:`Parser.combine_dict`.
 
 .. _using-previous-values:
 
@@ -231,7 +231,7 @@ An equivalent parser to the one above can be written like this:
        m = yield month
        yield dash
        d = yield day
-       return (y, m, d)
+       return date(y, m, d)
 
 This is more verbose than before, but provides a good starting point for our
 next set of requirements.
@@ -368,6 +368,35 @@ We could also fix it like this:
 
    >>> ((a + c) | (ab + c)).parse('abc')
    'abc'
+
+
+Custom data structures
+======================
+
+In the example shown so far, the result of parsing has been a native Python data
+type, such as a integer, string, datetime or tuple. In some cases that is
+enough, but very quickly you will find that for your parse result to be useful,
+you will need to use custom data structures (rather than ending up with nested
+lists etc.)
+
+For defining custom data structures, you can use any method you like (e.g.
+simple classes). We recommend `attrs
+<https://attrs.readthedocs.io/en/stable/>`_. You can also use `namedtuple
+<https://docs.python.org/3.6/library/collections.html#collections.namedtuple>`_
+from the standard library for simple cases.
+
+For combining parsed data into these data structures, you can:
+
+1. Use the ``@generate`` decorator as above, and manually call the data
+   structure constructor with the pieces, as in ``full_date`` or
+   ``full_or_partial_date`` above, but with your own data structure instead of a
+   tuple or datetime in the final line.
+
+2. Use :meth:`Parser.map`, :meth:`Parser.combine` and :meth:`Parser.combine_dict`,
+   often in conjunction with :func:`seq`.
+
+   See the :doc:`.proto file parser example </howto/other_examples/>` for a full
+   example of this approach.
 
 Learn more
 ==========

@@ -183,18 +183,14 @@ can be used and manipulated as below.
       If ``None`` is present as a key in the dictionary it will be removed before
       passing to ``fn``.
 
-      Motiviation:
+      Motivation:
 
-      Where the initial parser produces a dictionary of values (or a list of
-      name-value pairs), this can be a more convenient way to combine them than
-      :meth:`~Parser.map`.
-
-      It is similar to :meth:`combine`, but used for with a callable that
-      accepts keyword arguments. Compared to using :meth:`combine`, by using
-      keyword arguments instead of positional arguments we can avoid a
-      dependence on the order of components in the string being parsed (and in
-      the argument order of callables being used) and therefore improve
-      flexibility, and readability.
+      For building complex objects, this can be more convenient, flexible and
+      readable than :meth:`map` or :meth:`combine`, because by avoiding
+      positional arguments we can avoid a dependence on the order of components
+      in the string being parsed and in the argument order of callables being
+      used. It is especially designed to be used in conjunction with :func:`seq`
+      and :meth:`tag`.
 
       Example using Python 3.5 and below, using :meth:`tag`
       to produce a list of name-value pairs:
@@ -250,7 +246,7 @@ can be used and manipulated as below.
          >>> pair.parse("foo=123;")
          Pair(name='foo', value=123)
 
-      (You could also use ``<<`` for the unwanted parts instead of ``.tag(None)``:
+      You could also use ``<<`` for the unwanted parts instead of ``.tag(None)``:
 
       .. code-block:: python
 
