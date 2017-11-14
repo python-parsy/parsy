@@ -1,5 +1,8 @@
 # -*- code: utf8 -*-
-import enum
+try:
+    import enum
+except ImportError:
+    enum = None
 import re
 import sys
 import unittest
@@ -483,34 +486,35 @@ class TestParser(unittest.TestCase):
 
         self.assertRaises(ParseError, not_a_digit.parse, '8ab')
 
-    def test_from_enum_string(self):
-        class Pet(enum.Enum):
-            CAT = "cat"
-            DOG = "dog"
+    if enum is not None:
+        def test_from_enum_string(self):
+            class Pet(enum.Enum):
+                CAT = "cat"
+                DOG = "dog"
 
-        pet = from_enum(Pet)
-        self.assertEqual(pet.parse("cat"), Pet.CAT)
-        self.assertEqual(pet.parse("dog"), Pet.DOG)
-        self.assertRaises(ParseError, pet.parse, "foo")
+            pet = from_enum(Pet)
+            self.assertEqual(pet.parse("cat"), Pet.CAT)
+            self.assertEqual(pet.parse("dog"), Pet.DOG)
+            self.assertRaises(ParseError, pet.parse, "foo")
 
-    def test_from_enum_int(self):
-        class Position(enum.Enum):
-            FIRST = 1
-            SECOND = 2
+        def test_from_enum_int(self):
+            class Position(enum.Enum):
+                FIRST = 1
+                SECOND = 2
 
-        position = from_enum(Position)
-        self.assertEqual(position.parse("1"), Position.FIRST)
-        self.assertEqual(position.parse("2"), Position.SECOND)
-        self.assertRaises(ParseError, position.parse, "foo")
+            position = from_enum(Position)
+            self.assertEqual(position.parse("1"), Position.FIRST)
+            self.assertEqual(position.parse("2"), Position.SECOND)
+            self.assertRaises(ParseError, position.parse, "foo")
 
-    def test_from_enum_transform(self):
-        class Pet(enum.Enum):
-            CAT = "cat"
-            DOG = "dog"
+        def test_from_enum_transform(self):
+            class Pet(enum.Enum):
+                CAT = "cat"
+                DOG = "dog"
 
-        pet = from_enum(Pet, transform=lambda s: s.lower())
-        self.assertEqual(pet.parse("cat"), Pet.CAT)
-        self.assertEqual(pet.parse("CAT"), Pet.CAT)
+            pet = from_enum(Pet, transform=lambda s: s.lower())
+            self.assertEqual(pet.parse("cat"), Pet.CAT)
+            self.assertEqual(pet.parse("CAT"), Pet.CAT)
 
 
 class TestParserTokens(unittest.TestCase):
