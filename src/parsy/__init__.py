@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*- #
 
+# End-user documentation is in ../../doc/ and so is for the most part not
+# duplicated here in the form of doc strings. Code comments and docstrings
+# are mainly for internal use.
+
 import operator
 import re
 import sys
