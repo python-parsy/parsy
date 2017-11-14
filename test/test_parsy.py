@@ -1,4 +1,5 @@
 # -*- code: utf8 -*-
+import enum
 import re
 import sys
 import unittest
@@ -8,8 +9,8 @@ from datetime import date
 from parsy import test_char as parsy_test_char  # to stop pytest thinking this function is a test
 from parsy import test_item as parsy_test_item  # to stop pytest thinking this function is a test
 from parsy import (
-    ParseError, alt, any_char, char_from, decimal_digit, digit, generate, index, letter, line_info, line_info_at,
-    match_item, regex, seq, string, string_from, whitespace
+    ParseError, alt, any_char, char_from, decimal_digit, digit, from_enum, generate, index, letter, line_info,
+    line_info_at, match_item, regex, seq, string, string_from, whitespace
 )
 
 
@@ -481,6 +482,35 @@ class TestParser(unittest.TestCase):
         self.assertEqual(str(err.exception), "expected 'not a digit' at 0:0")
 
         self.assertRaises(ParseError, not_a_digit.parse, '8ab')
+
+    def test_from_enum_string(self):
+        class Pet(enum.Enum):
+            CAT = "cat"
+            DOG = "dog"
+
+        pet = from_enum(Pet)
+        self.assertEqual(pet.parse("cat"), Pet.CAT)
+        self.assertEqual(pet.parse("dog"), Pet.DOG)
+        self.assertRaises(ParseError, pet.parse, "foo")
+
+    def test_from_enum_int(self):
+        class Position(enum.Enum):
+            FIRST = 1
+            SECOND = 2
+
+        position = from_enum(Position)
+        self.assertEqual(position.parse("1"), Position.FIRST)
+        self.assertEqual(position.parse("2"), Position.SECOND)
+        self.assertRaises(ParseError, position.parse, "foo")
+
+    def test_from_enum_transform(self):
+        class Pet(enum.Enum):
+            CAT = "cat"
+            DOG = "dog"
+
+        pet = from_enum(Pet, transform=lambda s: s.lower())
+        self.assertEqual(pet.parse("cat"), Pet.CAT)
+        self.assertEqual(pet.parse("CAT"), Pet.CAT)
 
 
 class TestParserTokens(unittest.TestCase):

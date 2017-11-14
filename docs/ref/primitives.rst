@@ -138,6 +138,31 @@ These are the lowest level building blocks for creating parsers.
 
    Returns a parser that always fails with the provided error message.
 
+.. function:: from_enum(enum_cls, transform=None)
+
+   Given a class that is an `enum.Enum
+   <https://docs.python.org/3/library/enum.html>`_ class, returns a parser that
+   will parse the values (or the string representations of the values) and
+   return the corresponding enum item.
+
+   .. code-block:: python
+
+      >>> from enum import Enum
+      >>> class Pet(Enum):
+      ...     CAT = "cat"
+      ...     DOG = "dog"
+      >>> pet = from_enum(Pet)
+      >>> pet.parse("cat")
+      <Pet.CAT: 'cat'>
+
+   ``str`` is first run on the values (for the case of values that are integers
+   etc.) to create the strings which are turned into parsers using
+   :func:`string`.
+
+   If ``transform`` is provided, it is passed to :func:`string` when creating
+   the parser (allowing for things like case insensitive parsing).
+
+
 Pre-built parsers
 =================
 

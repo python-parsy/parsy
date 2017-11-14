@@ -10,6 +10,8 @@ History and release notes
 * Added ``transform`` argument to :func:`string` and :func:`string_from`.
 * Made :meth:`Parser.combine_dict` accept lists of name value pairs,
   and filter out keys with value ``None``.
+* Added :func:`from_enum`.
+
 
 1.1.0 - 2017-11-05
 ------------------

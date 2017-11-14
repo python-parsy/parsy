@@ -8,7 +8,6 @@ from functools import wraps
 
 from .version import __version__  # noqa: F401
 
-
 noop = lambda x: x
 
 
@@ -445,3 +444,11 @@ def eof(stream, index):
         return Result.success(index, None)
     else:
         return Result.failure(index, 'EOF')
+
+
+def from_enum(enum_cls, transform=noop):
+    items = sorted([(str(enum_item.value), enum_item) for enum_item in enum_cls],
+                   key=lambda t: len(t[0]),
+                   reverse=True)
+    return alt(*[string(value, transform=transform).result(enum_item)
+                 for value, enum_item in items])
