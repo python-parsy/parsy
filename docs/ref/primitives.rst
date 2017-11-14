@@ -104,7 +104,7 @@ These are the lowest level building blocks for creating parsers.
       >>> string_from('y', 'yes').parse('yes')
       'yes'
 
-   Optionally accepts ``tranform``, which is passed to :func:`string` (see the
+   Optionally accepts ``transform``, which is passed to :func:`string` (see the
    documentation there).
 
    .. versionchanged:: 1.2
