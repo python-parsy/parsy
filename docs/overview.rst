@@ -81,7 +81,8 @@ Other Python projects
 
 * `pyparsing <http://pyparsing.wikispaces.com/>`_. Also a combinator approach,
   but in general much less cleanly implemented, and rather scattered
-  documentation.
+  documentation, although it has more builtin functionality in terms
+  of provided utilities for certain parsing tasks.
 
 * `funcparserlib <https://github.com/vlasovskikh/funcparserlib>`_ - the most
   similar to parsy. It differs from parsy mainly in normally using a separate
