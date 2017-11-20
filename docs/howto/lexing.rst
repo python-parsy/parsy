@@ -20,6 +20,11 @@ Parsy can actually work with either approach. Further, for the split
 lexing/parsing approach, parsy can be used either to implement the lexer, or the
 parser, or both! The following examples use parsy to do both lexing and parsing.
 
+However, parsy's features for this use case are not as developed as some other
+Python tools. If you are building a parser for a full language that needs the
+split lexing/parsing approach, you might be better off with `PLY
+<http://www.dabeaz.com/ply/>`_.
+
 Turtle Logo
 ===========
 

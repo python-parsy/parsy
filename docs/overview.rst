@@ -84,6 +84,10 @@ Other Python projects
   documentation, although it has more builtin functionality in terms
   of provided utilities for certain parsing tasks.
 
+* `PLY <http://www.dabeaz.com/ply/>`_. A pure Python implementation of
+  the classic lex/yacc parsing tools. It is well suited to large grammars
+  that would be found in typical programming languages.
+
 * `funcparserlib <https://github.com/vlasovskikh/funcparserlib>`_ - the most
   similar to parsy. It differs from parsy mainly in normally using a separate
   tokenization phase, lacking the convenience of the :func:`generate` method for
