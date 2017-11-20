@@ -142,8 +142,6 @@ class Parser(object):
         return self.times(0, float('inf'))
 
     def times(self, min, max=None):
-        # max=None means exactly min
-        # min=max=None means from 0 to infinity
         if max is None:
             max = min
 
