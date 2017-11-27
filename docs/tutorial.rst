@@ -287,9 +287,9 @@ This works now works as expected:
 
 .. code-block:: python
 
-   >>> full_or_partial_date('2017-02')
+   >>> full_or_partial_date.parse('2017-02')
    (2017, 2, None)
-   >>> full_or_partial_date('2017-02-29')
+   >>> full_or_partial_date.parse('2017-02-29')
    ParseError: expected 'day is out of range for month' at 0:10
 
 We could of course use a custom object in the final line to return a more
