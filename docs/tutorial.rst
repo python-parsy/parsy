@@ -241,14 +241,10 @@ able to handle missing dashes, and return what we've got so far rather than
 failing the whole parse.
 
 :class:`Parser` has a set of methods that convert parsers into ones that allow
-multiples of the parser - including :meth:`Parser.times`, :meth:`Parser.at_most`
-and :meth:`Parser.at_least`.
-
-The :meth:`Parser.at_most` method will take the initial parser and return one
-that succeeds if there are between zero and n repetitions of matching input. It
-returns a (possibly empty) list of produced values. With ``n=1`` we can get an
-optional dash, and then we then check the length of what was produced to see if
-a dash was present.
+multiples of the parser - including :meth:`Parser.many`, :meth:`Parser.times`,
+:meth:`Parser.at_most` and :meth:`Parser.at_least`. There is also
+:meth:`Parser.optional` which allows matching zero times (in which case the
+parser will return ``None``), or exactly once - just what we need in this case.
 
 We also need to do checking on the month and the day. We'll take a shortcut and
 use the built-in ``datetime.date`` class to do the validation for us. However,
@@ -258,7 +254,7 @@ parsing failure.
 
 .. code-block:: python
 
-   optional_dash = dash.at_most(1)
+   optional_dash = dash.optional()
 
    @generate
    def full_or_partial_date():
@@ -266,10 +262,10 @@ parsing failure.
        m = None
        y = yield year
        dash1 = yield optional_dash
-       if len(dash1) > 0:
+       if dash1 is not None:
            m = yield month
            dash2 = yield optional_dash
-           if len(dash2) > 0:
+           if dash2 is not None:
                 d = yield day
        if m is not None:
           if m < 1 or m > 12:

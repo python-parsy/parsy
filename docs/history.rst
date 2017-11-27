@@ -7,6 +7,7 @@ History and release notes
 1.2.1 - unreleased
 ------------------
 
+* Documentation improvements.
 
 1.2.0 - 2017-11-15
 ------------------
