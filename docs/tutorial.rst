@@ -184,8 +184,8 @@ At this point, we could also convert this to a date object if we wanted using
 
 We could have used :meth:`Parser.map` here, but :meth:`Parser.combine` is a bit
 nicer. It's especially succinct because the argument order to ``date`` matches
-the order of the values parsed (year, month, day), otherwise we could pass a
-``lambda`` to ``combine``, or used :meth:`Parser.combine_dict`.
+the order of the values parsed (year, month, day), otherwise we could have
+passed a ``lambda`` to ``combine``, or used :meth:`Parser.combine_dict`.
 
 .. _using-previous-values:
 
