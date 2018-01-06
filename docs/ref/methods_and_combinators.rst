@@ -407,6 +407,20 @@ successful parser.
    >>> (string('x') >> string('y')).parse('xy')
    'y'
 
+Note that ``other_parser`` will only be tried if ``parser`` cannot consume any
+input and fails. ``other_parser`` is not done in the case that **later** parser
+components fail. This means that the order of the operands matters - for
+example:
+
+.. code:: python
+
+   >>> ((string('A') | string('AB')) + string('C')).parse('ABC')
+   ParseEror: expected 'C' at 0:1
+   >>> ((string('AB') | string('A')) + string('C')).parse('ABC')
+   'ABC'
+   >>> ((string('AB') | string('A')) + string('C')).parse('AC')
+   'ABC'
+
 .. _parser-lshift:
 
 ``<<`` operator
@@ -506,6 +520,8 @@ Parser combinators
       >>> hexdigit = alt(*map(string, "0123456789abcdef"))
 
    (In this case you would be better off using :func:`char_from`)
+
+   Note that the order of arguments matter, as described in :ref:`parser-or`.
 
 .. function:: seq(*parsers, **kw_parsers)
 
