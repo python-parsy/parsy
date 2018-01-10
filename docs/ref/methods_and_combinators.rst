@@ -237,7 +237,7 @@ can be used and manipulated as below.
 
          >>> from collections import namedtuple
          >>> Pair = namedtuple('Pair', ['name', 'value'])
-         >>> name = regex("[A-Z]+")
+         >>> name = regex("[A-Za-z]+")
          >>> int_value = regex("[0-9]+").map(int)
          >>> bool_value = string("true").result(True) | string("false").result(False)
          >>> pair = seq(
@@ -248,6 +248,8 @@ can be used and manipulated as below.
          ... ).combine_dict(Pair)
          >>> pair.parse("foo=123;")
          Pair(name='foo', value=123)
+         >>> pair.parse("BAR=true")
+         Pair(name='BAR', value=True)
 
       You could also use ``<<`` for the unwanted parts instead of ``.tag(None)``:
 
