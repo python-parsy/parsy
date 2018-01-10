@@ -205,6 +205,9 @@ can be used and manipulated as below.
          >>> ddmmyyyy.parse('04052003')
          datetime.date(2003, 5, 4)
 
+      (If that is hard to understand, use a Python REPL, and examine the result
+      of the ``parse`` call if you 1) remove the ``combine_dict`` call 2)
+      further remove the ``tag`` calls).
 
       With Python 3.6, we can make use of the ``**kwargs`` version of
       :func:`seq` to make this more readable:
@@ -233,7 +236,7 @@ can be used and manipulated as below.
       .. code-block:: python
 
          >>> from collections import namedtuple
-         >>> Pair = Pair = namedtuple('Pair', ['name', 'value'])
+         >>> Pair = namedtuple('Pair', ['name', 'value'])
          >>> name = regex("[A-Z]+")
          >>> int_value = regex("[0-9]+").map(int)
          >>> bool_value = string("true").result(True) | string("false").result(False)
@@ -404,11 +407,8 @@ successful parser.
    >>> parser.parse('z')
    'z'
 
-   >>> (string('x') >> string('y')).parse('xy')
-   'y'
-
 Note that ``other_parser`` will only be tried if ``parser`` cannot consume any
-input and fails. ``other_parser`` is not done in the case that **later** parser
+input and fails. ``other_parser`` is not used in the case that **later** parser
 components fail. This means that the order of the operands matters - for
 example:
 
