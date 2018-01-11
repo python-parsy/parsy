@@ -271,14 +271,18 @@ can be used and manipulated as below.
 
       .. code:: python
 
-         >>> day = regex(r'[0-9]+').map(int).tag('day')
+         >>> day = regex(r'[0-9]+').map(int)
          >>> month = string_from("January", "February", "March", "April", "May",
          ...                     "June", "July", "August", "September", "October",
-         ...                     "November", "December").tag('month')
+         ...                     "November", "December")
          >>> day.parse("10")
-         ("day", 10)
+         10
+         >>> day.tag("day").parse("10")
+         ('day', 10)
 
-         >>> seq(day << whitespace, month).parse("10 September")
+         >>> seq(day.tag("day") << whitespace,
+         ...     month.tag("month")
+         ...     ).parse("10 September")
          [('day', 10), ('month', 'September')]
 
       It also works well when combined with ``.map(dict)`` to get a dictionary
@@ -286,7 +290,9 @@ can be used and manipulated as below.
 
       .. code:: python
 
-         >>> seq(day << whitespace, month).map(dict).parse("10 September")
+         >>> seq(day.tag("name") << whitespace,
+         ...     month.tag("month")
+         ...     ).map(dict).parse("10 September")
          {'day': 10, 'month': 'September'}
 
       ... and with :meth:`combine_dict` to build other objects.
