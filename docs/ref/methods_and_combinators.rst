@@ -229,7 +229,7 @@ can be used and manipulated as below.
       <https://docs.python.org/3.6/library/collections.html#collections.namedtuple>`_
       from the standard library for simple cases.
 
-      The following example shows the use of ``tag(None)`` to remove things
+      The following example shows the use of ``tag(None)`` to remove
       elements you are not interested in, and the use of ``namedtuple`` to
       create a simple data-structure.
 
