@@ -21,7 +21,7 @@ Links:
 To contribute, please create a fork and submit a pull request on GitHub,
 after checking the "contributing" section of the docs. Thanks!
 
-If you like parsy and think it should be better known, you could vote:
+If you like parsy and think it should be better known, you could:
 
 * Star this project on GitHub.
 * `Vote <https://github.com/vinta/awesome-python/pull/993>`_ for it being included on awesome-python.
