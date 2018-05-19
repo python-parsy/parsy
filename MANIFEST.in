@@ -1,6 +1,7 @@
 include *.md
 include *.rst
 include *.sh
+include *.yml
 include LICENSE
 include tox.ini
 include .editorconfig
