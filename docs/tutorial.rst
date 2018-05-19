@@ -327,7 +327,7 @@ depending on which parser got furthest before returning a failure:
 
    >>> flexi_date.parse('2012-')
    ParseError: expected '2 digit month' at 0:5
-   >>> flexi_data.parse('2 years ago')
+   >>> flexi_date.parse('2 years ago')
    ParseError: expected ' days ago' at 0:1
 
 When using backtracking, you need to understand that backtracking to the other

@@ -14,7 +14,7 @@ from parsy import char_from, from_enum, generate, regex, seq, string
 
 # However, because we are parsing into useful objects, we do transformations
 # along the way e.g. turning into integers, strings etc. and custom objects.
-# Some of the lowest level items has been implemented using 'regex' and converting
+# Some of the lowest level items have been implemented using 'regex' and converting
 # the descriptions to regular expressions. Higher level constructs have been
 # implemented using other parsy primitives and combinators.
 
