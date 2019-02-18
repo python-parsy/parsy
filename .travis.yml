@@ -7,11 +7,11 @@ python:
 env: SCRIPT=./travis_tests.sh
 matrix:
   include:
-    - python: "3.5"
+    - python: "3.6"
       env: SCRIPT=flake8
-    - python: "3.5"
+    - python: "3.6"
       env: SCRIPT="isort -c"
-    - python: "3.5"
+    - python: "3.6"
       env: SCRIPT=check-manifest
 install:
   - pip install pytest flake8 check-manifest isort coverage codecov
