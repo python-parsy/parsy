@@ -427,7 +427,7 @@ example:
    >>> ((string('AB') | string('A')) + string('C')).parse('ABC')
    'ABC'
    >>> ((string('AB') | string('A')) + string('C')).parse('AC')
-   'ABC'
+   'AC'
 
 .. _parser-lshift:
 
