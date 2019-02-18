@@ -377,8 +377,8 @@ class TestParser(unittest.TestCase):
 
     if sys.version_info >= (3, 6):
         def test_seq_kwargs(self):
-            self.assertEqual(seq(first_name=regex("\S+") << whitespace,
-                                 last_name=regex("\S+"))
+            self.assertEqual(seq(first_name=regex(r"\S+") << whitespace,
+                                 last_name=regex(r"\S+"))
                              .parse("Jane Smith"),
                              {'first_name': 'Jane',
                               'last_name': 'Smith'})

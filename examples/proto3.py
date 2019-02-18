@@ -251,21 +251,21 @@ boolLit = (string("true").result(True) | string("false").result(False)).desc('bo
 hexEscape = regex(r"\\[x|X]") >> regex("[0-9a-fA-F]{2}").map(convert_hex).map(chr)
 octEscape = regex(r"\\") >> regex('[0-7]{2}').map(convert_octal).map(chr)
 charEscape = regex(r"\\") >> (
-    string("a").result("\a") |
-    string("b").result("\b") |
-    string("f").result("\f") |
-    string("n").result("\n") |
-    string("r").result("\r") |
-    string("t").result("\t") |
-    string("v").result("\v") |
-    string("\\").result("\\") |
-    string("'").result("'") |
-    string('"').result('"')
+    string("a").result("\a")
+    | string("b").result("\b")
+    | string("f").result("\f")
+    | string("n").result("\n")
+    | string("r").result("\r")
+    | string("t").result("\t")
+    | string("v").result("\v")
+    | string("\\").result("\\")
+    | string("'").result("'")
+    | string('"').result('"')
 )
 escapes = hexEscape | octEscape | charEscape
 # Correction to spec regarding " and ' inside quoted strings
-strLit = (string("'") >> (escapes | regex(r"[^\0\n\'\\]")).many().concat() << string("'") |
-          string('"') >> (escapes | regex(r"[^\0\n\"\\]")).many().concat() << string('"')).desc('strLit')
+strLit = (string("'") >> (escapes | regex(r"[^\0\n\'\\]")).many().concat() << string("'")
+          | string('"') >> (escapes | regex(r"[^\0\n\"\\]")).many().concat() << string('"')).desc('strLit')
 quote = string("'") | string('"')
 
 # EmptyStatement
@@ -326,8 +326,8 @@ oneofField = seq(type_.tag('type'),
                  fieldOptionList.tag('options') << SEMI,
                  ).combine_dict(OneOfField)
 oneof = seq(lexeme("oneof") >> oneofName.tag('name'),
-            LBRACE >>
-            (oneofField | emptyStatement).many().map(exclude_none).tag('fields')
+            LBRACE
+            >> (oneofField | emptyStatement).many().map(exclude_none).tag('fields')
             << RBRACE
             ).combine_dict(OneOf)
 
@@ -361,8 +361,8 @@ enumField = seq(ident.tag('name') << EQ,
                 .map(lambda o: [] if o is None else o).tag('options')
                 << SEMI
                 ).combine_dict(EnumField)
-enumBody = (LBRACE >>
-            (option | enumField | emptyStatement).many().map(exclude_none)
+enumBody = (LBRACE
+            >> (option | enumField | emptyStatement).many().map(exclude_none)
             << RBRACE)
 enum = seq(lexeme("enum") >> enumName.tag('name'),
            enumBody.tag('body')
@@ -378,31 +378,31 @@ def message():
     return Message(name=name, body=body)
 
 
-messageBody = (LBRACE >>
-               (field | enum | message | option | oneof | mapField |
-                reserved | emptyStatement).many()
+messageBody = (LBRACE
+               >> (field | enum | message | option | oneof | mapField
+                   | reserved | emptyStatement).many()
                << RBRACE)
 
 
 # Service definition
 rpc = seq(lexeme("rpc") >> rpcName.tag('name'),
-          LPAREN >>
-          (is_present("stream").tag("request_stream")),
+          LPAREN
+          >> (is_present("stream").tag("request_stream")),
           messageType.tag("request_message_type") << RPAREN,
-          lexeme("returns") >> LPAREN >>
-          (is_present("stream").tag("response_stream")),
+          lexeme("returns") >> LPAREN
+          >> (is_present("stream").tag("response_stream")),
           messageType.tag("response_message_type")
           << RPAREN,
-          ((LBRACE >>
-           (option | emptyStatement).many()
+          ((LBRACE
+           >> (option | emptyStatement).many()
            << RBRACE)
            | SEMI.result([])
            ).optional().map(exclude_none).tag('options')
           ).combine_dict(Rpc)
 
 service = seq(lexeme("service") >> serviceName.tag('name'),
-              LBRACE >>
-              (option | rpc | emptyStatement).many().map(exclude_none).tag('body')
+              LBRACE
+              >> (option | rpc | emptyStatement).many().map(exclude_none).tag('body')
               << RBRACE
               ).combine_dict(Service)
 
