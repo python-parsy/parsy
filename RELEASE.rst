@@ -17,7 +17,9 @@ How to do releases
 
 * Release to PyPI::
 
-    ./setup.py sdist bdist_wheel upload
+    $ ./setup.py sdist bdist_wheel
+
+    $ twine upload dist/parsy-$VERSION-py2.py3-none-any.whl dist/parsy-$VERSION.tar.gz
 
 * Tag and push::
 
