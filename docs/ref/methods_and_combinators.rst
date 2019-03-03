@@ -429,6 +429,36 @@ example:
    >>> ((string('AB') | string('A')) + string('C')).parse('AC')
    'AC'
 
+.. _parser-and:
+
+``&`` operator
+--------------
+
+``parser & other_parser``
+
+Returns a parser that runs a sequence of parsers in order and combines their
+results in a list.
+
+.. code:: python
+
+   >>> parser = string('x') & string('y') & string('z')
+   >>> parser.parse('xyz')
+   ['x', 'y', 'z']
+
+Unlike :func:`seq`, this does not keep nested lists returned by intermediate
+parsers such as :func:`seq`or methods relying on :meth:`~Parser.times` which
+include :meth:`~Parser.many`, :meth:`~Parser.at_most`, :meth:`~Parser.at_least`,
+:meth:`~Parser.optional`, and :meth:`~Parser.sep_by`.
+
+.. code:: python
+
+   >>> parser = seq(seq(string('x'), string('y')), string('z'))
+   >>> parser.parse('xyz')
+   [['x', 'y'], 'z']
+   >>> parser = (string('x') & string('y')) & string('z')
+   >>> parser.parse('xyz')
+   ['x', 'y', 'z']
+
 .. _parser-lshift:
 
 ``<<`` operator

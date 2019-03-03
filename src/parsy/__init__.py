@@ -229,6 +229,13 @@ class Parser(object):
     def __or__(self, other):
         return alt(self, other)
 
+    def __and__(self, other):
+        def flatten(a, b):
+            l = lambda x: x if isinstance(x, list) else [x]
+            return l(a) + l(b)
+
+        return seq(self, other).combine(flatten)
+
     # haskelley operators, for fun #
 
     # >>

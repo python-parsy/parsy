@@ -241,6 +241,34 @@ class TestParser(unittest.TestCase):
 
         self.assertRaises(ParseError, parser.parse, '\\z')
 
+    def test_and(self):
+        breakpoint()
+        x, y, z = [string(c) for c in 'xyz']
+        xy = x & y
+        xyz = x & y & z
+        x_yz = x & (y & z)
+        xy_z = xy & z
+
+        self.assertEqual(xy.parse('xy'), ['x', 'y'])
+        self.assertEqual(xyz.parse('xyz'), ['x', 'y', 'z'])
+        self.assertEqual(x_yz.parse('xyz'), ['x', 'y', 'z'])
+        self.assertEqual(xy_z.parse('xyz'), ['x', 'y', 'z'])
+
+    def test_and_flatten(self):
+        seq_times = seq(string('x'), string('y') * 2)
+        and_times = string('x') & string('y') * 2
+
+        self.assertEqual(seq_times.parse('xyy'), ['x', ['y', 'y']])
+        self.assertEqual(and_times.parse('xyy'), ['x', 'y', 'y'])
+
+        seq_seq = seq(string('x'), seq(string('y'), string('z')))
+        and_seq = string('x') & seq(string('y'), string('z'))
+        and_and = string('x') & (string('y') & string('z'))
+
+        self.assertEqual(seq_seq.parse('xyz'), ['x', ['y', 'z']])
+        self.assertEqual(and_seq.parse('xyz'), ['x', 'y', 'z'])
+        self.assertEqual(and_and.parse('xyz'), ['x', 'y', 'z'])
+
     def test_many(self):
         letters = letter.many()
         self.assertEqual(letters.parse('x'), ['x'])
