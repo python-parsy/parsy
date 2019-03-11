@@ -9,12 +9,13 @@ import unittest
 from collections import namedtuple
 from datetime import date
 
-from parsy import test_char as parsy_test_char  # to stop pytest thinking this function is a test
-from parsy import test_item as parsy_test_item  # to stop pytest thinking this function is a test
 from parsy import (
     ParseError, alt, any_char, char_from, decimal_digit, digit, from_enum, generate, index, letter, line_info,
-    line_info_at, match_item, regex, seq, string, string_from, whitespace
+    line_info_at, match_item, regex, seq, string, string_from
 )
+from parsy import test_char as parsy_test_char  # to stop pytest thinking this function is a test
+from parsy import test_item as parsy_test_item  # to stop pytest thinking this function is a test
+from parsy import whitespace
 
 
 class TestParser(unittest.TestCase):
