@@ -8,7 +8,8 @@ parsers. If it means anything to you, it's a monadic parser combinator library
 for LL(infinity) grammars in the spirit of `Parsec
 <https://github.com/haskell/parsec>`_, `Parsnip
 <http://parsnip-parser.sourceforge.net/>`_, and `Parsimmon
-<https://github.com/jneen/parsimmon>`_.
+<https://github.com/jneen/parsimmon>`_. But don't worry, it has really good 
+documentation and it doesn't say things like that!
 
 Parsy requires Python 3.3 or greater.
 
