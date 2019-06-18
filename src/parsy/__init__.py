@@ -429,6 +429,17 @@ def char_from(string):
     return test_char(lambda c: c in string, "[" + string + "]")
 
 
+def peek(parser):
+    @Parser
+    def peek_parser(stream, index):
+        result = parser(stream, index)
+        if result.status:
+            return Result.success(index, result.value)
+        else:
+            return result
+    return peek_parser
+
+
 any_char = test_char(lambda c: True, "any character")
 
 whitespace = regex(r'\s+')

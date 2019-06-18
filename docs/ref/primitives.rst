@@ -162,6 +162,15 @@ These are the lowest level building blocks for creating parsers.
    If ``transform`` is provided, it is passed to :func:`string` when creating
    the parser (allowing for things like case insensitive parsing).
 
+.. function:: peek(parser)
+
+   Returns a lookahead parser that parse the input stream without consuming
+   chars.
+
+   .. code-block: python
+
+      >>> peek(any_char).parse_partial("ABC")
+      ('A', 'ABC')
 
 Pre-built parsers
 =================
