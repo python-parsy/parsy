@@ -11,7 +11,7 @@ from datetime import date
 
 from parsy import (
     ParseError, alt, any_char, char_from, decimal_digit, digit, from_enum, generate, index, letter, line_info,
-    line_info_at, match_item, regex, seq, string, string_from
+    line_info_at, match_item, peek, regex, seq, string, string_from
 )
 from parsy import test_char as parsy_test_char  # to stop pytest thinking this function is a test
 from parsy import test_item as parsy_test_item  # to stop pytest thinking this function is a test
@@ -435,6 +435,12 @@ class TestParser(unittest.TestCase):
         self.assertEqual(titles.parse("mr."), "Mr.")
         self.assertEqual(titles.parse("MR"), "Mr")
         self.assertEqual(titles.parse("MR."), "Mr.")
+
+    def test_peek(self):
+        self.assertEqual(peek(any_char).parse_partial("abc"), ("a", "abc"))
+        with self.assertRaises(ParseError) as err:
+            peek(digit).parse("a")
+        self.assertEqual(str(err.exception), "expected 'a digit' at 0:0")
 
     def test_any_char(self):
         self.assertEqual(any_char.parse("x"), "x")
