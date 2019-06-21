@@ -8,6 +8,7 @@ History and release notes
 ------------------
 
 * Documentation improvements.
+* Added :func:`peek`
 
 1.2.0 - 2017-11-15
 ------------------
