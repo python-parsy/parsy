@@ -8,6 +8,9 @@ History and release notes
 ------------------
 
 * Documentation improvements.
+* Added :func:`peek`
+* Remove Python 3.3 support
+* Add Python 3.7 support
 
 1.2.0 - 2017-11-15
 ------------------
