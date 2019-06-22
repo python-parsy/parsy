@@ -437,7 +437,28 @@ def peek(parser):
             return Result.success(index, result.value)
         else:
             return result
+
     return peek_parser
+
+
+def many_until(p, end):
+    @Parser
+    def many_until_parser(stream, index):
+        values = []
+        while True:
+            end_result = end(stream, index)
+            if end_result.status:
+                values.append(end_result.value)
+                return Result.success(end_result.index, values)
+            else:
+                result = p(stream, index)
+                if result.status:
+                    values.append(result.value)
+                    index = result.index
+                else:
+                    return result.aggregate(end_result)
+
+    return many_until_parser
 
 
 any_char = test_char(lambda c: True, "any character")

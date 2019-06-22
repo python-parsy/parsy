@@ -571,6 +571,29 @@ Parser combinators
       For earlier versions, see :meth:`Parser.tag` for a way of labelling parsed
       components and producing dictionaries.
 
+.. function:: many_until(parser, end)
+
+   Creates a parser that expects :arg:`parser` 0 or more times until :arg:`end` is
+   found.
+
+   .. code-block:: python
+
+      >>> many_until(string("a"), string("abc")).parse("aabc")
+      ['a', 'abc']
+
+   Note that even though ``string("a")`` and ``string("abc")`` overlap, ``end``
+   parser is tried first after each match of ``parser``. Otherwise the previous
+   exemaple would fail with ``['a', 'a', 'a', ParseError]``.
+
+   .. code-block:: python
+
+      >>> comment = string("<!--") >> many_until(any_char, string("-->")).map(
+      ...     lambda elems: "".join(elems[:-1]))
+      >>> comment.parser("<!-- Hi! -->")
+      ' Hi! '
+
+   This ``comment`` parser doesn't allow nested comments, though. Nested comments
+   parsing require a recursive parser as described in :doc:`/ref/generating`.
 
 Other combinators
 =================

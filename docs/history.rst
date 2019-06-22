@@ -9,6 +9,7 @@ History and release notes
 
 * Documentation improvements.
 * Added :func:`peek`
+* Added :func:`many_until`
 * Remove Python 3.3 support
 * Add Python 3.7 support
 
