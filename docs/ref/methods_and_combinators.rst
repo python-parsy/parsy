@@ -578,12 +578,12 @@ Parser combinators
 
    .. code-block:: python
 
-      >>> many_until(string("a"), string("abc")).parse("aabc")
-      ['a', 'abc']
+      >>> many_until(string("a"), string("abc")).parse("aaabc")
+      ['a', 'a', 'abc']
 
    Note that even though ``string("a")`` and ``string("abc")`` overlap, ``end``
-   parser is tried first after each match of ``parser``. Otherwise the previous
-   exemaple would fail with ``['a', 'a', 'a', ParseError]``.
+   parser is tried first after each match of ``parser``. Otherwise the example
+   above would fail with ``['a', 'a', 'a', ParseError]``.
 
    .. code-block:: python
 
