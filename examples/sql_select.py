@@ -16,6 +16,7 @@ from parsy import regex, seq, string, string_from
 
 # -- AST nodes.
 
+
 @attr.s
 class Number:
     value = attr.ib()
@@ -57,7 +58,6 @@ number_literal = regex(r'-?[0-9]+').map(int).map(Number)
 # We don't support ' in strings or escaping for simplicity
 string_literal = regex(r"'[^']*'").map(lambda s: String(s[1:-1]))
 
-
 identifier = regex('[a-zA-Z][a-zA-Z0-9_]*')
 
 field = identifier.map(Field)
@@ -65,7 +65,7 @@ field = identifier.map(Field)
 table = identifier.map(Table)
 
 space = regex(r'\s+')  # non-optional whitespace
-padding = regex(r'\s*')  # for optional whitespace
+padding = regex(r'\s*')  # optional whitespace
 
 column_expr = field | string_literal | number_literal
 
@@ -77,16 +77,19 @@ comparison = seq(
     right=padding >> column_expr,
 ).combine_dict(Comparison)
 
-# Keywords
 SELECT = string('SELECT')
 FROM = string('FROM')
 WHERE = string('WHERE')
 
+# Here we demonstrate use of leading underscore to discard parts we don't want,
+# which is more readable and convenient than `<<` and `>>` sometimes.
 select = seq(
-    columns=SELECT >> space >> column_expr.sep_by(padding + string(',') + padding, min=1) << space,
-    table=FROM >> space >> table,
+    _select=SELECT + space,
+    columns=column_expr.sep_by(padding + string(',') + padding, min=1),
+    _from=space + FROM + space,
+    table=table,
     where=(space >> WHERE >> space >> comparison).optional(),
-    _end=string(';')
+    _end=padding + string(';')
 ).combine_dict(Select)
 
 

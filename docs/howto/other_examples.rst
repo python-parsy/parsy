@@ -12,7 +12,7 @@ SQL SELECT statement parser
 
 This shows a very simplified parser for a SQL ``SELECT`` statement, using custom
 data structures, and the convenient keyword argument syntax for :func:`seq`
-(usuable with Python 3.6 and later), followed by :meth:`Parser.combine_dict`.
+(usable with Python 3.6 and later), followed by :meth:`Parser.combine_dict`.
 
 .. literalinclude:: ../../examples/sql_select.py
    :language: python
