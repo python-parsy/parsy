@@ -123,8 +123,10 @@ class Parser(object):
         return self.bind(lambda res: success(combine_fn(*res)))
 
     def combine_dict(self, combine_fn):
-        return self.bind(lambda res: success(combine_fn(**{k: v for k, v in dict(res).items()
-                                                           if k is not None})))
+        return self.bind(lambda res: success(combine_fn(**{
+            k: v for k, v in dict(res).items()
+            if k is not None and not (isinstance(k, str) and k.startswith('_'))
+        })))
 
     def concat(self):
         return self.map(''.join)

@@ -180,8 +180,8 @@ can be used and manipulated as below.
       names to values, or a list of two-tuples, or something else that can be
       passed to the ``dict`` constructor.
 
-      If ``None`` is present as a key in the dictionary it will be removed before
-      passing to ``fn``.
+      If ``None`` is present as a key in the dictionary it will be removed
+      before passing to ``fn``, as will all keys starting with ``_``.
 
       Motivation:
 
@@ -192,25 +192,8 @@ can be used and manipulated as below.
       used. It is especially designed to be used in conjunction with :func:`seq`
       and :meth:`tag`.
 
-      Example using Python 3.5 and below, using :meth:`tag`
-      to produce a list of name-value pairs:
-
-      .. code:: python
-
-         >>> ddmmyyyy = seq(
-         ...     regex(r'[0-9]{2}').map(int).tag('day'),
-         ...     regex(r'[0-9]{2}').map(int).tag('month'),
-         ...     regex(r'[0-9]{4}').map(int).tag('year'),
-         ... ).combine_dict(date)
-         >>> ddmmyyyy.parse('04052003')
-         datetime.date(2003, 5, 4)
-
-      (If that is hard to understand, use a Python REPL, and examine the result
-      of the ``parse`` call if you 1) remove the ``combine_dict`` call 2)
-      further remove the ``tag`` calls).
-
-      With Python 3.6, we can make use of the ``**kwargs`` version of
-      :func:`seq` to make this more readable:
+      **For Python 3.6 and above,** we can make use of the ``**kwargs`` version
+      of :func:`seq` to produce a very readable definition:
 
       .. code:: python
 
@@ -222,12 +205,62 @@ can be used and manipulated as below.
          >>> ddmmyyyy.parse('04052003')
          datetime.date(2003, 5, 4)
 
+      (If that is hard to understand, use a Python REPL, and examine the result
+      of the ``parse`` call if you remove the ``combine_dict`` call).
+
       Here we used ``datetime.date`` which accepts keyword arguments. For your
       own parsing needs you will often use custom data types. You can create
       these however you like, but we recommend `attrs
       <https://attrs.readthedocs.io/en/stable/>`_. You can also use `namedtuple
       <https://docs.python.org/3.6/library/collections.html#collections.namedtuple>`_
-      from the standard library for simple cases.
+      from the standard library for simple cases, or `dataclasses
+      <https://docs.python.org/3/library/dataclasses.html>`_
+
+      The following example shows the use of ``_`` as a prefix to remove
+      elements you are not interested in, and the use of ``namedtuple`` to
+      create a simple data-structure.
+
+      .. code-block:: python
+
+         >>> from collections import namedtuple
+         >>> Pair = namedtuple('Pair', ['name', 'value'])
+         >>> name = regex("[A-Za-z]+")
+         >>> int_value = regex("[0-9]+").map(int)
+         >>> bool_value = string("true").result(True) | string("false").result(False)
+         >>> pair = seq(
+         ...    name=name,
+         ...    __eq=string('='),
+         ...    value=int_value | bool_value,
+         ...    __sc=string(';'),
+         ... ).combine_dict(Pair)
+         >>> pair.parse("foo=123;")
+         Pair(name='foo', value=123)
+         >>> pair.parse("BAR=true;")
+         Pair(name='BAR', value=True)
+
+      You could also use ``<<`` or ``>>`` for the unwanted parts instead of
+      ``.tag(None)`` (but in some cases this is less convenient):
+
+      .. code-block:: python
+
+         >>> pair = seq(
+         ...    name=name << string('='),
+         ...    value=(int_value | bool_value) << string(';')
+         ... ).combine_dict(Pair)
+
+      **For Python 3.5 and below**, kwargs usage is not possible (because
+      keyword arguments produce a dictionary that does not have a guaranteed
+      order). Instead, use :meth:`tag` to produce a list of name-value pairs:
+
+      .. code:: python
+
+         >>> ddmmyyyy = seq(
+         ...     regex(r'[0-9]{2}').map(int).tag('day'),
+         ...     regex(r'[0-9]{2}').map(int).tag('month'),
+         ...     regex(r'[0-9]{4}').map(int).tag('year'),
+         ... ).combine_dict(date)
+         >>> ddmmyyyy.parse('04052003')
+         datetime.date(2003, 5, 4)
 
       The following example shows the use of ``tag(None)`` to remove
       elements you are not interested in, and the use of ``namedtuple`` to
@@ -248,7 +281,7 @@ can be used and manipulated as below.
          ... ).combine_dict(Pair)
          >>> pair.parse("foo=123;")
          Pair(name='foo', value=123)
-         >>> pair.parse("BAR=true")
+         >>> pair.parse("BAR=true;")
          Pair(name='BAR', value=True)
 
       You could also use ``<<`` for the unwanted parts instead of ``.tag(None)``:
@@ -262,6 +295,9 @@ can be used and manipulated as below.
 
       .. versionchanged:: 1.2
          Allow lists as well as dicts to be consumed, and filter out ``None``.
+
+      .. versionchanged:: 1.3
+         Stripping of args starting with ``_``
 
    .. method:: tag(name)
 

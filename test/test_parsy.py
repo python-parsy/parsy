@@ -105,11 +105,21 @@ class TestParser(unittest.TestCase):
         self.assertEqual(parser.parse('ABC123'),
                          Pair(word='ABC', number=123))
 
-    def test_combine_dict_skip(self):
+    def test_combine_dict_skip_None(self):
         Pair = namedtuple('Pair', ['word', 'number'])
         parser = seq(
             regex(r'[A-Z]+').tag('word'),
             whitespace.tag(None),
+            regex(r'[0-9]+').map(int).tag('number'),
+        ).combine_dict(Pair)
+        self.assertEqual(parser.parse('ABC   123'),
+                         Pair(word='ABC', number=123))
+
+    def test_combine_dict_skip_underscores(self):
+        Pair = namedtuple('Pair', ['word', 'number'])
+        parser = seq(
+            regex(r'[A-Z]+').tag('word'),
+            whitespace.tag('_whitespace'),
             regex(r'[0-9]+').map(int).tag('number'),
         ).combine_dict(Pair)
         self.assertEqual(parser.parse('ABC   123'),

@@ -4,13 +4,15 @@ History and release notes
 
 .. currentmodule:: parsy
 
-1.2.1 - unreleased
+1.3.0 - unreleased
 ------------------
 
 * Documentation improvements.
 * Added :func:`peek`
-* Remove Python 3.3 support
-* Add Python 3.7 support
+* Removed Python 3.3 support
+* Added Python 3.7 support
+* :meth:`Parser.combine_dict` now strips keys that start with ``_``.
+
 
 1.2.0 - 2017-11-15
 ------------------
