@@ -21,7 +21,7 @@ setup(
     description="easy-to-use parser combinators, for parsing in pure Python",
     long_description=readme,
     author="Jeanine Adkisson",
-    author_email="jneen at jneen dot net (humans only, please)",
+    author_email="jneen@jneen.net",
     maintainer="Luke Plant",
     maintainer_email="L.Plant.98@cantab.net",
     url="https://github.com/python-parsy/parsy",
