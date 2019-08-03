@@ -214,7 +214,7 @@ can be used and manipulated as below.
       <https://attrs.readthedocs.io/en/stable/>`_. You can also use `namedtuple
       <https://docs.python.org/3.6/library/collections.html#collections.namedtuple>`_
       from the standard library for simple cases, or `dataclasses
-      <https://docs.python.org/3/library/dataclasses.html>`_
+      <https://docs.python.org/3/library/dataclasses.html>`_.
 
       The following example shows the use of ``_`` as a prefix to remove
       elements you are not interested in, and the use of ``namedtuple`` to
@@ -238,8 +238,8 @@ can be used and manipulated as below.
          >>> pair.parse("BAR=true;")
          Pair(name='BAR', value=True)
 
-      You could also use ``<<`` or ``>>`` for the unwanted parts instead of
-      ``.tag(None)`` (but in some cases this is less convenient):
+      You could also use ``<<`` or ``>>`` for the unwanted parts (but in some
+      cases this is less convenient):
 
       .. code-block:: python
 

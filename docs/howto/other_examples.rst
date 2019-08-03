@@ -21,6 +21,9 @@ data structures, and the convenient keyword argument syntax for :func:`seq`
 JSON parser
 ===========
 
+A full parser for JSON. (This will not be competitive in terms of performance
+with other implementations!)
+
 .. literalinclude:: ../../examples/json.py
    :language: python
 
