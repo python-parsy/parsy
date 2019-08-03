@@ -8,7 +8,7 @@ History and release notes
 ------------------
 
 * Documentation improvements.
-* Added :func:`peek`
+* Added :func:`peek` - thanks `@lisael <https://github.com/lisael>`_.
 * Removed Python 3.3 support
 * Added Python 3.7 support
 * :meth:`Parser.combine_dict` now strips keys that start with ``_``.
