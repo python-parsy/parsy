@@ -129,6 +129,17 @@ These are the lowest level building blocks for creating parsers.
    >>> hello.parse_partial(['hello', 'how', 'are', 'you'])
    ('hello', ['how', 'are', 'you'])
 
+.. data:: eof
+
+   A parser that only succeeds if the end of the stream has been reached.
+
+   >>> eof.parse_partial("")
+   (None, '')
+   >>> eof.parse_partial("123")
+   Traceback (most recent call last):
+      ...
+   parsy.ParseError: expected 'EOF' at 0:0
+
 .. function:: success(val)
 
    Returns a parser that does not consume any of the stream, but
