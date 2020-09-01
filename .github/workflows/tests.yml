@@ -22,7 +22,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('test/requirements-isort.txt') }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('tests/requirements-isort.txt') }}
       - name: Install deps
         run: |
           python -m pip install --upgrade pip
@@ -44,7 +44,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('test/requirements-flake8.txt') }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('tests/requirements-flake8.txt') }}
       - name: Install deps
         run: |
           python -m pip install --upgrade pip
