@@ -10,6 +10,8 @@ import sys
 from collections import namedtuple
 from functools import wraps
 
+import functools
+
 from .version import __version__  # noqa: F401
 
 noop = lambda x: x
