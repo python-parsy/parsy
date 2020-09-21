@@ -30,7 +30,7 @@ These are the lowest level building blocks for creating parsers.
    .. versionchanged:: 1.2
       Added ``transform`` argument.
 
-.. function:: regex(exp, flags=0)
+.. function:: regex(exp, flags=0, group=0)
 
    Returns a parser that expects the given ``exp``, and produces the
    matched string. ``exp`` can be a compiled regular expression, or a
@@ -48,8 +48,10 @@ These are the lowest level building blocks for creating parsers.
         >>> (string('a') | string('b')).times(1, 4)
         >>> regex(r'[ab]{1,4}')
 
-   * It will return the entire matched string as a single item,
+   * It can return the entire matched string as a single item,
      so you don't need to use :meth:`Parser.concat`.
+   * It can return a part of the matched string using a capturing group
+     from the regex, so you don't need to split the string yourself.
    * It can be much faster.
 
 .. function:: test_char(func, description)
