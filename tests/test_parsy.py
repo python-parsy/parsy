@@ -54,6 +54,11 @@ class TestParser(unittest.TestCase):
         self.assertEqual(parser.parse('1'), '1')
         self.assertRaises(ParseError, parser.parse, 'x')
 
+    def test_regex_group(self):
+        parser = regex(re.compile(r'a([0-9])b'), group=1)
+        self.assertEqual(parser.parse('a1b'), '1')
+        self.assertRaises(ParseError, parser.parse, 'x')
+
     def test_then(self):
         xy_parser = string('x') >> string('y')
         self.assertEqual(xy_parser.parse('xy'), 'y')
