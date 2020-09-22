@@ -36,6 +36,11 @@ These are the lowest level building blocks for creating parsers.
    matched string. ``exp`` can be a compiled regular expression, or a
    string which will be compiled with the given ``flags``.
 
+   Optionally, accepts ``group``, which is passed to `re.Match.group
+   <https://docs.python.org/3/library/re.html#re.Match.group>`_ to
+   return the text from a capturing group in the regex instead of the
+   entire match.
+
    Using a regex parser for small building blocks, instead of building up
    parsers from primitives like :func:`string`, :func:`test_char` and
    :meth:`Parser.times` combinators etc., can have several advantages,
