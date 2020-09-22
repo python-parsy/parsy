@@ -52,6 +52,20 @@ These are the lowest level building blocks for creating parsers.
      so you don't need to use :meth:`Parser.concat`.
    * It can return a part of the matched string using a capturing group
      from the regex, so you don't need to split the string yourself.
+
+     You can use named or numbered groups, just like with `re.Match.group
+     <https://docs.python.org/3/library/re.html#re.Match.group>`_.
+     Tuples also work, and return the captured text from multiple groups.
+
+     .. code-block:: python
+
+        >>> regex(r'([0-9]{4})-([0-9]{2})', group=1).parse('2020-03')
+        '2020'
+        >>> regex(r'(?P<year>[0-9]{4})-(?P<month>[0-9]{2})', group='month').parse('2020-03')
+        '03'
+        >>> regex(r'([0-9]{4})-([0-9]{2})', group=(1,2)).parse('2020-03')
+        ('2020', '03')
+
    * It can be much faster.
 
 .. function:: test_char(func, description)
