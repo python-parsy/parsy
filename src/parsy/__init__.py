@@ -384,15 +384,17 @@ def string(s, transform=noop):
     return string_parser
 
 
-def regex(exp, flags=0):
+def regex(exp, flags=0, group=0):
     if isinstance(exp, str):
         exp = re.compile(exp, flags)
+    if isinstance(group, (str, int)):
+        group = (group,)
 
     @Parser
     def regex_parser(stream, index):
         match = exp.match(stream, index)
         if match:
-            return Result.success(match.end(), match.group(0))
+            return Result.success(match.end(), match.group(*group))
         else:
             return Result.failure(index, exp.pattern)
 

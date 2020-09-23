@@ -30,11 +30,16 @@ These are the lowest level building blocks for creating parsers.
    .. versionchanged:: 1.2
       Added ``transform`` argument.
 
-.. function:: regex(exp, flags=0)
+.. function:: regex(exp, flags=0, group=0)
 
    Returns a parser that expects the given ``exp``, and produces the
    matched string. ``exp`` can be a compiled regular expression, or a
    string which will be compiled with the given ``flags``.
+
+   Optionally, accepts ``group``, which is passed to `re.Match.group
+   <https://docs.python.org/3/library/re.html#re.Match.group>`_ to
+   return the text from a capturing group in the regex instead of the
+   entire match.
 
    Using a regex parser for small building blocks, instead of building up
    parsers from primitives like :func:`string`, :func:`test_char` and
@@ -48,8 +53,24 @@ These are the lowest level building blocks for creating parsers.
         >>> (string('a') | string('b')).times(1, 4)
         >>> regex(r'[ab]{1,4}')
 
-   * It will return the entire matched string as a single item,
+   * It can return the entire matched string as a single item,
      so you don't need to use :meth:`Parser.concat`.
+   * It can return a part of the matched string using a capturing group
+     from the regex, so you don't need to split the string yourself.
+
+     You can use named or numbered groups, just like with `re.Match.group
+     <https://docs.python.org/3/library/re.html#re.Match.group>`_.
+     Tuples also work, and return the captured text from multiple groups.
+
+     .. code-block:: python
+
+        >>> regex(r'([0-9]{4})-([0-9]{2})', group=1).parse('2020-03')
+        '2020'
+        >>> regex(r'(?P<year>[0-9]{4})-(?P<month>[0-9]{2})', group='month').parse('2020-03')
+        '03'
+        >>> regex(r'([0-9]{4})-([0-9]{2})', group=(1,2)).parse('2020-03')
+        ('2020', '03')
+
    * It can be much faster.
 
 .. function:: test_char(func, description)
