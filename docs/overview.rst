@@ -2,6 +2,8 @@
 Overview
 ========
 
+.. currentmodule:: parsy
+
 Parsy is an easy way to combine simple, small parsers into complex, larger
 parsers.
 
