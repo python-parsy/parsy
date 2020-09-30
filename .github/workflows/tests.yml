@@ -17,6 +17,9 @@ jobs:
       matrix:
         python-version: [3.5, 3.6, 3.7, 3.8, pypy3]
 
+    env:
+      PYTHON: ${{ matrix.python-version }}
+
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.python-version }}
@@ -34,7 +37,13 @@ jobs:
           python setup.py develop --no-deps
       - name: Run tests
         run: |
-          pytest
+          pytest --cov=./ --cov-report=xml
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          file: ./coverage.xml
+          env_vars: PYTHON
+          fail_ci_if_error: true
 
   isort:
     runs-on: ubuntu-latest
