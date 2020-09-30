@@ -162,6 +162,7 @@ list:
 
 .. code-block:: python
 
+   >>> from parsy import seq
    >>> fulldate = seq(year, dash, month, dash, day)
    >>> fulldate.parse('2017-01-02')
    [2017, '-', 1, '-', 2]
@@ -224,6 +225,8 @@ An equivalent parser to the one above can be written like this:
 
 .. code-block:: python
 
+   from parsy import generate
+
    @generate
    def full_date():
        y = yield year
@@ -253,6 +256,8 @@ parsing failure.
 
 
 .. code-block:: python
+
+   from parsy import fail, generate
 
    optional_dash = dash.optional()
 
