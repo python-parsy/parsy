@@ -385,7 +385,7 @@ def string(s, transform=noop):
 
 
 def regex(exp, flags=0, group=0):
-    if isinstance(exp, str):
+    if isinstance(exp, (str, bytes)):
         exp = re.compile(exp, flags)
     if isinstance(group, (str, int)):
         group = (group,)
