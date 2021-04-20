@@ -41,13 +41,21 @@ class TestParser(unittest.TestCase):
 
         self.assertRaises(ParseError, parser.parse, 'dog')
 
-    def test_regex(self):
+    def test_regex_str(self):
         parser = regex(r'[0-9]')
 
         self.assertEqual(parser.parse('1'), '1')
         self.assertEqual(parser.parse('4'), '4')
 
         self.assertRaises(ParseError, parser.parse, 'x')
+
+    def test_regex_bytes(self):
+        parser = regex(rb'[0-9]')
+
+        self.assertEqual(parser.parse(b'1'), b'1')
+        self.assertEqual(parser.parse(b'4'), b'4')
+
+        self.assertRaises(ParseError, parser.parse, b'x')
 
     def test_regex_compiled(self):
         parser = regex(re.compile(r'[0-9]'))
