@@ -4,6 +4,16 @@ History and release notes
 
 .. currentmodule:: parsy
 
+1.4.0 - unreleased
+------------------
+
+* Documentation improvements.
+* Added ``group`` parameter to :func:`regex` - thanks `@camerondm9
+  <https://github.com/camerondm9>`_.
+* Support ``bytes`` with :func:`regex` as well as ``str`` - thanks `@quack4
+  <https://github.com/quack4>`_.
+
+
 1.3.0 - 2019-08-03
 ------------------
 
