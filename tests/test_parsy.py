@@ -438,7 +438,7 @@ class TestParser(unittest.TestCase):
         ex = err.exception
         self.assertEqual(str(ex), """expected 'ascii character' at 0:0""")
 
-    def test_char_from(self):
+    def test_char_from_str(self):
         ab = char_from("ab")
         self.assertEqual(ab.parse("a"), "a")
         self.assertEqual(ab.parse("b"), "b")
@@ -448,6 +448,17 @@ class TestParser(unittest.TestCase):
 
         ex = err.exception
         self.assertEqual(str(ex), """expected '[ab]' at 0:0""")
+
+    def test_char_from_bytes(self):
+        ab = char_from(b"ab")
+        self.assertEqual(ab.parse(b"a"), b"a")
+        self.assertEqual(ab.parse(b"b"), b"b")
+
+        with self.assertRaises(ParseError) as err:
+            ab.parse(b'x')
+
+        ex = err.exception
+        self.assertEqual(str(ex), """expected b'[ab]' at 0""")
 
     def test_string_from(self):
         titles = string_from("Mr", "Mr.", "Mrs", "Mrs.")
