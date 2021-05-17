@@ -435,5 +435,8 @@ message outer {
   map<int32, string> my_map = 4;
 }
 """
-# Smoke test - should find 4 top level statements in the example:
-assert len(proto.parse(EXAMPLE).statements) == 4
+
+
+def test_example():
+    # Smoke test - should find 4 top level statements in the example:
+    assert len(proto.parse(EXAMPLE).statements) == 4

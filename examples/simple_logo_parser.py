@@ -42,3 +42,7 @@ def statement():
 
 
 program = statement.many()
+
+
+import pytest  # noqa  isort:skip
+test_item = pytest.mark.skip(test_item)  # This is not a test

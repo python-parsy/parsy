@@ -4,6 +4,8 @@ include *.sh
 include *.yml
 include LICENSE
 include tox.ini
+include pytest.ini
+include conftest.py
 include .editorconfig
 recursive-include docs *.bat
 recursive-include docs *.py

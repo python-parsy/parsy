@@ -52,5 +52,24 @@ json_object = lbrace >> object_pair.sep_by(comma).map(dict) << rbrace
 value = quoted | number | json_object | array | true | false | null
 json = whitespace >> value
 
+
+def test():
+    assert json.parse(r'''
+    {
+        "int": 1,
+        "string": "hello",
+        "a list": [1, 2, 3],
+        "escapes": "\n",
+        "nested": {"x": "y"}
+    }
+''') == {
+        "int": 1,
+        "string": "hello",
+        "a list": [1, 2, 3],
+        "escapes": "\n",
+        "nested": {"x": "y"},
+    }
+
+
 if __name__ == '__main__':
     print(repr(json.parse(stdin.read())))
