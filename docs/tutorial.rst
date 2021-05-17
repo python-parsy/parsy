@@ -350,7 +350,7 @@ option only occurs if the first parser fails. So, for example:
    ParseError: expected 'c' at 0:1
 
 The parse fails because the ``a`` parser succeeds, and so the ``ab`` parser is
-never tried. This is different from most regular expressions engines, where
+never tried. This is different from most regular expression engines, where
 backtracking is done over the whole regex by default.
 
 In this case we can get the parse to succeed by switching the order:
