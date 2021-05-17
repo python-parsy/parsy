@@ -405,7 +405,12 @@ def test_item(func, description):
     @Parser
     def test_item_parser(stream, index):
         if index < len(stream):
-            item = stream[index]
+            if isinstance(stream, bytes):
+                # Subscripting bytes with `[index]` instead of
+                # `[index:index + 1]` returns an int
+                item = stream[index:index + 1]
+            else:
+                item = stream[index]
             if func(item):
                 return Result.success(index + 1, item)
         return Result.failure(index, description)
@@ -430,7 +435,10 @@ def string_from(*strings, transform=noop):
 
 
 def char_from(string):
-    return test_char(lambda c: c in string, "[" + string + "]")
+    if isinstance(string, bytes):
+        return test_char(lambda c: c in string, b"[" + string + b"]")
+    else:
+        return test_char(lambda c: c in string, "[" + string + "]")
 
 
 def peek(parser):
