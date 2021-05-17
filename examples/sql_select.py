@@ -9,49 +9,52 @@
 # We demonstrate the use of `map` to create AST nodes with a single arg,
 # and `seq` for AST nodes with more than one arg.
 
-
-import attr
+from dataclasses import dataclass
+from typing import List, Optional, Union
 
 from parsy import regex, seq, string, string_from
 
-# -- AST nodes.
+# -- AST nodes:
 
 
-@attr.s
+@dataclass
 class Number:
-    value = attr.ib()
+    value: int
 
 
-@attr.s
+@dataclass
 class String:
-    value = attr.ib()
+    value: string
 
 
-@attr.s
+@dataclass
 class Field:
-    name = attr.ib()
+    name: string
 
 
-@attr.s
+@dataclass
 class Table:
-    name = attr.ib()
+    name: string
 
 
-@attr.s
+ColumnExpression = Union[Field, String, Number]
+
+
+@dataclass
 class Comparison:
-    left = attr.ib()
-    operator = attr.ib()
-    right = attr.ib()
+    left: ColumnExpression
+    operator: string
+    right: ColumnExpression
 
 
-@attr.s
+@dataclass
 class Select:
-    columns = attr.ib()
-    table = attr.ib()
-    where = attr.ib()
+    columns: List[ColumnExpression]
+    table: Table
+    where: Optional[Comparison]
 
 
-# -- Parsers
+# -- Parsers:
 
 number_literal = regex(r'-?[0-9]+').map(int).map(Number)
 
@@ -92,6 +95,8 @@ select = seq(
     _end=padding + string(';')
 ).combine_dict(Select)
 
+
+# Run these tests with pytest:
 
 def test_select():
     assert select.parse(
