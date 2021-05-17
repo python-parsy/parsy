@@ -381,11 +381,12 @@ you will need to use custom data structures (rather than ending up with nested
 lists etc.)
 
 For defining custom data structures, you can use any method you like (e.g.
-simple classes). We recommend `attrs
-<https://attrs.readthedocs.io/en/stable/>`_. You can also use `namedtuple
-<https://docs.python.org/3.6/library/collections.html#collections.namedtuple>`_
-from the standard library for simple cases or `dataclasses
-<https://docs.python.org/3/library/dataclasses.html>`_.
+simple classes). We suggest `dataclasses
+<https://docs.python.org/3/library/dataclasses.html>`_ (stdlib), `attrs
+<https://github.com/python-attrs/attrs>`_ or `pydantic
+<https://github.com/samuelcolvin/pydantic/>`_. You can also use `namedtuple
+<https://docs.python.org/3/library/collections.html#collections.namedtuple>`_
+for simple cases.
 
 For combining parsed data into these data structures, you can:
 

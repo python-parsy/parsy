@@ -210,11 +210,13 @@ can be used and manipulated as below.
 
       Here we used ``datetime.date`` which accepts keyword arguments. For your
       own parsing needs you will often use custom data types. You can create
-      these however you like, but we recommend `attrs
-      <https://attrs.readthedocs.io/en/stable/>`_. You can also use `namedtuple
-      <https://docs.python.org/3.6/library/collections.html#collections.namedtuple>`_
-      from the standard library for simple cases, or `dataclasses
-      <https://docs.python.org/3/library/dataclasses.html>`_.
+      these however you like, but we suggest `dataclasses
+      <https://docs.python.org/3/library/dataclasses.html>`_ (stdlib), `attrs
+      <https://github.com/python-attrs/attrs>`_ or `pydantic
+      <https://github.com/samuelcolvin/pydantic/>`_. You can also use
+      `namedtuple
+      <https://docs.python.org/3/library/collections.html#collections.namedtuple>`_
+      for simple cases.
 
       The following example shows the use of ``_`` as a prefix to remove
       elements you are not interested in, and the use of ``namedtuple`` to
