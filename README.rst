@@ -13,6 +13,10 @@ documentation and it doesn't say things like that!
 
 Parsy requires Python 3.5 or greater (and may work on earlier version of Python 3)
 
+For a good example of the kind of clear, declarative code you can create using
+parsy, see the `SQL SELECT statement example
+<https://parsy.readthedocs.io/en/latest/howto/other_examples.html#sql-select-statement-parser>`_.
+
 Links:
 
 - `Documentation <http://parsy.readthedocs.io/en/latest/>`_
