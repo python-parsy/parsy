@@ -12,6 +12,7 @@ History and release notes
   <https://github.com/camerondm9>`_.
 * Support ``bytes`` with :func:`regex` as well as ``str`` - thanks `@quack4
   <https://github.com/quack4>`_.
+* Added :class:`forward_declaration`.
 
 
 1.3.0 - 2019-08-03

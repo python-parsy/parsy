@@ -10,8 +10,8 @@ from collections import namedtuple
 from datetime import date
 
 from parsy import (
-    ParseError, alt, any_char, char_from, decimal_digit, digit, from_enum, generate, index, letter, line_info,
-    line_info_at, match_item, peek, regex, seq, string, string_from
+    ParseError, alt, any_char, char_from, decimal_digit, digit, forward_declaration, from_enum, generate, index,
+    letter, line_info, line_info_at, match_item, peek, regex, seq, string, string_from
 )
 from parsy import test_char as parsy_test_char  # to stop pytest thinking this function is a test
 from parsy import test_item as parsy_test_item  # to stop pytest thinking this function is a test
@@ -638,6 +638,49 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(line_info_at(text, 7),
                          (1, 3))
         self.assertRaises(ValueError, lambda: line_info_at(text, 8))
+
+
+class TestForwardDeclaration(unittest.TestCase):
+    def test_forward_declaration_1(self):
+        # This is the example from the docs
+        expr = forward_declaration()
+        with self.assertRaises(ValueError):
+            expr.parse("()")
+
+        with self.assertRaises(ValueError):
+            expr.parse_partial("()")
+
+        simple = regex('[0-9]+').map(int)
+        group = string('(') >> expr.sep_by(string(' ')) << string(')')
+        expr.become(simple | group)
+
+        self.assertEqual(expr.parse("(0 1 (2 3))"),
+                         [0, 1, [2, 3]])
+
+    def test_forward_declaration_2(self):
+        # Simplest example I could think of
+        expr = forward_declaration()
+        expr.become(string("A") + expr | string("Z"))
+
+        self.assertEqual(expr.parse("Z"), "Z")
+        self.assertEqual(expr.parse("AZ"), "AZ")
+        self.assertEqual(expr.parse("AAAAAZ"), "AAAAAZ")
+
+        with self.assertRaises(ParseError):
+            expr.parse("A")
+
+        with self.assertRaises(ParseError):
+            expr.parse("B")
+
+        self.assertEqual(expr.parse_partial("AAZXX"), ("AAZ", "XX"))
+
+    def test_forward_declaration_cant_become_twice(self):
+        dec = forward_declaration()
+        other = string("X")
+        dec.become(other)
+
+        with self.assertRaises((AttributeError, TypeError)):
+            dec.become(other)
 
 
 if __name__ == '__main__':
