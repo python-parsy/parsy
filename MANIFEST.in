@@ -2,14 +2,17 @@ include *.md
 include *.rst
 include *.sh
 include *.yml
+include *.yaml
 include LICENSE
 include tox.ini
 include pytest.ini
 include conftest.py
 include .editorconfig
 recursive-include docs *.bat
+recursive-include docs *.txt
 recursive-include docs *.py
 recursive-include docs *.rst
 recursive-include docs Makefile
 recursive-include examples *.py
 recursive-include tests *.py *.txt
+prune docs/_build
