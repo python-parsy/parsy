@@ -2,6 +2,8 @@
 How to do releases
 ==================
 
+* Make sure you are on master branch, and have pulled latest changes.
+
 * Check test suite passes on all supported versions::
 
     tox
