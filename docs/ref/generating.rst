@@ -105,13 +105,15 @@ There are also more complex examples in the :ref:`tutorial
 <using-previous-values>` of using the ``generate`` decorator to create parsers
 where there is logic that is conditional upon earlier parsed values.
 
+.. _recursive-definitions-with-generate:
+
 Implementing recursive definitions
 ----------------------------------
 
 A fourth examples shows how you can use this syntax for grammars that you would
 like to define recursively (or mutually recursively).
 
-Say we want to be able to pass an s-expression like syntax which uses
+Say we want to be able to parse an s-expression like syntax which uses
 parenthesis for grouping items into a tree structure, like the following::
 
      (0 1 (2 3) (4 5 6) 7 8)
@@ -126,6 +128,9 @@ A naive approach would be:
 
 The problem is that the second line will get a ``NameError`` because ``expr`` is
 not defined yet.
+
+One way to solve this is to use :ref:`forward-declarations`. But another uses
+``@generate``.
 
 Using the ``@generate`` syntax will introduce a level of laziness in resolving
 ``expr`` that allows things to work:

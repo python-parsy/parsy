@@ -248,3 +248,50 @@ using the primitives above):
    A parser that consumes no input and always just returns the current stream
    index. This is normally useful when wanting to build more debugging
    information into parse failure error messages.
+
+
+.. _forward-declarations:
+
+Forward declarations
+====================
+
+.. class:: forward_declaration
+
+When defining parsers for a recursive grammar, you may run into ``NameError``
+problems with a naive approach, because you can’t refer to a Python object
+before you have defined it. In this case, :class:`forward_declaration` can be
+useful.
+
+Say we want to be able to parse an s-expression like syntax which uses
+parenthesis for grouping items into a tree structure, like the following::
+
+     (0 1 (2 3) (4 5 6) 7 8)
+
+A naive approach would be:
+
+.. code-block:: python
+
+   simple = regex('[0-9]+').map(int)
+   group = string('(') >> expr.sep_by(string(' ')) << string(')')
+   expr = simple | group
+
+The problem is that the second line will get a ``NameError`` because ``expr`` is
+not defined yet, and we’ll have the same problem if we put the ``expr``
+definition first.
+
+We can solve it like this:
+
+.. code-block:: python
+
+   from parsy import forward_declaration, regex, string
+
+   expr = forward_declaration()
+   simple = regex('[0-9]+').map(int)
+   group = string('(') >> expr.sep_by(string(' ')) << string(')')
+   expr.become(simple | group)
+
+
+You must use ``.become()`` method exactly once before attempting to use the
+parser.
+
+An alternative to this is to use :ref:`recursive-definitions-with-generate`.

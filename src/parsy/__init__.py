@@ -477,3 +477,24 @@ def from_enum(enum_cls, transform=noop):
                    reverse=True)
     return alt(*[string(value, transform=transform).result(enum_item)
                  for value, enum_item in items])
+
+
+class forward_declaration(Parser):
+    """
+    An empty parser that can be used as a forward declaration,
+    especially for parsers that need to be defined recursively.
+
+    You must use `.become(parser)` before using.
+    """
+    def __init__(self):
+        pass
+
+    def _raise_error(self, *args, **kwargs):
+        raise ValueError("You must use 'become' before attempting to call `parse` or `parse_partial`")
+
+    parse = _raise_error
+    parse_partial = _raise_error
+
+    def become(self, other):
+        self.__dict__ = other.__dict__
+        self.__class__ = other.__class__
