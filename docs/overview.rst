@@ -33,8 +33,6 @@ Parsy differentiates itself from other solutions with the following:
     something parsed earlier e.g. Hollerith constants.
   * it's easy to build up complex result objects, rather than returning lists of
     lists etc. which then need to be further processed.
-  * there is no need for things like `pyparsing's Forward class
-    <http://infohost.nmt.edu/tcc/help/pubs/pyparsing/web/class-Forward.html>`_ .
 
 * it has a minimalist philosophy. It doesn't include built-in helpers for any
   specific grammars or languages, but provides building blocks for making these.

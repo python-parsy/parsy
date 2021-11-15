@@ -17,18 +17,7 @@ How to do releases
 
 * Release to PyPI::
 
-    $ VERSION=$(./setup.py --version)
-
-    $ ./setup.py sdist bdist_wheel
-
-    $ twine upload dist/parsy-$VERSION-py2.py3-none-any.whl dist/parsy-$VERSION.tar.gz
-
-* Tag and push::
-
-
-    git tag v$VERSION
-    git push
-    git push --tags
+    $ ./release.sh 
 
 
 Post release
