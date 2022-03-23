@@ -183,7 +183,7 @@ can be used and manipulated as below.
       If ``None`` is present as a key in the dictionary it will be removed
       before passing to ``fn``, as will all keys starting with ``_``.
 
-      Motivation:
+      **Motivation:**
 
       For building complex objects, this can be more convenient, flexible and
       readable than :meth:`map` or :meth:`combine`, because by avoiding
@@ -192,8 +192,8 @@ can be used and manipulated as below.
       used. It is especially designed to be used in conjunction with :func:`seq`
       and :meth:`tag`.
 
-      **For Python 3.6 and above,** we can make use of the ``**kwargs`` version
-      of :func:`seq` to produce a very readable definition:
+      We can make use of the ``**kwargs`` version of :func:`seq` to produce a
+      very readable definition:
 
       .. code:: python
 
@@ -248,51 +248,6 @@ can be used and manipulated as below.
          >>> pair = seq(
          ...    name=name << string('='),
          ...    value=(int_value | bool_value) << string(';')
-         ... ).combine_dict(Pair)
-
-      **For Python 3.5 and below**, kwargs usage is not possible (because
-      keyword arguments produce a dictionary that does not have a guaranteed
-      order). Instead, use :meth:`tag` to produce a list of name-value pairs:
-
-      .. code:: python
-
-         >>> ddmmyyyy = seq(
-         ...     regex(r'[0-9]{2}').map(int).tag('day'),
-         ...     regex(r'[0-9]{2}').map(int).tag('month'),
-         ...     regex(r'[0-9]{4}').map(int).tag('year'),
-         ... ).combine_dict(date)
-         >>> ddmmyyyy.parse('04052003')
-         datetime.date(2003, 5, 4)
-
-      The following example shows the use of ``tag(None)`` to remove
-      elements you are not interested in, and the use of ``namedtuple`` to
-      create a simple data-structure.
-
-      .. code-block:: python
-
-         >>> from collections import namedtuple
-         >>> Pair = namedtuple('Pair', ['name', 'value'])
-         >>> name = regex("[A-Za-z]+")
-         >>> int_value = regex("[0-9]+").map(int)
-         >>> bool_value = string("true").result(True) | string("false").result(False)
-         >>> pair = seq(
-         ...    name.tag('name'),
-         ...    string('=').tag(None),
-         ...    (int_value | bool_value).tag('value'),
-         ...    string(';').tag(None),
-         ... ).combine_dict(Pair)
-         >>> pair.parse("foo=123;")
-         Pair(name='foo', value=123)
-         >>> pair.parse("BAR=true;")
-         Pair(name='BAR', value=True)
-
-      You could also use ``<<`` for the unwanted parts instead of ``.tag(None)``:
-
-      .. code-block:: python
-
-         >>> pair = seq(
-         ...    name.tag('name') << string('='),
-         ...    (int_value | bool_value).tag('value') << string(';')
          ... ).combine_dict(Pair)
 
       .. versionchanged:: 1.2
@@ -586,10 +541,10 @@ Parser combinators
       [99, 'beer', 'wall']
 
 
-   In Python 3.6, you can also use ``seq`` with keyword arguments instead of positional
+   You can also use :func:`seq` with keyword arguments instead of positional
    arguments. In this case, the produced value is a dictionary of the individual
-   values, rather than a sequence. This can make the produced value easier
-   to consume.
+   values, rather than a sequence. This can make the produced value easier to
+   consume.
 
    .. code-block:: python
 
@@ -603,10 +558,7 @@ Parser combinators
       Added ``**kwargs`` option.
 
    .. note::
-      The ``**kwargs`` feature is for Python 3.6 and later only, because keyword
-      arguments do not keep their order in earlier versions.
-
-      For earlier versions, see :meth:`Parser.tag` for a way of labelling parsed
+      As an alternative, see :meth:`Parser.tag` for a way of labelling parsed
       components and producing dictionaries.
 
 
