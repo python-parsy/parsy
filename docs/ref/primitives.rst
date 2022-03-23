@@ -294,4 +294,5 @@ We can solve it like this:
 You must use ``.become()`` method exactly once before attempting to use the
 parser.
 
-An alternative to this is to use :ref:`recursive-definitions-with-generate`.
+An alternative to this is to use ``generate`` as described in
+:ref:`recursive-definitions-with-generate`.

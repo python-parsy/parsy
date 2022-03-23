@@ -1,6 +1,4 @@
-from sys import stdin
-
-from parsy import generate, regex, string
+from parsy import forward_declaration, regex, seq, string
 
 whitespace = regex(r"\s*")
 lexeme = lambda p: p << whitespace
@@ -28,26 +26,12 @@ string_esc = string("\\") >> (
 )
 quoted = lexeme(string('"') >> (string_part | string_esc).many().concat() << string('"'))
 
-
-# Circular dependency between array and value means we use `generate` form here
-@generate
-def array():
-    yield lbrack
-    elements = yield value.sep_by(comma)
-    yield rbrack
-    return elements
-
-
-@generate
-def object_pair():
-    key = yield quoted
-    yield colon
-    val = yield value
-    return (key, val)
-
-
+object_pair = forward_declaration()
+array = forward_declaration()
 json_object = lbrace >> object_pair.sep_by(comma).map(dict) << rbrace
 value = quoted | number | json_object | array | true | false | null
+array.become(lbrack >> value.sep_by(comma) << rbrack)
+object_pair.become(seq(quoted << colon, value).map(tuple))
 json = whitespace >> value
 
 
@@ -72,4 +56,6 @@ def test():
 
 
 if __name__ == "__main__":
+    from sys import stdin
+
     print(repr(json.parse(stdin.read())))
