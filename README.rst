@@ -11,7 +11,7 @@ for LL(infinity) grammars in the spirit of `Parsec
 <https://github.com/jneen/parsimmon>`_. But don't worry, it has really good
 documentation and it doesn't say things like that!
 
-Parsy requires Python 3.5 or greater (and may work on earlier version of Python 3)
+Parsy requires Python 3.6 or greater.
 
 For a good example of the kind of clear, declarative code you can create using
 parsy, see the `SQL SELECT statement example

@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [3.5, 3.6, 3.7, 3.8, pypy3]
+        python-version: [3.6, 3.7, 3.8, 3.9, "3.10", "pypy-3.6"]
 
     env:
       PYTHON: ${{ matrix.python-version }}
@@ -53,7 +53,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: "3.7"
+          python-version: "3.9"
       - uses: actions/cache@v2
         with:
           path: ~/.cache/pip
@@ -75,7 +75,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: "3.7"
+          python-version: "3.9"
       - uses: actions/cache@v2
         with:
           path: ~/.cache/pip
@@ -97,7 +97,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: "3.7"
+          python-version: "3.9"
       - uses: actions/cache@v2
         with:
           path: ~/.cache/pip

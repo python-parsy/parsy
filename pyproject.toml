@@ -1,0 +1,11 @@
+[tool.black]
+line-length = 119
+# required-version = '22.1.0' # see https://github.com/psf/black/issues/2493
+target-version = ['py36']
+
+[tool.isort]
+line_length = 119
+profile = "black"
+default_section = "THIRDPARTY"
+skip = [".tox", ".git", "docs", "dist", "build" , "todo"]
+known_first_party = "parsy"

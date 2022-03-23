@@ -1,12 +1,9 @@
-# -*- coding: utf-8 -*- #
-
 # End-user documentation is in ../../doc/ and so is for the most part not
 # duplicated here in the form of doc strings. Code comments and docstrings
 # are mainly for internal use.
 
 import operator
 import re
-import sys
 from collections import namedtuple
 from functools import wraps
 
@@ -32,7 +29,7 @@ class ParseError(RuntimeError):
 
     def line_info(self):
         try:
-            return '{}:{}'.format(*line_info_at(self.stream, self.index))
+            return "{}:{}".format(*line_info_at(self.stream, self.index))
         except (TypeError, AttributeError):  # not a str
             return str(self.index)
 
@@ -40,12 +37,12 @@ class ParseError(RuntimeError):
         expected_list = sorted(repr(e) for e in self.expected)
 
         if len(expected_list) == 1:
-            return 'expected {} at {}'.format(expected_list[0], self.line_info())
+            return f"expected {expected_list[0]} at {self.line_info()}"
         else:
-            return 'expected one of {} at {}'.format(', '.join(expected_list), self.line_info())
+            return f"expected one of {', '.join(expected_list)} at {self.line_info()}"
 
 
-class Result(namedtuple('Result', 'status index value furthest expected')):
+class Result(namedtuple("Result", "status index value furthest expected")):
     @staticmethod
     def success(index, value):
         return Result(True, index, value, -1, frozenset())
@@ -68,7 +65,7 @@ class Result(namedtuple('Result', 'status index value furthest expected')):
             return Result(self.status, self.index, self.value, other.furthest, other.expected)
 
 
-class Parser(object):
+class Parser:
     """
     A Parser is an object that wraps a function whose arguments are
     a string to be parsed and the index on which to begin parsing.
@@ -99,7 +96,7 @@ class Parser(object):
         result = self(stream, 0)
 
         if result.status:
-            return (result.value, stream[result.index:])
+            return (result.value, stream[result.index :])
         else:
             raise ParseError(result.expected, stream, result.furthest)
 
@@ -123,13 +120,20 @@ class Parser(object):
         return self.bind(lambda res: success(combine_fn(*res)))
 
     def combine_dict(self, combine_fn):
-        return self.bind(lambda res: success(combine_fn(**{
-            k: v for k, v in dict(res).items()
-            if k is not None and not (isinstance(k, str) and k.startswith('_'))
-        })))
+        return self.bind(
+            lambda res: success(
+                combine_fn(
+                    **{
+                        k: v
+                        for k, v in dict(res).items()
+                        if k is not None and not (isinstance(k, str) and k.startswith("_"))
+                    }
+                )
+            )
+        )
 
     def concat(self):
-        return self.map(''.join)
+        return self.map("".join)
 
     def then(self, other):
         return seq(self, other).combine(lambda left, right: right)
@@ -141,7 +145,7 @@ class Parser(object):
         return self >> success(res)
 
     def many(self):
-        return self.times(0, float('inf'))
+        return self.times(0, float("inf"))
 
     def times(self, min, max=None):
         if max is None:
@@ -177,7 +181,7 @@ class Parser(object):
     def optional(self):
         return self.times(0, 1).map(lambda v: v[0] if v else None)
 
-    def sep_by(self, sep, *, min=0, max=float('inf')):
+    def sep_by(self, sep, *, min=0, max=float("inf")):
         zero_times = success([])
         if max == 0:
             return zero_times
@@ -244,7 +248,7 @@ class Parser(object):
 
 def alt(*parsers):
     if not parsers:
-        return fail('<empty alt>')
+        return fail("<empty alt>")
 
     @Parser
     def alt_parser(stream, index):
@@ -259,57 +263,18 @@ def alt(*parsers):
     return alt_parser
 
 
-if sys.version_info >= (3, 6):
-    # Only 3.6 and later supports kwargs that remember their order,
-    # so only have this kwarg signature on Python 3.6 and above
-    def seq(*parsers, **kw_parsers):
-        """
-        Takes a list of list of parsers, runs them in order,
-        and collects their individuals results in a list
-        """
-        if not parsers and not kw_parsers:
-            return success([])
+def seq(*parsers, **kw_parsers):
+    """
+    Takes a list of list of parsers, runs them in order,
+    and collects their individuals results in a list
+    """
+    if not parsers and not kw_parsers:
+        return success([])
 
-        if parsers and kw_parsers:
-            raise ValueError("Use either positional arguments or keyword arguments with seq, not both")
+    if parsers and kw_parsers:
+        raise ValueError("Use either positional arguments or keyword arguments with seq, not both")
 
-        if parsers:
-            @Parser
-            def seq_parser(stream, index):
-                result = None
-                values = []
-                for parser in parsers:
-                    result = parser(stream, index).aggregate(result)
-                    if not result.status:
-                        return result
-                    index = result.index
-                    values.append(result.value)
-                return Result.success(index, values).aggregate(result)
-
-            return seq_parser
-        else:
-            @Parser
-            def seq_kwarg_parser(stream, index):
-                result = None
-                values = {}
-                for name, parser in kw_parsers.items():
-                    result = parser(stream, index).aggregate(result)
-                    if not result.status:
-                        return result
-                    index = result.index
-                    values[name] = result.value
-                return Result.success(index, values).aggregate(result)
-
-            return seq_kwarg_parser
-
-else:
-    def seq(*parsers):
-        """
-        Takes a list of list of parsers, runs them in order,
-        and collects their individuals results in a list
-        """
-        if not parsers:
-            return success([])
+    if parsers:
 
         @Parser
         def seq_parser(stream, index):
@@ -321,10 +286,24 @@ else:
                     return result
                 index = result.index
                 values.append(result.value)
-
             return Result.success(index, values).aggregate(result)
 
         return seq_parser
+    else:
+
+        @Parser
+        def seq_kwarg_parser(stream, index):
+            result = None
+            values = {}
+            for name, parser in kw_parsers.items():
+                result = parser(stream, index).aggregate(result)
+                if not result.status:
+                    return result
+                index = result.index
+                values[name] = result.value
+            return Result.success(index, values).aggregate(result)
+
+        return seq_kwarg_parser
 
 
 # combinator syntax
@@ -376,7 +355,7 @@ def string(s, transform=noop):
 
     @Parser
     def string_parser(stream, index):
-        if transform(stream[index:index + slen]) == transformed_s:
+        if transform(stream[index : index + slen]) == transformed_s:
             return Result.success(index + slen, s)
         else:
             return Result.failure(index, s)
@@ -408,7 +387,7 @@ def test_item(func, description):
             if isinstance(stream, bytes):
                 # Subscripting bytes with `[index]` instead of
                 # `[index:index + 1]` returns an int
-                item = stream[index:index + 1]
+                item = stream[index : index + 1]
             else:
                 item = stream[index]
             if func(item):
@@ -431,7 +410,7 @@ def match_item(item, description=None):
 
 def string_from(*strings, transform=noop):
     # Sort longest first, so that overlapping options work correctly
-    return alt(*[string(s, transform) for s in sorted(strings, key=len, reverse=True)])
+    return alt(*(string(s, transform) for s in sorted(strings, key=len, reverse=True)))
 
 
 def char_from(string):
@@ -449,16 +428,17 @@ def peek(parser):
             return Result.success(index, result.value)
         else:
             return result
+
     return peek_parser
 
 
 any_char = test_char(lambda c: True, "any character")
 
-whitespace = regex(r'\s+')
+whitespace = regex(r"\s+")
 
-letter = test_char(lambda c: c.isalpha(), 'a letter')
+letter = test_char(lambda c: c.isalpha(), "a letter")
 
-digit = test_char(lambda c: c.isdigit(), 'a digit')
+digit = test_char(lambda c: c.isdigit(), "a digit")
 
 decimal_digit = char_from("0123456789")
 
@@ -468,15 +448,14 @@ def eof(stream, index):
     if index >= len(stream):
         return Result.success(index, None)
     else:
-        return Result.failure(index, 'EOF')
+        return Result.failure(index, "EOF")
 
 
 def from_enum(enum_cls, transform=noop):
-    items = sorted([(str(enum_item.value), enum_item) for enum_item in enum_cls],
-                   key=lambda t: len(t[0]),
-                   reverse=True)
-    return alt(*[string(value, transform=transform).result(enum_item)
-                 for value, enum_item in items])
+    items = sorted(
+        ((str(enum_item.value), enum_item) for enum_item in enum_cls), key=lambda t: len(t[0]), reverse=True
+    )
+    return alt(*(string(value, transform=transform).result(enum_item) for value, enum_item in items))
 
 
 class forward_declaration(Parser):
@@ -486,6 +465,7 @@ class forward_declaration(Parser):
 
     You must use `.become(parser)` before using.
     """
+
     def __init__(self):
         pass
 
