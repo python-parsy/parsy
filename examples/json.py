@@ -2,31 +2,29 @@ from sys import stdin
 
 from parsy import generate, regex, string
 
-whitespace = regex(r'\s*')
+whitespace = regex(r"\s*")
 lexeme = lambda p: p << whitespace
-lbrace = lexeme(string('{'))
-rbrace = lexeme(string('}'))
-lbrack = lexeme(string('['))
-rbrack = lexeme(string(']'))
-colon  = lexeme(string(':'))
-comma  = lexeme(string(','))
-true   = lexeme(string('true')).result(True)
-false  = lexeme(string('false')).result(False)
-null   = lexeme(string('null')).result(None)
-number = lexeme(
-    regex(r'-?(0|[1-9][0-9]*)([.][0-9]+)?([eE][+-]?[0-9]+)?')
-).map(float)
+lbrace = lexeme(string("{"))
+rbrace = lexeme(string("}"))
+lbrack = lexeme(string("["))
+rbrack = lexeme(string("]"))
+colon = lexeme(string(":"))
+comma = lexeme(string(","))
+true = lexeme(string("true")).result(True)
+false = lexeme(string("false")).result(False)
+null = lexeme(string("null")).result(None)
+number = lexeme(regex(r"-?(0|[1-9][0-9]*)([.][0-9]+)?([eE][+-]?[0-9]+)?")).map(float)
 string_part = regex(r'[^"\\]+')
-string_esc = string('\\') >> (
-    string('\\')
-    | string('/')
+string_esc = string("\\") >> (
+    string("\\")
+    | string("/")
     | string('"')
-    | string('b').result('\b')
-    | string('f').result('\f')
-    | string('n').result('\n')
-    | string('r').result('\r')
-    | string('t').result('\t')
-    | regex(r'u[0-9a-fA-F]{4}').map(lambda s: chr(int(s[1:], 16)))
+    | string("b").result("\b")
+    | string("f").result("\f")
+    | string("n").result("\n")
+    | string("r").result("\r")
+    | string("t").result("\t")
+    | regex(r"u[0-9a-fA-F]{4}").map(lambda s: chr(int(s[1:], 16)))
 )
 quoted = lexeme(string('"') >> (string_part | string_esc).many().concat() << string('"'))
 
@@ -54,7 +52,8 @@ json = whitespace >> value
 
 
 def test():
-    assert json.parse(r'''
+    assert json.parse(
+        r"""
     {
         "int": 1,
         "string": "hello",
@@ -62,7 +61,8 @@ def test():
         "escapes": "\n",
         "nested": {"x": "y"}
     }
-''') == {
+"""
+    ) == {
         "int": 1,
         "string": "hello",
         "a list": [1, 2, 3],
@@ -71,5 +71,5 @@ def test():
     }
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     print(repr(json.parse(stdin.read())))
