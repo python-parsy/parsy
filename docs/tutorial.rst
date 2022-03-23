@@ -15,7 +15,7 @@ ISO 8601 date. Specifically, we want to handle dates that look like this:
 ``2017-09-25``.
 
 A problem of this size could admittedly be solved fairly easily with regexes.
-But very quickly regexes don't scale, especially when it comes to getting the
+But very quickly regexes don’t scale, especially when it comes to getting the
 parsed data out, and for this tutorial we need to start with a simple example.
 
 With parsy, you start by breaking the problem down into the smallest components.
@@ -27,9 +27,9 @@ There are various ways we can do this, but a regex works nicely, and
 .. code-block:: python
 
    >>> from parsy import regex
-   >>> year = regex(r'[0-9]{4}')
+   >>> year = regex(r"[0-9]{4}")
 
-(For those who don't know regular expressions, the regex ``[0-9]{4}`` means
+(For those who don’t know regular expressions, the regex ``[0-9]{4}`` means
 “match any character from 0123456789 exactly 4 times”.)
 
 This has produced a :class:`Parser` object which has various methods. We can
@@ -37,14 +37,14 @@ immediately check that it works using the :meth:`Parser.parse` method:
 
 .. code-block:: python
 
-   >>> year.parse('2017')
+   >>> year.parse("2017")
    '2017'
-   >>> year.parse('abc')
+   >>> year.parse("abc")
    ParseError: expected '[0-9]{4}' at 0:0
 
 Notice first of all that a parser consumes input (the value we pass to
 ``parse``), and it produces an output. In the case of ``regex``, the produced
-output is the string that was matched, but this doesn't have to be the case for
+output is the string that was matched, but this doesn’t have to be the case for
 all parsers.
 
 If there is no match, it raises a ``ParseError``.
@@ -56,23 +56,23 @@ File/Data):
 
 .. code-block:: python
 
-   >>> year.parse('2017 ')
+   >>> year.parse("2017 ")
    ParseError: expected 'EOF' at 0:4
 
 You can use :meth:`Parser.parse_partial` if you want to just keep parsing as far
 as possible and not throw an exception.
 
-To parse the data, we need to parse months, days, and the dash symbol, so we'll
+To parse the data, we need to parse months, days, and the dash symbol, so we’ll
 add those:
 
 .. code-block:: python
 
    >>> from parsy import string
-   >>> month = regex('[0-9]{2}')
-   >>> day = regex('[0-9]{2}')
-   >>> dash = string('-')
+   >>> month = regex("[0-9]{2}")
+   >>> day = regex("[0-9]{2}")
+   >>> dash = string("-")
 
-We've added use of the :func:`string` primitive here, that matches just the
+We’ve added use of the :func:`string` primitive here, that matches just the
 string passed in, and returns that string.
 
 Next we need to combine these parsers into something that will parse the whole
@@ -97,17 +97,17 @@ as a basic validator:
 
 .. code-block:: python
 
-   >>> fulldate.parse('2017-xx')
+   >>> fulldate.parse("2017-xx")
    ParseError: expected '[0-9]{2}' at 0:5
-   >>> fulldate.parse('2017-01')
+   >>> fulldate.parse("2017-01")
    ParseError: expected '-' at 0:7
-   >>> fulldate.parse('2017-02-01')
+   >>> fulldate.parse("2017-02-01")
    '01'
 
-If the parse doesn't succeed, we'll get ``ParseError``, otherwise it is valid
-(at least as far as the basic syntax checks we've added).
+If the parse doesn’t succeed, we’ll get ``ParseError``, otherwise it is valid
+(at least as far as the basic syntax checks we’ve added).
 
-The first problem with this parser is that it doesn't return a very useful
+The first problem with this parser is that it doesn’t return a very useful
 value. Due to the way that :meth:`Parser.then` works, when it combines two
 parsers to produce a larger one, the value from the first parser is discarded,
 and the value returned by the second parser is the overall return value. So, we
@@ -121,10 +121,10 @@ of ``then``. This operator is defined to combine the results of the two parsers
 using the normal plus operator, which will work fine on strings:
 
    >>> fulldate = year + dash + month + dash + day
-   >>> fulldate.parse('2017-02-01')
+   >>> fulldate.parse("2017-02-01")
    '2017-02-01'
 
-However, it won't help us if we want to split our data up into a set of
+However, it won’t help us if we want to split our data up into a set of
 integers.
 
 Our first step should actually be to work on the year, month and day components
@@ -136,15 +136,15 @@ our components now look this this:
 
 .. code-block:: python
 
-   >>> year = regex('[0-9]{4}').map(int).desc('4 digit year')
-   >>> month = regex('[0-9]{2}').map(int).desc('2 digit month')
-   >>> day = regex('[0-9]{2}').map(int).desc('2 digit day')
+   >>> year = regex("[0-9]{4}").map(int).desc("4 digit year")
+   >>> month = regex("[0-9]{2}").map(int).desc("2 digit month")
+   >>> day = regex("[0-9]{2}").map(int).desc("2 digit day")
 
 We get better error messages now:
 
 .. code-block:: python
 
-   >>> year.then(dash).then(month).parse('2017-xx')
+   >>> year.then(dash).then(month).parse("2017-xx")
    ParseError: expected '2 digit month' at 0:5
 
 
@@ -164,15 +164,15 @@ list:
 
    >>> from parsy import seq
    >>> fulldate = seq(year, dash, month, dash, day)
-   >>> fulldate.parse('2017-01-02')
+   >>> fulldate.parse("2017-01-02")
    [2017, '-', 1, '-', 2]
 
-Now, we don't need those dashes, so we can eliminate them using the :ref:`parser-rshift` or :ref:`parser-lshift`:
+Now, we don’t need those dashes, so we can eliminate them using the :ref:`parser-rshift` or :ref:`parser-lshift`:
 
 .. code-block:: python
 
    >>> fulldate = seq(year << dash, month << dash, day)
-   >>> fulldate.parse('2017-01-02')
+   >>> fulldate.parse("2017-01-02")
    [2017, 1, 2]
 
 At this point, we could also convert this to a date object if we wanted using
@@ -188,18 +188,29 @@ This works because the positional argument order of ``date`` matches the order
 of the values parsed i.e. (year, month, day).
 
 A slightly more readable and flexible version would use the keyword argument
-version of :func:`seq`, followed by :meth:`Parser.combine_dict`:
+version of :func:`seq`, followed by :meth:`Parser.combine_dict`. Putting
+everything together for our final solution:
 
 .. code-block:: python
 
-   >>> from datetime import date
-   >>> fulldate = seq(
-   ...     year=year << dash,
-   ...     month=month << dash,
-   ...     day=day,
-   ... ).combine_dict(date)
+   from datetime import date
+   from parsy import regex, seq, string
+
+   year = regex("[0-9]{4}").map(int).desc("4 digit year")
+   month = regex("[0-9]{2}").map(int).desc("2 digit month")
+   day = regex("[0-9]{2}").map(int).desc("2 digit day")
+   dash = string("-")
+
+   fulldate = seq(
+       year=year << dash,
+       month=month << dash,
+       day=day,
+   ).combine_dict(date)
 
 Breaking that down:
+
+* for clarity, and to allow us test separately, we have defined individual
+  parsers for the YYYY, MM and DD components.
 
 * the ``seq`` call produces a parser that parses the year, month and day
   components in order, discarding the dashes, to produce a dictionary like this:
@@ -221,7 +232,7 @@ So now it does exactly what we want:
 
 .. code-block:: python
 
-   >>> fulldate.parse('2017-02-01')
+   >>> fulldate.parse("2017-02-01")
    datetime.date(2017, 2, 1)
 
 
@@ -234,12 +245,12 @@ Now, sometimes we might want to do more complex logic with the values that are
 collected as parse results, and do so while we are still parsing.
 
 To continue our example, the above parser has a problem that it will raise an
-exception if the day and month values are not valid. We'd like to be able to
+exception if the day and month values are not valid. We’d like to be able to
 check this, and produce a parse error instead, which will make our parser play
 better with others if we want to use it to build something bigger.
 
 Also, in ISO8601, strictly speaking you can just write the year, or the year and
-the month, and leave off the other parts. We'd like to handle that by returning
+the month, and leave off the other parts. We’d like to handle that by returning
 a tuple for the result, and ``None`` for the missing data.
 
 To do this, we need to allow the parse to continue if the later components (with
@@ -248,7 +259,7 @@ components, and we need a way to be able to test earlier values while in the
 middle of parsing, to see if we should continue looking for another component.
 
 The :meth:`Parser.bind` method provides one way to do it (yay monads!).
-Unfortunately, it gets ugly pretty fast, and in Python we don't have Haskell's
+Unfortunately, it gets ugly pretty fast, and in Python we don’t have Haskell’s
 ``do`` notation to tidy it up. But thankfully we can use generators and the
 ``yield`` keyword to great effect.
 
@@ -278,7 +289,7 @@ with keyword arguments. It’s more verbose than before, but provides a good
 starting point for our next set of requirements.
 
 First of all, we need to express optional components - that is we need to be
-able to handle missing dashes, and return what we've got so far rather than
+able to handle missing dashes, and return what we’ve got so far rather than
 failing the whole parse.
 
 :class:`Parser` has a set of methods that convert parsers into ones that allow
@@ -287,7 +298,7 @@ multiples of the parser - including :meth:`Parser.many`, :meth:`Parser.times`,
 :meth:`Parser.optional` which allows matching zero times (in which case the
 parser will return ``None``), or exactly once - just what we need in this case.
 
-We also need to do checking on the month and the day. We'll take a shortcut and
+We also need to do checking on the month and the day. We’ll take a shortcut and
 use the built-in ``datetime.date`` class to do the validation for us. However,
 rather than allow exceptions to be raised, we convert the exception into a
 parsing failure.
@@ -326,9 +337,9 @@ This works now works as expected:
 
 .. code-block:: python
 
-   >>> full_or_partial_date.parse('2017-02')
+   >>> full_or_partial_date.parse("2017-02")
    (2017, 2, None)
-   >>> full_or_partial_date.parse('2017-02-29')
+   >>> full_or_partial_date.parse("2017-02-29")
    ParseError: expected 'day is out of range for month' at 0:10
 
 We could of course use a custom object in the final line to return a more
@@ -341,7 +352,7 @@ Suppose we are using our date parser to scrape dates off articles on a web site.
 We then discover that for recently published articles, instead of printing a
 timestamp, they write "X days ago".
 
-We want to parse this, and we'll use a timedelta object to represent the value
+We want to parse this, and we’ll use a timedelta object to represent the value
 (to easily distinguish it from other values and consume it later). We can write
 a parser for this easily:
 
@@ -358,7 +369,7 @@ This is done using the :ref:`parser-or`, as follows:
 .. code-block:: python
 
    >>> flexi_date = full_or_partial_date | days_ago
-   >>> flexi_date.parse('2012-01-05')
+   >>> flexi_date.parse("2012-01-05")
    (2012, 1, 5)
    >>> days_ago.parse("2 days ago")
    datetime.timedelta(-2)
@@ -368,9 +379,9 @@ depending on which parser got furthest before returning a failure:
 
 .. code-block:: python
 
-   >>> flexi_date.parse('2012-')
+   >>> flexi_date.parse("2012-")
    ParseError: expected '2 digit month' at 0:5
-   >>> flexi_date.parse('2 years ago')
+   >>> flexi_date.parse("2 years ago")
    ParseError: expected ' days ago' at 0:1
 
 When using backtracking, you need to understand that backtracking to the other
@@ -382,9 +393,9 @@ option only occurs if the first parser fails. So, for example:
    >>> ab = string("ab")
    >>> c = string("c")
    >>> a_or_ab_and_c = ((a | ab) + c)
-   >>> a_or_ab_and_c.parse('ac')
+   >>> a_or_ab_and_c.parse("ac")
    'ac'
-   >>> a_or_ab_and_c.parse('abc')
+   >>> a_or_ab_and_c.parse("abc")
    ParseError: expected 'c' at 0:1
 
 The parse fails because the ``a`` parser succeeds, and so the ``ab`` parser is
@@ -395,17 +406,17 @@ In this case we can get the parse to succeed by switching the order:
 
 .. code-block:: python
 
-   >>> ((ab | a) + c).parse('abc')
+   >>> ((ab | a) + c).parse("abc")
    'abc'
 
-   >>> ((ab | a) + c).parse('ac')
+   >>> ((ab | a) + c).parse("ac")
    'ac'
 
 We could also fix it like this:
 
 .. code-block:: python
 
-   >>> ((a + c) | (ab + c)).parse('abc')
+   >>> ((a + c) | (ab + c)).parse("abc")
    'abc'
 
 
@@ -431,8 +442,8 @@ For combining parsed data into these data structures, you can:
 1. Use :meth:`Parser.map`, :meth:`Parser.combine` and :meth:`Parser.combine_dict`,
    often in conjunction with :func:`seq`.
 
-   See the :doc:`SQL SELECT and .proto file parser examples
-   </howto/other_examples/>` for examples of this approach.
+   See the :doc:`SQL SELECT example
+   </howto/other_examples/>` for an example of this approach.
 
 2. Use the ``@generate`` decorator as above, and manually call the data
    structure constructor with the pieces, as in ``full_date`` or
