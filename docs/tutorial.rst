@@ -171,22 +171,50 @@ Now, we don't need those dashes, so we can eliminate them using the :ref:`parser
 
 .. code-block:: python
 
-   >>> fulldate = seq(year, dash >> month, dash >> day)
+   >>> fulldate = seq(year << dash, month << dash, day)
    >>> fulldate.parse('2017-01-02')
    [2017, 1, 2]
 
 At this point, we could also convert this to a date object if we wanted using
-:meth:`Parser.combine`:
+:meth:`Parser.combine`, which passes the produced sequence to another function
+using ``*args`` syntax.
 
 .. code-block:: python
 
    >>> from datetime import date
-   >>> fulldate = seq(year, dash >> month, dash >> day).combine(date)
+   >>> fulldate = seq(year << dash, month << dash, day).combine(date)
 
-We could have used :meth:`Parser.map` here, but :meth:`Parser.combine` is a bit
-nicer. It's especially succinct because the argument order to ``date`` matches
-the order of the values parsed (year, month, day), otherwise we could have
-passed a ``lambda`` to ``combine``, or used :meth:`Parser.combine_dict`.
+This works because the positional argument order of ``date`` matches the order
+of the values parsed i.e. (year, month, day).
+
+A slightly more readable and flexible version would use the keyword argument
+version of :func:`seq`, followed by :meth:`Parser.combine_dict`:
+
+.. code-block:: python
+
+   >>> from datetime import date
+   >>> fulldate = seq(
+   ...     year=year << dash
+   ...     month=month << dash
+   ...     day=day
+   ... ).combine_dict(date)
+
+Breaking that down:
+
+* the ``seq`` call produces a parser that parses the year, month and day
+  components in order, discarding the dashes, to produce a dictionary like this:
+
+  .. code-block:: python
+
+     {
+       "year": 2017,
+       "month": 1,
+       "day": 2,
+     }
+
+* when we chain the ``combine_dict`` call, we have a parser that passes this
+  dictionary to the ``date`` constructor using ``**kwargs`` syntax, so we end up
+  calling ``date(year=2017, month=1, day=2)``
 
 .. _using-previous-values:
 
@@ -228,7 +256,7 @@ An equivalent parser to the one above can be written like this:
    from parsy import generate
 
    @generate
-   def full_date():
+   def fulldate():
        y = yield year
        yield dash  # implicit skip, since we do nothing with the value
        m = yield month
@@ -236,8 +264,9 @@ An equivalent parser to the one above can be written like this:
        d = yield day
        return date(y, m, d)
 
-This is more verbose than before, but provides a good starting point for our
-next set of requirements.
+Notice how this follows the previous definition of ``fulldate`` using ``seq``
+with keyword arguments. It’s more verbose than before, but provides a good
+starting point for our next set of requirements.
 
 First of all, we need to express optional components - that is we need to be
 able to handle missing dashes, and return what we've got so far rather than
