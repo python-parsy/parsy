@@ -194,9 +194,9 @@ version of :func:`seq`, followed by :meth:`Parser.combine_dict`:
 
    >>> from datetime import date
    >>> fulldate = seq(
-   ...     year=year << dash
-   ...     month=month << dash
-   ...     day=day
+   ...     year=year << dash,
+   ...     month=month << dash,
+   ...     day=day,
    ... ).combine_dict(date)
 
 Breaking that down:
@@ -215,6 +215,15 @@ Breaking that down:
 * when we chain the ``combine_dict`` call, we have a parser that passes this
   dictionary to the ``date`` constructor using ``**kwargs`` syntax, so we end up
   calling ``date(year=2017, month=1, day=2)``
+
+
+So now it does exactly what we want:
+
+.. code-block:: python
+
+   >>> fulldate.parse('2017-02-01')
+   datetime.date(2017, 2, 1)
+
 
 .. _using-previous-values:
 
