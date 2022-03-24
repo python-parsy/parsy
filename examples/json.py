@@ -1,13 +1,18 @@
 from parsy import forward_declaration, regex, seq, string
 
+# Utilities
 whitespace = regex(r"\s*")
 lexeme = lambda p: p << whitespace
+
+# Puntuation
 lbrace = lexeme(string("{"))
 rbrace = lexeme(string("}"))
 lbrack = lexeme(string("["))
 rbrack = lexeme(string("]"))
 colon = lexeme(string(":"))
 comma = lexeme(string(","))
+
+# Primitives
 true = lexeme(string("true")).result(True)
 false = lexeme(string("false")).result(False)
 null = lexeme(string("null")).result(None)
@@ -26,17 +31,19 @@ string_esc = string("\\") >> (
 )
 quoted = lexeme(string('"') >> (string_part | string_esc).many().concat() << string('"'))
 
-object_pair = forward_declaration()
-array = forward_declaration()
+# Data structures
+json_value = forward_declaration()
+object_pair = seq(quoted << colon, json_value).map(tuple)
 json_object = lbrace >> object_pair.sep_by(comma).map(dict) << rbrace
-value = quoted | number | json_object | array | true | false | null
-array.become(lbrack >> value.sep_by(comma) << rbrack)
-object_pair.become(seq(quoted << colon, value).map(tuple))
-json = whitespace >> value
+array = lbrack >> json_value.sep_by(comma) << rbrack
+
+# Everything
+json_value.become(quoted | number | json_object | array | true | false | null)
+json_doc = whitespace >> json_value
 
 
 def test():
-    assert json.parse(
+    assert json_doc.parse(
         r"""
     {
         "int": 1,
@@ -58,4 +65,4 @@ def test():
 if __name__ == "__main__":
     from sys import stdin
 
-    print(repr(json.parse(stdin.read())))
+    print(repr(json_doc.parse(stdin.read())))
