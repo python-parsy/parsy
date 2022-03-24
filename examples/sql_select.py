@@ -24,17 +24,17 @@ class Number:
 
 @dataclass
 class String:
-    value: string
+    value: str
 
 
 @dataclass
 class Field:
-    name: string
+    name: str
 
 
 @dataclass
 class Table:
-    name: string
+    name: str
 
 
 ColumnExpression = Union[Field, String, Number]
@@ -43,7 +43,7 @@ ColumnExpression = Union[Field, String, Number]
 @dataclass
 class Comparison:
     left: ColumnExpression
-    operator: string
+    operator: str
     right: ColumnExpression
 
 
