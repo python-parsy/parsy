@@ -4,7 +4,7 @@ from parsy import forward_declaration, regex, seq, string
 whitespace = regex(r"\s*")
 lexeme = lambda p: p << whitespace
 
-# Puntuation
+# Punctuation
 lbrace = lexeme(string("{"))
 rbrace = lexeme(string("}"))
 lbrack = lexeme(string("["))
