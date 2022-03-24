@@ -9,12 +9,21 @@
 # We demonstrate the use of `map` to create AST nodes with a single arg,
 # and `seq` for AST nodes with more than one arg.
 
+import enum
 from dataclasses import dataclass
 from typing import List, Optional, Union
 
-from parsy import regex, seq, string, string_from
+from parsy import from_enum, regex, seq, string
 
 # -- AST nodes:
+
+
+class Operator(enum.Enum):
+    EQ = "="
+    LT = "<"
+    GT = ">"
+    LTE = "<="
+    GTE = ">="
 
 
 @dataclass
@@ -43,7 +52,7 @@ ColumnExpression = Union[Field, String, Number]
 @dataclass
 class Comparison:
     left: ColumnExpression
-    operator: str
+    operator: Operator
     right: ColumnExpression
 
 
@@ -72,7 +81,7 @@ padding = regex(r"\s*")  # optional whitespace
 
 column_expr = field | string_literal | number_literal
 
-operator = string_from("=", "<", ">", "<=", ">=")
+operator = from_enum(Operator)
 
 comparison = seq(
     left=column_expr << padding,
@@ -103,7 +112,7 @@ def test_select():
     assert select.parse("SELECT thing, stuff, 123, 'hello' FROM my_table WHERE id = 1;") == Select(
         columns=[Field("thing"), Field("stuff"), Number(123), String("hello")],
         table=Table("my_table"),
-        where=Comparison(left=Field("id"), operator="=", right=Number(1)),
+        where=Comparison(left=Field("id"), operator=Operator.EQ, right=Number(1)),
     )
 
 
