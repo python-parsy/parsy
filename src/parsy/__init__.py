@@ -1,18 +1,25 @@
 # End-user documentation is in ../../doc/ and so is for the most part not
 # duplicated here in the form of doc strings. Code comments and docstrings
 # are mainly for internal use.
+from __future__ import annotations
 
 import operator
 import re
-from collections import namedtuple
+from dataclasses import dataclass
 from functools import wraps
+from typing import Any, Callable, FrozenSet, Generic, Optional, Tuple, TypeVar
 
 from .version import __version__  # noqa: F401
 
 noop = lambda x: x
 
 
-def line_info_at(stream, index):
+OUT = TypeVar("OUT")
+OUT1 = TypeVar("OUT1")
+OUT2 = TypeVar("OUT2")
+
+
+def line_info_at(stream: str, index: int) -> Tuple[int, int]:
     if index > len(stream):
         raise ValueError("invalid index")
     line = stream.count("\n", 0, index)
@@ -22,18 +29,18 @@ def line_info_at(stream, index):
 
 
 class ParseError(RuntimeError):
-    def __init__(self, expected, stream, index):
-        self.expected = expected
-        self.stream = stream
-        self.index = index
+    def __init__(self, expected: FrozenSet[str], stream: str, index: int):
+        self.expected: FrozenSet[str] = expected
+        self.stream: str = stream
+        self.index: int = index
 
-    def line_info(self):
+    def line_info(self) -> str:
         try:
             return "{}:{}".format(*line_info_at(self.stream, self.index))
         except (TypeError, AttributeError):  # not a str
             return str(self.index)
 
-    def __str__(self):
+    def __str__(self) -> str:
         expected_list = sorted(repr(e) for e in self.expected)
 
         if len(expected_list) == 1:
@@ -42,17 +49,24 @@ class ParseError(RuntimeError):
             return f"expected one of {', '.join(expected_list)} at {self.line_info()}"
 
 
-class Result(namedtuple("Result", "status index value furthest expected")):
+@dataclass
+class Result(Generic[OUT]):
+    status: bool
+    index: int
+    value: OUT
+    furthest: int
+    expected: FrozenSet[str]
+
     @staticmethod
-    def success(index, value):
+    def success(index: int, value: OUT) -> Result[OUT]:
         return Result(True, index, value, -1, frozenset())
 
     @staticmethod
-    def failure(index, expected):
+    def failure(index: int, expected: str) -> Result[None]:
         return Result(False, -1, None, index, frozenset([expected]))
 
     # collect the furthest failure from self and other
-    def aggregate(self, other):
+    def aggregate(self: Result[OUT], other: Optional[Result[Any]]) -> Result[OUT]:
         if not other:
             return self
 
@@ -65,7 +79,7 @@ class Result(namedtuple("Result", "status index value furthest expected")):
             return Result(self.status, self.index, self.value, other.furthest, other.expected)
 
 
-class Parser:
+class Parser(Generic[OUT]):
     """
     A Parser is an object that wraps a function whose arguments are
     a string to be parsed and the index on which to begin parsing.
@@ -76,18 +90,18 @@ class Parser:
     of the failure.
     """
 
-    def __init__(self, wrapped_fn):
-        self.wrapped_fn = wrapped_fn
+    def __init__(self, wrapped_fn: Callable[[str, int], Result[OUT]]):
+        self.wrapped_fn: Callable[[str, int], Result[OUT]] = wrapped_fn
 
-    def __call__(self, stream, index):
+    def __call__(self, stream: str, index: int) -> Result[OUT]:
         return self.wrapped_fn(stream, index)
 
-    def parse(self, stream):
+    def parse(self, stream: str) -> OUT:
         """Parse a string or list of tokens and return the result or raise a ParseError."""
         (result, _) = (self << eof).parse_partial(stream)
         return result
 
-    def parse_partial(self, stream):
+    def parse_partial(self, stream: str) -> Tuple[OUT, str]:
         """
         Parse the longest possible prefix of a given string.
         Return a tuple of the result and the rest of the string,
@@ -113,7 +127,7 @@ class Parser:
 
         return bound_parser
 
-    def map(self, map_fn):
+    def map(self: Parser[OUT1], map_fn: Callable[[OUT1], OUT2]) -> Parser[OUT2]:
         return self.bind(lambda res: success(map_fn(res)))
 
     def combine(self, combine_fn):
@@ -135,10 +149,10 @@ class Parser:
     def concat(self):
         return self.map("".join)
 
-    def then(self, other):
+    def then(self: Parser[OUT1], other: Parser[OUT2]) -> Parser[OUT2]:
         return seq(self, other).combine(lambda left, right: right)
 
-    def skip(self, other):
+    def skip(self: Parser[OUT1], other: Parser[OUT2]) -> Parser[OUT1]:
         return seq(self, other).combine(lambda left, right: left)
 
     def result(self, res):
@@ -238,11 +252,11 @@ class Parser:
     # haskelley operators, for fun #
 
     # >>
-    def __rshift__(self, other):
+    def __rshift__(self: Parser[OUT1], other: Parser[OUT2]) -> Parser[OUT2]:
         return self.then(other)
 
     # <<
-    def __lshift__(self, other):
+    def __lshift__(self: Parser[OUT1], other: Parser[OUT2]) -> Parser[OUT1]:
         return self.skip(other)
 
 
@@ -341,15 +355,15 @@ index = Parser(lambda _, index: Result.success(index, index))
 line_info = Parser(lambda stream, index: Result.success(index, line_info_at(stream, index)))
 
 
-def success(val):
+def success(val: OUT) -> Parser[OUT]:
     return Parser(lambda _, index: Result.success(index, val))
 
 
-def fail(expected):
+def fail(expected: str) -> Parser[None]:
     return Parser(lambda _, index: Result.failure(index, expected))
 
 
-def string(s, transform=noop):
+def string(s: str, transform=noop) -> Parser[str]:
     slen = len(s)
     transformed_s = transform(s)
 
@@ -363,7 +377,7 @@ def string(s, transform=noop):
     return string_parser
 
 
-def regex(exp, flags=0, group=0):
+def regex(exp, flags=0, group=0) -> Parser[str]:
     if isinstance(exp, (str, bytes)):
         exp = re.compile(exp, flags)
     if isinstance(group, (str, int)):
@@ -408,7 +422,7 @@ def match_item(item, description=None):
     return test_item(lambda i: item == i, description)
 
 
-def string_from(*strings, transform=noop):
+def string_from(*strings, transform=noop) -> Parser:
     # Sort longest first, so that overlapping options work correctly
     return alt(*(string(s, transform) for s in sorted(strings, key=len, reverse=True)))
 
