@@ -347,6 +347,68 @@ class TestParser(unittest.TestCase):
         self.assertEqual(ab.at_most(2).parse("abab"), ["ab", "ab"])
         self.assertRaises(ParseError, ab.at_most(2).parse, "ababab")
 
+    def test_until(self):
+
+        until = string('s').until(string('x'))
+
+        s = 'ssssx'
+        self.assertEqual(until.parse_partial(s), (4 * ['s'], 'x'))
+        self.assertEqual(seq(until, string('x')).parse(s), [4 * ['s'], 'x'])
+        self.assertEqual(until.then(string('x')).parse(s), 'x')
+
+        s = 'ssssxy'
+        self.assertEqual(until.parse_partial(s), (4 * ['s'], 'xy'))
+        self.assertEqual(seq(until, string('x')).parse_partial(s), ([4 * ['s'], 'x'], 'y'))
+        self.assertEqual(until.then(string('x')).parse_partial(s), ('x', 'y'))
+
+        self.assertRaises(ParseError, until.parse, 'ssssy')
+        self.assertRaises(ParseError, until.parse, 'xssssxy')
+
+    def test_until_with_consume_other(self):
+
+        until = string('s').until(string('x'), consume_other=True)
+
+        self.assertEqual(until.parse('ssssx'), 4 * ['s'] + ['x'])
+        self.assertEqual(until.parse_partial('ssssxy'), (4 * ['s'] + ['x'], 'y'))
+
+        self.assertRaises(ParseError, until.parse, 'ssssy')
+        self.assertRaises(ParseError, until.parse, 'xssssxy')
+
+    def test_until_with_min(self):
+
+        until = string('s').until(string('x'), min=3)
+
+        self.assertEqual(until.parse_partial('sssx'), (3 * ['s'], 'x'))
+        self.assertEqual(until.parse_partial('sssssx'), (5 * ['s'], 'x'))
+
+        self.assertRaises(ParseError, until.parse_partial, 'ssx')
+
+    def test_until_with_max(self):
+
+        # until with max
+        until = string('s').until(string('x'), max=3)
+
+        self.assertEqual(until.parse_partial('ssx'), (2 * ['s'], 'x'))
+        self.assertEqual(until.parse_partial('sssx'), (3 * ['s'], 'x'))
+
+        self.assertRaises(ParseError, until.parse_partial, 'ssssx')
+
+    def test_until_with_min_max(self):
+
+        until = string('s').until(string('x'), min=3, max=5)
+
+        self.assertEqual(until.parse_partial('sssx'), (3 * ['s'], 'x'))
+        self.assertEqual(until.parse_partial('sssssx'), (5 * ['s'], 'x'))
+
+        self.assertRaises(ParseError, until.parse_partial, 'ssx')
+        self.assertRaises(ParseError, until.parse_partial, 'ssssssx')
+
+    def test_until_with_none(self):
+
+        until = string('s').until(None)
+        self.assertEqual(until.parse('ssss'), 4 * ['s'])
+        self.assertEqual(until.parse_partial('ssssx'), (4 * ['s'], 'x'))
+
     def test_optional(self):
         p = string("a").optional()
         self.assertEqual(p.parse("a"), "a")
