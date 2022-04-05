@@ -206,7 +206,7 @@ class Parser:
 
                 # exceeded max?
                 if times >= max:
-                    # return failure, it did not match parser at least min times
+                    # return failure, it matched parser more than max times
                     return Result.failure(index,
                                           f'at most {max} items')
 
