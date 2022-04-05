@@ -111,6 +111,24 @@ can be used and manipulated as below.
       Returns a parser that expects the initial parser at least ``n`` times, and
       produces a list of the results.
 
+   .. method:: until(other_parser, [min=0, max=inf, consume_other=False])
+
+      Returns a parser that expects the initial parser followed by ``other_parser``.
+      The initial parser is expected at least ``min`` times and at most ``max`` times.
+      By default, it does not consume ``other_parser`` and it produces a list of the
+      results excluding ``other_parser``. If ``consume_other`` is ``True`` then
+      ``other_parser`` is consumed and its result is included in the list of results.
+
+      .. code:: python
+
+         >>> seq(string('A').until(string('B')), string('BC')).parse('AAABC')
+         [['A','A','A'], 'BC']
+         >>> string('A').until(string('B')).then(string('BC')).parse('AAABC')
+         'BC'
+         >>> string('A').until(string('BC'), consume_other=True).parse('AAABC')
+         ['A', 'A', 'A', 'BC']
+
+
    .. method:: optional()
 
       Returns a parser that expects the initial parser zero or once, and maps

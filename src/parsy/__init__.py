@@ -181,6 +181,43 @@ class Parser:
     def optional(self):
         return self.times(0, 1).map(lambda v: v[0] if v else None)
 
+    def until(self, other, min=0, max=float("inf"), consume_other=False):
+        @Parser
+        def until_parser(stream, index):
+            values = []
+            times = 0
+            while True:
+
+                # try parser first
+                res = other(stream, index)
+                if res.status and times >= min:
+                    if consume_other:
+                        # consume other
+                        values.append(res.value)
+                        index = res.index
+                    return Result.success(index, values)
+
+                # exceeded max?
+                if times >= max:
+                    # return failure, it matched parser more than max times
+                    return Result.failure(index, f"at most {max} items")
+
+                # failed, try parser
+                result = self(stream, index)
+                if result.status:
+                    # consume
+                    values.append(result.value)
+                    index = result.index
+                    times += 1
+                elif times >= min:
+                    # return failure, parser is not followed by other
+                    return Result.failure(index, "did not find other parser")
+                else:
+                    # return failure, it did not match parser at least min times
+                    return Result.failure(index, f"at least {min} items; got {times} item(s)")
+
+        return until_parser
+
     def sep_by(self, sep, *, min=0, max=float("inf")):
         zero_times = success([])
         if max == 0:
