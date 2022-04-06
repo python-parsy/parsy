@@ -181,7 +181,7 @@ class Parser:
     def optional(self):
         return self.times(0, 1).map(lambda v: v[0] if v else None)
 
-    def until(self, other, min = 1, max = float('inf'), consume_other=False):
+    def until(self, other, min=1, max=float('inf'), consume_other=False):
 
         @Parser
         def until_parser(stream, index):
