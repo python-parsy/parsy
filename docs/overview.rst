@@ -22,6 +22,8 @@ Parsy differentiates itself from other solutions with the following:
 * it is not a parser generator, but a combinator based parsing library.
 * a very clean implementation, only a few hundred lines, that borrows
   from the best of recent combinator libraries.
+* it produces fairly terse code, with an embedded DSL feel — not too far from
+  things like EBNF notation or Haskell’s parsec.
 * free, good quality documentation, all in one place. (Please raise an issue on
   GitHub if you have any problems, or find the documentation lacking in any
   way).
@@ -44,16 +46,16 @@ Example 1 - parsing a set of alternatives:
 .. code-block:: python
 
    >>> from parsy import string
-   >>> parser = (string('Dr.') | string('Mr.') | string('Mrs.')).desc("title")
-   >>> parser.parse('Mrs.')
+   >>> title = (string('Dr.') | string('Mr.') | string('Mrs.')).desc("title")
+   >>> title.parse('Mrs.')
    'Mrs.'
-   >>> parser.parse('Mr.')
+   >>> title.parse('Mr.')
    'Mr.'
 
-   >>> parser.parse('Joe')
+   >>> title.parse('Joe')
    ParseError: expected title at 0:0
 
-   >>> parser.parse_partial('Dr. Who')
+   >>> title.parse_partial('Dr. Who')
    ('Dr.', ' Who')
 
 Example 2 - Parsing a dd-mm-yy date:
@@ -66,6 +68,8 @@ Example 2 - Parsing a dd-mm-yy date:
    ...                lambda d, m, y: date(2000 + y, m, d))
    >>> ddmmyy.parse('06-05-14')
    datetime.date(2014, 5, 6)
+
+
 
 
 To learn how to use parsy, you should continue with:

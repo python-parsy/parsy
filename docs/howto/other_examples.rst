@@ -25,7 +25,7 @@ A full parser for JSON. (This will not be competitive in terms of performance
 with other implementations!)
 
 This demonstrates the use of :class:`forward_declaration`, needed due to the
-circular definition of ``value``.
+circular definition of ``json_value``.
 
 .. literalinclude:: ../../examples/json.py
    :language: python
