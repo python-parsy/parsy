@@ -45,7 +45,7 @@ jobs:
           env_vars: PYTHON
           fail_ci_if_error: true
 
-  isort:
+  linters:
     runs-on: ubuntu-latest
 
     steps:
@@ -57,55 +57,24 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('tests/requirements-isort.txt') }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('tests/requirements-linters.txt') }}
       - name: Install deps
         run: |
           python -m pip install --upgrade pip
-          pip install -r tests/requirements-isort.txt
+          pip install -r tests/requirements-linters.txt
       - name: Run isort
         run: |
           isort --version
           isort -c .
-
-  flake8:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: "3.9"
-      - uses: actions/cache@v2
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('tests/requirements-flake8.txt') }}
-      - name: Install deps
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r tests/requirements-flake8.txt
       - name: Run flake8
+        if: failure() || success()
         run: |
           flake8 --version
-          flake8
-
-  check-manifest:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: "3.9"
-      - uses: actions/cache@v2
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('test/requirements-check-manifest.txt') }}
-      - name: Install deps
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r tests/requirements-check-manifest.txt
       - name: Run check-manifest
+        if: failure() || success()
         run: |
           check-manifest
+      - uses: psf/black@stable
+        with:
+          version: "22.3.0"
+        if: failure() || success()

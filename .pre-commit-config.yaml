@@ -14,12 +14,6 @@ repos:
     hooks:
       - id: isort
         language_version: python3.9
-  - repo: https://github.com/rtts/djhtml
-    rev: v1.4.9
-    hooks:
-      - id: djhtml
-        entry: djhtml -t 2 -i
-        language_version: python3.9
   - repo: https://github.com/ikamensh/flynt/
     rev: '0.69'
     hooks:
@@ -43,7 +37,7 @@ repos:
       - id: autopep8
         language_version: python3.9
   - repo: https://github.com/psf/black
-    rev: 21.8b0
+    rev: 22.3.0
     hooks:
       - id: black
         language_version: python3
