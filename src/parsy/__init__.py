@@ -187,7 +187,6 @@ class Parser:
         def until_parser(stream, index):
             values = []
             times = 0
-            initial_index = index
             while True:
 
                 # try parser first
@@ -219,7 +218,7 @@ class Parser:
                 else:
                     # return failure, it did not match parser at least min times
                     return Result.failure(index,
-                                          f'at least {min} items; got {index - initial_index} item(s)')
+                                          f'at least {min} items; got {times} item(s)')
 
         return until_parser
 
