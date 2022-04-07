@@ -181,15 +181,10 @@ class Parser:
     def optional(self):
         return self.times(0, 1).map(lambda v: v[0] if v else None)
 
-    def until(self, other, min=1, max=float('inf'), consume_other=False):
+    def until(self, other, min=0, max=float('inf'), consume_other=False):
 
         @Parser
         def until_parser(stream, index):
-            # behaves as times if parser is not defined
-            if not other:
-                return self.times(min, max)(stream, index)
-
-            result = None
             values = []
             times = 0
             initial_index = index
@@ -211,7 +206,7 @@ class Parser:
                                           f'at most {max} items')
 
                 # failed, try parser
-                result = self.__call__(stream, index).aggregate(result)
+                result = self(stream, index)
                 if result.status:
                     # consume
                     values.append(result.value)

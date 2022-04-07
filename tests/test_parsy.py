@@ -364,12 +364,19 @@ class TestParser(unittest.TestCase):
         self.assertRaises(ParseError, until.parse, 'ssssy')
         self.assertRaises(ParseError, until.parse, 'xssssxy')
 
+        self.assertEqual(until.parse_partial('xxx'), ([], 'xxx'))
+
+        until = regex('.').until(string('x'))
+        self.assertEqual(until.parse_partial('xxxx'), ([], 'xxxx'))
+
     def test_until_with_consume_other(self):
 
         until = string('s').until(string('x'), consume_other=True)
 
         self.assertEqual(until.parse('ssssx'), 4 * ['s'] + ['x'])
         self.assertEqual(until.parse_partial('ssssxy'), (4 * ['s'] + ['x'], 'y'))
+
+        self.assertEqual(until.parse_partial('xxx'), (['x'], 'xx'))
 
         self.assertRaises(ParseError, until.parse, 'ssssy')
         self.assertRaises(ParseError, until.parse, 'xssssxy')
@@ -402,12 +409,6 @@ class TestParser(unittest.TestCase):
 
         self.assertRaises(ParseError, until.parse_partial, 'ssx')
         self.assertRaises(ParseError, until.parse_partial, 'ssssssx')
-
-    def test_until_with_none(self):
-
-        until = string('s').until(None)
-        self.assertEqual(until.parse('ssss'), 4 * ['s'])
-        self.assertEqual(until.parse_partial('ssssx'), (4 * ['s'], 'x'))
 
     def test_optional(self):
         p = string("a").optional()
