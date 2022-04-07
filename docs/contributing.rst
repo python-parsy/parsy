@@ -6,9 +6,7 @@ contribute by making a fork, and submitting a PR on `GitHub
 <https://github.com/python-parsy/parsy>`_.
 
 We have a high standard in terms of quality. All contributions will need to be
-fully covered by unit tests and documentation. Code should be formatted
-according to pep8, and the formatting defined by the ``../.editorconfig`` file
-(see `EditorConfig <http://editorconfig.org/>`_).
+fully covered by unit tests and documentation.
 
 To run the test suite::
 
@@ -27,9 +25,18 @@ To build the docs, do::
     cd docs
     make html
 
-We also require that `flake8 <http://flake8.pycqa.org/en/latest/>`_, `isort
-<https://github.com/timothycrosley/isort#readme>`_ and checkmanifest report zero
-errors (these are run by tox).
+We now have several linters and code formatters that we require use of,
+including `flake8 <http://flake8.pycqa.org/en/latest/>`_, `isort
+<https://github.com/timothycrosley/isort#readme>`_ and `black
+<https://github.com/psf/black>`_. These are most easily add by using `pre-commit
+<https://pre-commit.com/>`_:
+
+* Install pre-commit globally e.g. ``pipx install pre-commit`` if you already
+  have `pipx <https://github.com/pypa/pipx>`_.
+
+* Do ``pre-commit install`` in the repo.
+
+Now all the linters will run when you commit changes.
 
 When writing documentation, please keep in mind Daniele Procida's `great article
 on documentation <https://www.divio.com/en/blog/documentation/>`_. To summarise,
