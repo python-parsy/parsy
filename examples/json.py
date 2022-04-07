@@ -50,8 +50,9 @@ def test():
         "int": 1,
         "string": "hello",
         "a list": [1, 2, 3],
-        "escapes": "\n",
-        "nested": {"x": "y"}
+        "escapes": "\n \u24D2",
+        "nested": {"x": "y"},
+        "other": [true, false, null]
     }
 """
         )
@@ -59,8 +60,9 @@ def test():
             "int": 1,
             "string": "hello",
             "a list": [1, 2, 3],
-            "escapes": "\n",
+            "escapes": "\n ⓒ",
             "nested": {"x": "y"},
+            "other": [True, False, None],
         }
     )
 
