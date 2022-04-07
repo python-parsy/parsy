@@ -6,7 +6,7 @@ class Command:
         self.parameter = parameter
 
     def __repr__(self):
-        return "{0}({1})".format(self.__class__.__name__, self.parameter)
+        return f"{self.__class__.__name__}({self.parameter})"
 
 
 class Forward(Command):
@@ -26,10 +26,10 @@ class Left(Command):
 
 
 commands = {
-    'fd': Forward,
-    'bk': Backward,
-    'rt': Right,
-    'lt': Left,
+    "fd": Forward,
+    "bk": Backward,
+    "rt": Right,
+    "lt": Left,
 }
 
 
@@ -37,7 +37,7 @@ commands = {
 def statement():
     cmd_name = yield test_item(lambda i: i in commands.keys(), "command")
     parameter = yield test_item(lambda i: isinstance(i, int), "number")
-    yield match_item('\n')
+    yield match_item("\n")
     return commands[cmd_name](int(parameter))
 
 
@@ -45,4 +45,5 @@ program = statement.many()
 
 
 import pytest  # noqa  isort:skip
+
 test_item = pytest.mark.skip(test_item)  # This is not a test

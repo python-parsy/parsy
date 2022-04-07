@@ -43,8 +43,9 @@ json_doc = whitespace >> json_value
 
 
 def test():
-    assert json_doc.parse(
-        r"""
+    assert (
+        json_doc.parse(
+            r"""
     {
         "int": 1,
         "string": "hello",
@@ -53,13 +54,15 @@ def test():
         "nested": {"x": "y"}
     }
 """
-    ) == {
-        "int": 1,
-        "string": "hello",
-        "a list": [1, 2, 3],
-        "escapes": "\n",
-        "nested": {"x": "y"},
-    }
+        )
+        == {
+            "int": 1,
+            "string": "hello",
+            "a list": [1, 2, 3],
+            "escapes": "\n",
+            "nested": {"x": "y"},
+        }
+    )
 
 
 if __name__ == "__main__":
