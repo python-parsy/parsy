@@ -1,7 +1,7 @@
 parsy
 =====
 
-|Documentation Status| |Build Status| |Codecov|
+|Documentation Status| |Build Status| |Codecov| |Downloads|
 
 Parsy is an easy way to combine simple, small parsers into complex, larger
 parsers. If it means anything to you, it's a monadic parser combinator library
@@ -40,3 +40,5 @@ with contributions by other people as can be found in the git commit history.
    :target: https://github.com/python-parsy/parsy/actions?query=workflow%3A%22Tests%22+branch%3Amaster
 .. |Codecov| image:: https://img.shields.io/codecov/c/github/python-parsy/parsy/master.svg
    :target: https://codecov.io/gh/python-parsy/parsy
+.. |Downloads| image:: https://img.shields.io/pypi/dm/parsy
+   :target: https://pypi.org/project/parsy/
