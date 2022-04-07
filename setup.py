@@ -6,14 +6,12 @@ from setuptools import find_packages, setup
 
 # Evaluate version module without importing parsy, which could have undesirable
 # effects.
-version_file = os.path.join(os.path.dirname(__file__),
-                            "src", "parsy", "version.py")
+version_file = os.path.join(os.path.dirname(__file__), "src", "parsy", "version.py")
 namespace = {}
-exec(compile(open(version_file, "rb").read(), version_file, 'exec'),
-     globals(), namespace)
-version = namespace['__version__']
+exec(compile(open(version_file, "rb").read(), version_file, "exec"), globals(), namespace)
+version = namespace["__version__"]
 
-readme = open('README.rst').read()
+readme = open("README.rst").read()
 
 setup(
     name="parsy",
@@ -42,6 +40,6 @@ setup(
         "Programming Language :: Python :: 3.10",
     ],
     keywords="parser parsers parsing monad combinators",
-    packages=find_packages('src'),
-    package_dir={'': 'src'},
+    packages=find_packages("src"),
+    package_dir={"": "src"},
 )
