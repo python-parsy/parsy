@@ -79,22 +79,29 @@ To learn how to use parsy, you should continue with:
 Other Python projects
 =====================
 
-* `pyparsing <http://pyparsing.wikispaces.com/>`_. Also a combinator approach,
-  but in general much less cleanly implemented, and rather scattered
-  documentation, although it has more builtin functionality in terms
-  of provided utilities for certain parsing tasks.
+This library isn’t for everyone or for every project. It excels at quickly
+writing easy-to-read parsers for relatively small languages, and it’s great if
+you are a relative newcomer to the subject of parsing but want something better
+than ``str.split``. If you have demanding needs in terms of performance, or
+producing good error messages, you may need to look elsewhere. Below are some
+other Python libraries you might consider:
 
 * `PLY <http://www.dabeaz.com/ply/>`_. A pure Python implementation of
   the classic lex/yacc parsing tools. It is well suited to large grammars
   that would be found in typical programming languages.
+
+* `Lark <https://github.com/erezsh/lark>`_. With Lark you write a grammar
+  definition in a separate mini-language as a string, and have a parser
+  generated for you, rather than writing the grammar in Python. It has the
+  advantage of speed and being able to use different parsing algorithms.
+
+* `pyparsing <https://pypi.org/project/pyparsing/>`_. Also a combinator approach,
+  but in general much less cleanly implemented, and rather scattered
+  documentation, although it has more builtin functionality in terms
+  of provided utilities for certain parsing tasks.
 
 * `funcparserlib <https://github.com/vlasovskikh/funcparserlib>`_ - the most
   similar to parsy. It differs from parsy mainly in normally using a separate
   tokenization phase, lacking the convenience of the :func:`generate` method for
   creating parsers, and documentation that relies on understanding Haskell type
   annotations.
-
-* `Lark <https://github.com/erezsh/lark>`_. With Lark you write a grammar
-  definition in a separate mini-language as a string, and have a parser
-  generated for you, rather than writing the grammar in Python. It has the
-  advantage of speed and being able to use different parsing algorithms.
