@@ -19,7 +19,7 @@ How to do releases
 
 * Release to PyPI::
 
-    $ ./release.sh 
+    $ ./release.sh
 
 
 Post release
