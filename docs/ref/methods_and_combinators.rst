@@ -128,6 +128,7 @@ can be used and manipulated as below.
          >>> string('A').until(string('BC'), consume_other=True).parse('AAABC')
          ['A', 'A', 'A', 'BC']
 
+   .. versionadded:: 2.0
 
    .. method:: optional()
 

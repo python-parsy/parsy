@@ -8,6 +8,7 @@ History and release notes
 ----------------
 
 * Dropped support for Python < 3.6
+* Added :meth:`Parsy.until`. Thanks `@mcdeoliveira <https://github.com/mcdeoliveira>`_!
 
 1.4.0 - 2021-11-15
 ------------------
