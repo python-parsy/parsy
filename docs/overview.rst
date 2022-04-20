@@ -106,6 +106,5 @@ other Python libraries you might consider:
 
 * `funcparserlib <https://github.com/vlasovskikh/funcparserlib>`_ - the most
   similar to parsy. It differs from parsy mainly in normally using a separate
-  tokenization phase, lacking the convenience of the :func:`generate` method for
-  creating parsers, and documentation that relies on understanding Haskell type
-  annotations.
+  tokenization phase and lacking the convenience of the :func:`generate` method
+  for creating parsers.

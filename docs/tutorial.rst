@@ -354,7 +354,7 @@ timestamp, they write "X days ago".
 
 We want to parse this, and we’ll use a timedelta object to represent the value
 (to easily distinguish it from other values and consume it later). We can write
-a parser for this easily:
+a parser for this using tools we’ve seen already:
 
 .. code-block:: python
 
