@@ -157,8 +157,8 @@ However, we still need a way to package up the year, month and day as separate
 values.
 
 The :func:`seq` combinator provides one easy way to do that. It takes the
-parsers that are passed in as arguments, and combines their results into a
-list:
+sequence of parsers that are passed in as arguments, and returns a parser that
+runs each parser in order and combines their results into a list:
 
 .. code-block:: python
 
