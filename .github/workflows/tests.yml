@@ -70,6 +70,7 @@ jobs:
         if: failure() || success()
         run: |
           flake8 --version
+          flake8
       - name: Run check-manifest
         if: failure() || success()
         run: |
