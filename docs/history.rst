@@ -9,6 +9,7 @@ History and release notes
 
 * Dropped support for Python < 3.6
 * Added :meth:`Parser.until`. Thanks `@mcdeoliveira <https://github.com/mcdeoliveira>`_!
+* `Parser.optional` now supports an optional default argument to be returned instead of ``None``.
 
 1.4.0 - 2021-11-15
 ------------------

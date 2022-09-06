@@ -418,6 +418,9 @@ class TestParser(unittest.TestCase):
         p = string("a").optional()
         self.assertEqual(p.parse("a"), "a")
         self.assertEqual(p.parse(""), None)
+        p = string("a").optional("b")
+        self.assertEqual(p.parse("a"), "a")
+        self.assertEqual(p.parse(""), "b")
 
     def test_sep_by(self):
         digit_list = digit.map(int).sep_by(string(","))

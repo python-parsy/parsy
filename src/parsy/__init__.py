@@ -178,8 +178,8 @@ class Parser:
     def at_least(self, n):
         return self.times(n) + self.many()
 
-    def optional(self):
-        return self.times(0, 1).map(lambda v: v[0] if v else None)
+    def optional(self, default=None):
+        return self.times(0, 1).map(lambda v: v[0] if v else default)
 
     def until(self, other, min=0, max=float("inf"), consume_other=False):
         @Parser

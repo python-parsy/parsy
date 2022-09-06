@@ -130,10 +130,11 @@ can be used and manipulated as below.
 
    .. versionadded:: 2.0
 
-   .. method:: optional()
+   .. method:: optional([default=None])
 
       Returns a parser that expects the initial parser zero or once, and maps
-      the result to ``None`` in the case of no match.
+      the result to a given default value in the case of no match. If no default
+      value is given, ``None`` is used.
 
       .. code:: python
 
@@ -141,6 +142,8 @@ can be used and manipulated as below.
          'A'
          >>> string('A').optional().parse('')
          None
+         >>> string('A').optional('Oops').parse('')
+         'Oops'
 
    .. method:: map(fn)
 
