@@ -296,7 +296,8 @@ failing the whole parse.
 multiples of the parser - including :meth:`Parser.many`, :meth:`Parser.times`,
 :meth:`Parser.at_most` and :meth:`Parser.at_least`. There is also
 :meth:`Parser.optional` which allows matching zero times (in which case the
-parser will return ``None``), or exactly once - just what we need in this case.
+parser will return the default value specified or ``None`` otherwise),
+or exactly once - just what we need in this case.
 
 We also need to do checking on the month and the day. We’ll take a shortcut and
 use the built-in ``datetime.date`` class to do the validation for us. However,
