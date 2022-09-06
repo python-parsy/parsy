@@ -130,7 +130,7 @@ can be used and manipulated as below.
 
    .. versionadded:: 2.0
 
-   .. method:: optional([default=None])
+   .. method:: optional(default=None)
 
       Returns a parser that expects the initial parser zero or once, and maps
       the result to a given default value in the case of no match. If no default
