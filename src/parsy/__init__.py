@@ -176,7 +176,7 @@ class Parser:
         return self.times(0, n)
 
     def at_least(self, n):
-        return self.times(n) + self.many()
+        return self.times(n, float('inf'))
 
     def optional(self, default=None):
         return self.times(0, 1).map(lambda v: v[0] if v else default)
