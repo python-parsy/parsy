@@ -8,6 +8,10 @@ How to do releases
 
     tox
 
+* Check linters::
+
+    pre-commit run --all --all-files
+
 * Change docs/history.rst to remove " - unreleased"
 
 * Update the version number (removing the ``-dev1`` part):
