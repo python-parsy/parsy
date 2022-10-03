@@ -16,14 +16,14 @@ def eval_tokens(tokens):
     rparen = match_item(")")
 
     @generate
-    def additive():
-        res = yield multiplicative
+    async def additive():
+        res = await multiplicative
         sign = match_item("+") | match_item("-")
         while True:
-            operation = yield sign | success("")
+            operation = await (sign | success(""))
             if not operation:
                 break
-            operand = yield multiplicative
+            operand = await multiplicative
             if operation == "+":
                 res += operand
             elif operation == "-":
@@ -31,14 +31,14 @@ def eval_tokens(tokens):
         return res
 
     @generate
-    def multiplicative():
-        res = yield simple
+    async def multiplicative():
+        res = await simple
         op = match_item("*") | match_item("/")
         while True:
-            operation = yield op | success("")
+            operation = await (op | success(""))
             if not operation:
                 break
-            operand = yield simple
+            operand = await simple
             if operation == "*":
                 res *= operand
             elif operation == "/":

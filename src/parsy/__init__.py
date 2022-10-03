@@ -6,6 +6,7 @@ import operator
 import re
 from collections import namedtuple
 from functools import wraps
+import inspect
 
 from .version import __version__  # noqa: F401
 
@@ -81,6 +82,9 @@ class Parser:
 
     def __call__(self, stream, index):
         return self.wrapped_fn(stream, index)
+
+    def __await__(self):
+        return (yield self)
 
     def parse(self, stream):
         """Parse a string or list of tokens and return the result or raise a ParseError."""
@@ -343,6 +347,27 @@ def seq(*parsers, **kw_parsers):
         return seq_kwarg_parser
 
 
+def _coro_to_gen(coro):
+    x = None
+    excep = None
+    while True:
+        try:
+            if excep is None:
+                future = coro.send(x)
+            else:
+                future = coro.throw(excep)
+        except StopIteration as e:
+            return e.value
+        else:
+            try:
+                x = yield future
+            except BaseException as e:
+                excep = e
+                x = None
+            else:
+                excep = None
+
+
 # combinator syntax
 def generate(fn):
     if isinstance(fn, str):
@@ -353,6 +378,10 @@ def generate(fn):
     def generated(stream, index):
         # start up the generator
         iterator = fn()
+
+        # async function will return a coroutine we can convert to a generator
+        if inspect.iscoroutine(iterator):
+            iterator = _coro_to_gen(iterator)
 
         result = None
         value = None
