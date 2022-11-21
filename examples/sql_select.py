@@ -110,9 +110,18 @@ select = seq(
 
 def test_select():
     assert select.parse("SELECT thing, stuff, 123, 'hello' FROM my_table WHERE id = 1;") == Select(
-        columns=[Field("thing"), Field("stuff"), Number(123), String("hello")],
+        columns=[
+            Field("thing"),
+            Field("stuff"),
+            Number(123),
+            String("hello"),
+        ],
         table=Table("my_table"),
-        where=Comparison(left=Field("id"), operator=Operator.EQ, right=Number(1)),
+        where=Comparison(
+            left=Field("id"),
+            operator=Operator.EQ,
+            right=Number(1),
+        ),
     )
 
 
