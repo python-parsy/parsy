@@ -23,7 +23,7 @@ repos:
     rev: v2.26.0
     hooks:
       - id: pyupgrade
-        entry: pyupgrade --py3-plus --py36-plus --keep-runtime-typing
+        entry: pyupgrade --py3-plus --py36-plus --py37-plus --keep-runtime-typing
         language_version: python3.9
   - repo: https://github.com/myint/autoflake
     rev: 'v1.4'
