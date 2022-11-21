@@ -1,11 +1,11 @@
-# End-user documentation is in ../../doc/ and so is for the most part not
-# duplicated here in the form of doc strings. Code comments and docstrings
-# are mainly for internal use.
+from __future__ import annotations
 
+import enum
 import operator
 import re
-from collections import namedtuple
+from dataclasses import dataclass
 from functools import wraps
+from typing import Any, Callable, FrozenSet
 
 from .version import __version__  # noqa: F401
 
@@ -42,7 +42,14 @@ class ParseError(RuntimeError):
             return f"expected one of {', '.join(expected_list)} at {self.line_info()}"
 
 
-class Result(namedtuple("Result", "status index value furthest expected")):
+@dataclass
+class Result:
+    status: bool
+    index: int
+    value: Any
+    furthest: int
+    expected: FrozenSet[str]
+
     @staticmethod
     def success(index, value):
         return Result(True, index, value, -1, frozenset())
@@ -76,22 +83,26 @@ class Parser:
     of the failure.
     """
 
-    def __init__(self, wrapped_fn):
+    def __init__(self, wrapped_fn: Callable[[str | bytes | list, int], Result]):
+        """
+        Creates a new Parser from a function that takes a stream
+        and returns a Result.
+        """
         self.wrapped_fn = wrapped_fn
 
-    def __call__(self, stream, index):
+    def __call__(self, stream: str | bytes | list, index: int):
         return self.wrapped_fn(stream, index)
 
-    def parse(self, stream):
-        """Parse a string or list of tokens and return the result or raise a ParseError."""
+    def parse(self, stream: str | bytes | list) -> Any:
+        """Parses a string or list of tokens and returns the result or raise a ParseError."""
         (result, _) = (self << eof).parse_partial(stream)
         return result
 
-    def parse_partial(self, stream):
+    def parse_partial(self, stream: str | bytes | list) -> tuple[Any, str | bytes | list]:
         """
-        Parse the longest possible prefix of a given string.
-        Return a tuple of the result and the rest of the string,
-        or raise a ParseError.
+        Parses the longest possible prefix of a given string.
+        Returns a tuple of the result and the unparsed remainder,
+        or raises ParseError
         """
         result = self(stream, 0)
 
@@ -113,13 +124,34 @@ class Parser:
 
         return bound_parser
 
-    def map(self, map_fn):
-        return self.bind(lambda res: success(map_fn(res)))
+    def map(self, map_function: Callable) -> Parser:
+        """
+        Returns a parser that transforms the produced value of the initial parser with map_function.
+        """
+        return self.bind(lambda res: success(map_function(res)))
 
-    def combine(self, combine_fn):
+    def combine(self, combine_fn: Callable) -> Parser:
+        """
+        Returns a parser that transforms the produced values of the initial parser
+        with ``combine_fn``, passing the arguments using ``*args`` syntax.
+
+        The initial parser should return a list/sequence of parse results.
+        """
         return self.bind(lambda res: success(combine_fn(*res)))
 
-    def combine_dict(self, combine_fn):
+    def combine_dict(self, combine_fn: Callable) -> Parser:
+        """
+        Returns a parser that transforms the value produced by the initial parser
+        using the supplied function/callable, passing the arguments using the
+        ``**kwargs`` syntax.
+
+        The value produced by the initial parser must be a mapping/dictionary from
+        names to values, or a list of two-tuples, or something else that can be
+        passed to the ``dict`` constructor.
+
+        If ``None`` is present as a key in the dictionary it will be removed
+        before passing to ``fn``, as will all keys starting with ``_``.
+        """
         return self.bind(
             lambda res: success(
                 combine_fn(
@@ -132,22 +164,50 @@ class Parser:
             )
         )
 
-    def concat(self):
+    def concat(self) -> Parser:
+        """
+        Returns a parser that concatenates together (as a string) the previously
+        produced values.
+        """
         return self.map("".join)
 
-    def then(self, other):
+    def then(self, other: Parser) -> Parser:
+        """
+        Returns a parser which, if the initial parser succeeds, will
+        continue parsing with ``other``. This will produce the
+        value produced by ``other``.
+
+        """
         return seq(self, other).combine(lambda left, right: right)
 
-    def skip(self, other):
+    def skip(self, other: Parser) -> Parser:
+        """
+        Returns a parser which, if the initial parser succeeds, will
+        continue parsing with ``other``. It will produce the
+        value produced by the initial parser.
+        """
         return seq(self, other).combine(lambda left, right: left)
 
-    def result(self, res):
-        return self >> success(res)
+    def result(self, value: Any) -> Parser:
+        """
+        Returns a parser that, if the initial parser succeeds, always produces
+        the passed in ``value``.
+        """
+        return self >> success(value)
 
-    def many(self):
+    def many(self) -> Parser:
+        """
+        Returns a parser that expects the initial parser 0 or more times, and
+        produces a list of the results.
+        """
         return self.times(0, float("inf"))
 
-    def times(self, min, max=None):
+    def times(self, min: int, max: int = None) -> Parser:
+        """
+        Returns a parser that expects the initial parser at least ``min`` times,
+        and at most ``max`` times, and produces a list of the results. If only one
+        argument is given, the parser is expected exactly that number of times.
+        """
         if max is None:
             max = min
 
@@ -172,16 +232,37 @@ class Parser:
 
         return times_parser
 
-    def at_most(self, n):
+    def at_most(self, n: int) -> Parser:
+        """
+        Returns a parser that expects the initial parser at most ``n`` times, and
+        produces a list of the results.
+        """
         return self.times(0, n)
 
-    def at_least(self, n):
+    def at_least(self, n: int) -> Parser:
+        """
+        Returns a parser that expects the initial parser at least ``n`` times, and
+        produces a list of the results.
+        """
         return self.times(n) + self.many()
 
-    def optional(self, default=None):
+    def optional(self, default: Any = None) -> Parser:
+        """
+        Returns a parser that expects the initial parser zero or once, and maps
+        the result to a given default value in the case of no match. If no default
+        value is given, ``None`` is used.
+        """
         return self.times(0, 1).map(lambda v: v[0] if v else default)
 
-    def until(self, other, min=0, max=float("inf"), consume_other=False):
+    def until(self, other: Parser, min: int = 0, max: int = float("inf"), consume_other: bool = False) -> Parser:
+        """
+        Returns a parser that expects the initial parser followed by ``other``.
+        The initial parser is expected at least ``min`` times and at most ``max`` times.
+        By default, it does not consume ``other`` and it produces a list of the
+        results excluding ``other``. If ``consume_other`` is ``True`` then
+        ``other`` is consumed and its result is included in the list of results.
+        """
+
         @Parser
         def until_parser(stream, index):
             values = []
@@ -218,7 +299,13 @@ class Parser:
 
         return until_parser
 
-    def sep_by(self, sep, *, min=0, max=float("inf")):
+    def sep_by(self, sep: Parser, *, min: int = 0, max: int = float("inf")) -> Parser:
+        """
+        Returns a new parser that repeats the initial parser and
+        collects the results in a list. Between each item, the ``sep`` parser
+        is run (and its return value is discarded). By default it
+        repeats with no limit, but minimum and maximum values can be supplied.
+        """
         zero_times = success([])
         if max == 0:
             return zero_times
@@ -227,7 +314,12 @@ class Parser:
             res |= zero_times
         return res
 
-    def desc(self, description):
+    def desc(self, description: str) -> Parser:
+        """
+        Returns a new parser with a description added, which is used in the error message
+        if parsing fails.
+        """
+
         @Parser
         def desc_parser(stream, index):
             result = self(stream, index)
@@ -238,7 +330,17 @@ class Parser:
 
         return desc_parser
 
-    def mark(self):
+    def mark(self) -> Parser:
+        """
+        Returns a parser that wraps the initial parser's result in a value
+        containing column and line information of the match, as well as the
+        original value. The new value is a 3-tuple:
+
+        ((start_row, start_column),
+         original_value,
+         (end_row, end_column))
+        """
+
         @generate
         def marked():
             start = yield line_info
@@ -248,10 +350,23 @@ class Parser:
 
         return marked
 
-    def tag(self, name):
+    def tag(self, name: str) -> Parser:
+        """
+        Returns a parser that wraps the produced value of the initial parser in a
+        2 tuple containing ``(name, value)``. This provides a very simple way to
+        label parsed components
+        """
         return self.map(lambda v: (name, v))
 
-    def should_fail(self, description):
+    def should_fail(self, description: str) -> Parser:
+        """
+        Returns a parser that fails when the initial parser succeeds, and succeeds
+        when the initial parser fails (consuming no input). A description must
+        be passed which is used in parse failure messages.
+
+        This is essentially a negative lookahead
+        """
+
         @Parser
         def fail_parser(stream, index):
             res = self(stream, index)
@@ -261,29 +376,34 @@ class Parser:
 
         return fail_parser
 
-    def __add__(self, other):
+    def __add__(self, other: Parser) -> Parser:
         return seq(self, other).combine(operator.add)
 
-    def __mul__(self, other):
+    def __mul__(self, other: Parser) -> Parser:
         if isinstance(other, range):
             return self.times(other.start, other.stop - 1)
         return self.times(other)
 
-    def __or__(self, other):
+    def __or__(self, other: Parser) -> Parser:
         return alt(self, other)
 
     # haskelley operators, for fun #
 
     # >>
-    def __rshift__(self, other):
+    def __rshift__(self, other: Parser) -> Parser:
         return self.then(other)
 
     # <<
-    def __lshift__(self, other):
+    def __lshift__(self, other: Parser) -> Parser:
         return self.skip(other)
 
 
-def alt(*parsers):
+def alt(*parsers: Parser) -> Parser:
+    """
+    Creates a parser from the passed in argument list of alternative
+    parsers, which are tried in order, moving to the next one if the
+    current one fails.
+    """
     if not parsers:
         return fail("<empty alt>")
 
@@ -300,10 +420,11 @@ def alt(*parsers):
     return alt_parser
 
 
-def seq(*parsers, **kw_parsers):
+def seq(*parsers: Parser, **kw_parsers: Parser) -> Parser:
     """
-    Takes a list of list of parsers, runs them in order,
-    and collects their individuals results in a list
+    Takes a list of parsers, runs them in order,
+    and collects their individuals results in a list,
+    or in a dictionary if you pass them as keyword arguments.
     """
     if not parsers and not kw_parsers:
         return success([])
@@ -343,8 +464,10 @@ def seq(*parsers, **kw_parsers):
         return seq_kwarg_parser
 
 
-# combinator syntax
-def generate(fn):
+def generate(fn) -> Parser:
+    """
+    Creates a parser from a generator function
+    """
     if isinstance(fn, str):
         return lambda f: generate(f).desc(fn)
 
@@ -378,29 +501,55 @@ index = Parser(lambda _, index: Result.success(index, index))
 line_info = Parser(lambda stream, index: Result.success(index, line_info_at(stream, index)))
 
 
-def success(val):
-    return Parser(lambda _, index: Result.success(index, val))
+def success(value: Any) -> Parser:
+    """
+    Returns a parser that does not consume any of the stream, but
+    produces ``value``.
+    """
+    return Parser(lambda _, index: Result.success(index, value))
 
 
-def fail(expected):
+def fail(expected: str) -> Parser:
+    """
+    Returns a parser that always fails with the provided error message.
+    """
     return Parser(lambda _, index: Result.failure(index, expected))
 
 
-def string(s, transform=noop):
-    slen = len(s)
-    transformed_s = transform(s)
+def string(expected_string: str, transform: Callable[[str], str] = noop) -> Parser:
+    """
+    Returns a parser that expects the ``expected_string`` and produces
+    that string value.
+
+    Optionally, a transform function can be passed, which will be used on both
+    the expected string and tested string.
+    """
+
+    slen = len(expected_string)
+    transformed_s = transform(expected_string)
 
     @Parser
     def string_parser(stream, index):
         if transform(stream[index : index + slen]) == transformed_s:
-            return Result.success(index + slen, s)
+            return Result.success(index + slen, expected_string)
         else:
-            return Result.failure(index, s)
+            return Result.failure(index, expected_string)
 
     return string_parser
 
 
-def regex(exp, flags=0, group=0):
+def regex(exp: str, flags=0, group: int | str | tuple = 0) -> Parser:
+    """
+    Returns a parser that expects the given ``exp``, and produces the
+    matched string. ``exp`` can be a compiled regular expression, or a
+    string which will be compiled with the given ``flags``.
+
+    Optionally, accepts ``group``, which is passed to re.Match.group
+    https://docs.python.org/3/library/re.html#re.Match.group> to
+    return the text from a capturing group in the regex instead of the
+    entire match.
+    """
+
     if isinstance(exp, (str, bytes)):
         exp = re.compile(exp, flags)
     if isinstance(group, (str, int)):
@@ -417,7 +566,14 @@ def regex(exp, flags=0, group=0):
     return regex_parser
 
 
-def test_item(func, description):
+def test_item(func: Callable[..., bool], description: str) -> Parser:
+    """
+    Returns a parser that tests a single item from the list of items being
+    consumed, using the callable ``func``. If ``func`` returns ``True``, the
+    parse succeeds, otherwise the parse fails with the description
+    ``description``.
+    """
+
     @Parser
     def test_item_parser(stream, index):
         if index < len(stream):
@@ -434,30 +590,56 @@ def test_item(func, description):
     return test_item_parser
 
 
-def test_char(func, description):
+def test_char(func: Callable[..., bool], description: str) -> Parser:
+    """
+    Returns a parser that tests a single character with the callable
+    ``func``. If ``func`` returns ``True``, the parse succeeds, otherwise
+    the parse fails with the description ``description``.
+    """
     # Implementation is identical to test_item
     return test_item(func, description)
 
 
-def match_item(item, description=None):
+def match_item(item: Any, description: str = None) -> Parser:
+    """
+    Returns a parser that tests the next item (or character) from the stream (or
+    string) for equality against the provided item. Optionally a string
+    description can be passed.
+    """
+
     if description is None:
         description = str(item)
     return test_item(lambda i: item == i, description)
 
 
-def string_from(*strings, transform=noop):
+def string_from(*strings: str, transform: Callable[[str], str] = noop):
+    """
+    Accepts a sequence of strings as positional arguments, and returns a parser
+    that matches and returns one string from the list. The list is first sorted
+    in descending length order, so that overlapping strings are handled correctly
+    by checking the longest one first.
+    """
     # Sort longest first, so that overlapping options work correctly
     return alt(*(string(s, transform) for s in sorted(strings, key=len, reverse=True)))
 
 
-def char_from(string):
+def char_from(string: str | bytes):
+    """
+    Accepts a string and returns a parser that matches and returns one character
+    from the string.
+    """
     if isinstance(string, bytes):
         return test_char(lambda c: c in string, b"[" + string + b"]")
     else:
         return test_char(lambda c: c in string, "[" + string + "]")
 
 
-def peek(parser):
+def peek(parser: Parser) -> Parser:
+    """
+    Returns a lookahead parser that parses the input stream without consuming
+    chars.
+    """
+
     @Parser
     def peek_parser(stream, index):
         result = parser(stream, index)
@@ -482,13 +664,24 @@ decimal_digit = char_from("0123456789")
 
 @Parser
 def eof(stream, index):
+    """
+    A parser that only succeeds if the end of the stream has been reached.
+    """
+
     if index >= len(stream):
         return Result.success(index, None)
     else:
         return Result.failure(index, "EOF")
 
 
-def from_enum(enum_cls, transform=noop):
+def from_enum(enum_cls: type[enum.Enum], transform=noop) -> Parser:
+    """
+    Given a class that is an enum.Enum class
+    https://docs.python.org/3/library/enum.html , returns a parser that
+    will parse the values (or the string representations of the values)
+    and return the corresponding enum item.
+    """
+
     items = sorted(
         ((str(enum_item.value), enum_item) for enum_item in enum_cls), key=lambda t: len(t[0]), reverse=True
     )
@@ -512,6 +705,9 @@ class forward_declaration(Parser):
     parse = _raise_error
     parse_partial = _raise_error
 
-    def become(self, other):
+    def become(self, other: Parser):
+        """
+        Take on the behavior of the given parser.
+        """
         self.__dict__ = other.__dict__
         self.__class__ = other.__class__

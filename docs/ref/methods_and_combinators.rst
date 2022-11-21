@@ -145,10 +145,10 @@ can be used and manipulated as below.
          >>> string('A').optional('Oops').parse('')
          'Oops'
 
-   .. method:: map(fn)
+   .. method:: map(map_function)
 
       Returns a parser that transforms the produced value of the initial parser
-      with ``fn``.
+      with ``map_function``.
 
       .. code:: python
 
@@ -158,10 +158,10 @@ can be used and manipulated as below.
       This is the simplest way to convert parsed strings into the data types
       that you need. See also :meth:`combine` and :meth:`combine_dict` below.
 
-   .. method:: combine(fn)
+   .. method:: combine(combine_fn)
 
       Returns a parser that transforms the produced values of the initial parser
-      with ``fn``, passing the arguments using ``*args`` syntax.
+      with ``combine_fn``, passing the arguments using ``*args`` syntax.
 
       Where the current parser produces an iterable of values, this can be a
       more convenient way to combine them than :meth:`~Parser.map`.
