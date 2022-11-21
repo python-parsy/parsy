@@ -196,7 +196,7 @@ These are the lowest level building blocks for creating parsers.
 
 .. function:: peek(parser)
 
-   Returns a lookahead parser that parse the input stream without consuming
+   Returns a lookahead parser that parses the input stream without consuming
    chars.
 
    .. code-block: python
