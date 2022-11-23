@@ -321,15 +321,15 @@ parsing failure.
            m = yield month
            dash2 = yield optional_dash
            if dash2 is not None:
-                d = yield day
+               d = yield day
        if m is not None:
-          if m < 1 or m > 12:
-              return fail("month must be in 1..12")
+           if m < 1 or m > 12:
+               return fail("month must be in 1..12")
        if d is not None:
-          try:
-              datetime.date(y, m, d)
-          except ValueError as e:
-              return fail(e.args[0])
+           try:
+               datetime.date(y, m, d)
+           except ValueError as e:
+               return fail(e.args[0])
 
        return (y, m, d)
 
