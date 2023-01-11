@@ -372,7 +372,7 @@ This is done using the :ref:`parser-or`, as follows:
    >>> flexi_date = full_or_partial_date | days_ago
    >>> flexi_date.parse("2012-01-05")
    (2012, 1, 5)
-   >>> days_ago.parse("2 days ago")
+   >>> flexi_date.parse("2 days ago")
    datetime.timedelta(-2)
 
 Notice that you still get good error messages from the appropriate parser,
