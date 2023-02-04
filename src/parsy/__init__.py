@@ -12,15 +12,6 @@ from .version import __version__  # noqa: F401
 noop = lambda x: x
 
 
-def line_info_at(stream, index):
-    if index > len(stream):
-        raise ValueError("invalid index")
-    line = stream.count("\n", 0, index)
-    last_nl = stream.rfind("\n", 0, index)
-    col = index - (last_nl + 1)
-    return (line, col)
-
-
 class ParseError(RuntimeError):
     def __init__(self, expected, stream, index):
         self.expected = expected
@@ -28,10 +19,10 @@ class ParseError(RuntimeError):
         self.index = index
 
     def line_info(self):
-        try:
-            return "{}:{}".format(*line_info_at(self.stream, self.index))
-        except (TypeError, AttributeError):  # not a str
-            return str(self.index)
+        if isinstance(self.stream, str):
+            return "{}:{}".format(self.index.line, self.index.column)
+        else:
+            return str(self.index.offset)
 
     def __str__(self):
         expected_list = sorted(repr(e) for e in self.expected)
@@ -42,30 +33,37 @@ class ParseError(RuntimeError):
             return f"expected one of {', '.join(expected_list)} at {self.line_info()}"
 
 
-@dataclass
+@dataclass(frozen=True)
+class Position:
+    offset: int
+    line: int
+    column: int
+
+
+@dataclass(frozen=True)
 class Result:
     status: bool
-    index: int
+    index: Position
     value: Any
-    furthest: int
+    furthest: Position
     expected: FrozenSet[str]
 
     @staticmethod
     def success(index, value):
-        return Result(True, index, value, -1, frozenset())
+        return Result(True, index, value, Position(-1, -1, -1), frozenset())
 
     @staticmethod
     def failure(index, expected):
-        return Result(False, -1, None, index, frozenset([expected]))
+        return Result(False, Position(-1, -1, -1), None, index, frozenset([expected]))
 
     # collect the furthest failure from self and other
     def aggregate(self, other):
         if not other:
             return self
 
-        if self.furthest > other.furthest:
+        if self.furthest.offset > other.furthest.offset:
             return self
-        elif self.furthest == other.furthest:
+        elif self.furthest.offset == other.furthest.offset:
             # if we both have the same failure index, we combine the expected messages.
             return Result(self.status, self.index, self.value, self.furthest, self.expected | other.expected)
         else:
@@ -83,14 +81,14 @@ class Parser:
     of the failure.
     """
 
-    def __init__(self, wrapped_fn: Callable[[str | bytes | list, int], Result]):
+    def __init__(self, wrapped_fn: Callable[[str | bytes | list, Position], Result]):
         """
         Creates a new Parser from a function that takes a stream
         and returns a Result.
         """
         self.wrapped_fn = wrapped_fn
 
-    def __call__(self, stream: str | bytes | list, index: int):
+    def __call__(self, stream: str | bytes | list, index: Position):
         return self.wrapped_fn(stream, index)
 
     def parse(self, stream: str | bytes | list) -> Any:
@@ -104,10 +102,10 @@ class Parser:
         Returns a tuple of the result and the unparsed remainder,
         or raises ParseError
         """
-        result = self(stream, 0)
+        result = self(stream, Position(0, 0, 0) if isinstance(stream, str) else Position(0, -1, -1))
 
         if result.status:
-            return (result.value, stream[result.index :])
+            return (result.value, stream[result.index.offset :])
         else:
             raise ParseError(result.expected, stream, result.furthest)
 
@@ -268,7 +266,6 @@ class Parser:
             values = []
             times = 0
             while True:
-
                 # try parser first
                 res = other(stream, index)
                 if res.status and times >= min:
@@ -497,8 +494,8 @@ def generate(fn) -> Parser:
     return generated
 
 
-index = Parser(lambda _, index: Result.success(index, index))
-line_info = Parser(lambda stream, index: Result.success(index, line_info_at(stream, index)))
+index = Parser(lambda _, index: Result.success(index, index.offset))
+line_info = Parser(lambda _, index: Result.success(index, (index.line, index.column)))
 
 
 def success(value: Any) -> Parser:
@@ -516,6 +513,17 @@ def fail(expected: str) -> Parser:
     return Parser(lambda _, index: Result.failure(index, expected))
 
 
+def make_index_update(consumed: str) -> Callable[[Position], Position]:
+    slen = len(consumed)
+    line_count = consumed.count("\n")
+    last_nl = consumed.rfind("\n")
+    return lambda index: Position(
+        offset=index.offset + slen,
+        line=index.line + line_count,
+        column=slen - (last_nl + 1) if last_nl >= 0 else index.column + slen,
+    )
+
+
 def string(expected_string: str, transform: Callable[[str], str] = noop) -> Parser:
     """
     Returns a parser that expects the ``expected_string`` and produces
@@ -527,11 +535,12 @@ def string(expected_string: str, transform: Callable[[str], str] = noop) -> Pars
 
     slen = len(expected_string)
     transformed_s = transform(expected_string)
+    index_update = make_index_update(expected_string)
 
     @Parser
     def string_parser(stream, index):
-        if transform(stream[index : index + slen]) == transformed_s:
-            return Result.success(index + slen, expected_string)
+        if transform(stream[index.offset : index.offset + slen]) == transformed_s:
+            return Result.success(index_update(index), expected_string)
         else:
             return Result.failure(index, expected_string)
 
@@ -557,9 +566,14 @@ def regex(exp: str, flags=0, group: int | str | tuple = 0) -> Parser:
 
     @Parser
     def regex_parser(stream, index):
-        match = exp.match(stream, index)
+        match = exp.match(stream, index.offset)
         if match:
-            return Result.success(match.end(), match.group(*group))
+            index = (
+                make_index_update(stream[match.start() : match.end()])(index)
+                if isinstance(stream, str)
+                else Position(match.end(), -1, -1)
+            )
+            return Result.success(index, match.group(*group))
         else:
             return Result.failure(index, exp.pattern)
 
@@ -576,15 +590,19 @@ def test_item(func: Callable[..., bool], description: str) -> Parser:
 
     @Parser
     def test_item_parser(stream, index):
-        if index < len(stream):
+        if index.offset < len(stream):
             if isinstance(stream, bytes):
                 # Subscripting bytes with `[index]` instead of
                 # `[index:index + 1]` returns an int
-                item = stream[index : index + 1]
+                item = stream[index.offset : index.offset + 1]
             else:
-                item = stream[index]
+                item = stream[index.offset]
             if func(item):
-                return Result.success(index + 1, item)
+                if isinstance(stream, str):
+                    index = make_index_update(item)(index)
+                else:
+                    index = Position(index.offset + 1, index.line, index.column)
+                return Result.success(index, item)
         return Result.failure(index, description)
 
     return test_item_parser
@@ -668,7 +686,7 @@ def eof(stream, index):
     A parser that only succeeds if the end of the stream has been reached.
     """
 
-    if index >= len(stream):
+    if index.offset >= len(stream):
         return Result.success(index, None)
     else:
         return Result.failure(index, "EOF")
