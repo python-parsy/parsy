@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from functools import wraps
 from typing import Any, Callable, FrozenSet
 
-from .version import __version__  # noqa: F401
+__version__ = "2.0"
 
 noop = lambda x: x
 
