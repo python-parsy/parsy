@@ -40,7 +40,7 @@ with contributions by other people as can be found in the git commit history.
 
 .. |Documentation Status| image:: https://readthedocs.org/projects/parsy/badge/?version=latest
    :target: http://parsy.readthedocs.io/en/latest/?badge=latest
-.. |Build Status| image:: https://img.shields.io/github/workflow/status/python-parsy/parsy/Tests
+.. |Build Status| image:: https://img.shields.io/github/actions/workflow/status/python-parsy/parsy/tests.yml?branch=master
    :target: https://github.com/python-parsy/parsy/actions?query=workflow%3A%22Tests%22+branch%3Amaster
 .. |Codecov| image:: https://img.shields.io/codecov/c/github/python-parsy/parsy/master.svg
    :target: https://codecov.io/gh/python-parsy/parsy
