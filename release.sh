@@ -1,5 +1,8 @@
 #!/bin/sh
 
+pytest || exit 1
+pre-commit run --all --all-files || exit 1
+
 umask 000
 rm -rf build dist
 git ls-tree --full-tree --name-only -r HEAD | xargs chmod ugo+r

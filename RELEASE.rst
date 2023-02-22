@@ -8,15 +8,11 @@ How to do releases
 
     tox
 
-* Check linters::
-
-    pre-commit run --all --all-files
-
 * Change docs/history.rst to remove " - unreleased"
 
 * Update the version number (removing the ``-dev1`` part):
 
-  * src/parsy/version.py
+  * src/parsy/__init__.py
   * docs/conf.py
 
 * Commit with "Version bump"

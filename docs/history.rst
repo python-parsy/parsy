@@ -4,10 +4,11 @@ History and release notes
 
 .. currentmodule:: parsy
 
-2.1 - unreleased
+2.1 - 2023-02-22
 ----------------
 
 * Dropped support for Python 3.7
+* Test against Python 3.11
 * Added docstrings and basic type hints to all primitives and main methods
 
 
