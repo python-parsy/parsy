@@ -32,13 +32,13 @@ from parsy import whitespace
 
 
 class TestParser(unittest.TestCase):
-    def test_string(self):
+    def test_string_str(self):
         parser = string("x")
         self.assertEqual(parser.parse("x"), "x")
 
         self.assertRaises(ParseError, parser.parse, "y")
 
-    def test_string_transform(self):
+    def test_string_transform_str(self):
         parser = string("x", transform=lambda s: s.lower())
         self.assertEqual(parser.parse("x"), "x")
         self.assertEqual(parser.parse("X"), "x")
@@ -52,6 +52,19 @@ class TestParser(unittest.TestCase):
         self.assertEqual(parser.parse("CaT"), "Cat")
 
         self.assertRaises(ParseError, parser.parse, "dog")
+
+    def test_string_bytes(self):
+        parser = string(b"x")
+        self.assertEqual(parser.parse(b"x"), b"x")
+
+        self.assertRaises(ParseError, parser.parse, b"y")
+
+    def test_string_transform_bytes(self):
+        parser = string(b"x", transform=lambda s: s.lower())
+        self.assertEqual(parser.parse(b"x"), b"x")
+        self.assertEqual(parser.parse(b"X"), b"x")
+
+        self.assertRaises(ParseError, parser.parse, b"y")
 
     def test_regex_str(self):
         parser = regex(r"[0-9]")
