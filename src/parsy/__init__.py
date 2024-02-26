@@ -166,10 +166,23 @@ class Parser:
 
     def concat(self) -> Parser:
         """
-        Returns a parser that concatenates together (as a string) the previously
-        produced values.
+        Returns a parser that concatenates together the previously produced values.
+
+        This parser will join the values using the type of the input stream, so
+        when feeding bytes to the parser, the items to be joined must also be bytes.
         """
-        return self.map("".join)
+
+        @Parser
+        def parser(stream: bytes | str, index: int) -> Result:
+            joiner = type(stream)()
+            result = self(stream, index)
+            if result.status:
+                next_parser: Parser = success(joiner.join(result.value))
+                return next_parser(stream, result.index).aggregate(result)
+            else:
+                return result
+
+        return parser
 
     def then(self, other: Parser) -> Parser:
         """

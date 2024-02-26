@@ -157,10 +157,15 @@ class TestParser(unittest.TestCase):
         ).combine_dict(Pair)
         self.assertEqual(parser.parse("ABC   123"), Pair(word="ABC", number=123))
 
-    def test_concat(self):
+    def test_concat_str(self):
         parser = letter.many().concat()
         self.assertEqual(parser.parse(""), "")
         self.assertEqual(parser.parse("abc"), "abc")
+
+    def test_concat_bytes(self):
+        parser = any_char.many().concat()
+        self.assertEqual(parser.parse(b""), b"")
+        self.assertEqual(parser.parse(b"abc"), b"abc")
 
     def test_generate(self):
         x = y = None
