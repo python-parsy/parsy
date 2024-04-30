@@ -5,7 +5,7 @@ import operator
 import re
 from dataclasses import dataclass
 from functools import wraps
-from typing import Any, Callable, FrozenSet
+from typing import Any, AnyStr, Callable, FrozenSet
 
 __version__ = "2.1"
 
@@ -166,10 +166,23 @@ class Parser:
 
     def concat(self) -> Parser:
         """
-        Returns a parser that concatenates together (as a string) the previously
-        produced values.
+        Returns a parser that concatenates together the previously produced values.
+
+        This parser will join the values using the type of the input stream, so
+        when feeding bytes to the parser, the items to be joined must also be bytes.
         """
-        return self.map("".join)
+
+        @Parser
+        def parser(stream: bytes | str, index: int) -> Result:
+            joiner = type(stream)()
+            result = self(stream, index)
+            if result.status:
+                next_parser: Parser = success(joiner.join(result.value))
+                return next_parser(stream, result.index).aggregate(result)
+            else:
+                return result
+
+        return parser
 
     def then(self, other: Parser) -> Parser:
         """
@@ -516,13 +529,16 @@ def fail(expected: str) -> Parser:
     return Parser(lambda _, index: Result.failure(index, expected))
 
 
-def string(expected_string: str, transform: Callable[[str], str] = noop) -> Parser:
+def string(expected_string: AnyStr, transform: Callable[[AnyStr], AnyStr] = noop) -> Parser:
     """
     Returns a parser that expects the ``expected_string`` and produces
     that string value.
 
     Optionally, a transform function can be passed, which will be used on both
     the expected string and tested string.
+
+    This parser can also be instantiated with a bytes value, in which case it can
+    should be applied to a stream of bytes.
     """
 
     slen = len(expected_string)
