@@ -162,6 +162,12 @@ class TestParser(unittest.TestCase):
         self.assertEqual(parser.parse(""), "")
         self.assertEqual(parser.parse("abc"), "abc")
 
+    def test_concat_from_byte_stream(self):
+        any_byte = parsy_test_item(lambda c: True, "any byte")
+        parser = any_byte.map(lambda b: b.decode("ascii")).many().concat()
+        self.assertEqual(parser.parse(b""), "")
+        self.assertEqual(parser.parse(b"abc"), "abc")
+
     def test_generate(self):
         x = y = None
 
