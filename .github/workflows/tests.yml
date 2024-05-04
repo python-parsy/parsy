@@ -43,7 +43,7 @@ jobs:
         with:
           file: ./coverage.xml
           env_vars: PYTHON
-          fail_ci_if_error: true
+          fail_ci_if_error: false
 
   linters:
     runs-on: ubuntu-latest
