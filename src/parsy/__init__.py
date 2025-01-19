@@ -32,6 +32,21 @@ class Stream:
             return self.data[i]
 
 
+@dataclass
+class SourceSpan:
+    """Identifies a span of material from the data to parse.
+
+    Attributes:
+        source (str | None): the source of the data, e.g. a file path.
+        start ([int, int]): the start row and column of the span.
+        end ([int, int]): the end row and column of the span.
+    """
+
+    source: str | None
+    start: [int, int]
+    end: [int, int]
+
+
 def line_info_at(stream: Stream, index):
     if index > len(stream):
         raise ValueError("invalid index")
@@ -368,6 +383,9 @@ class Parser:
         ((start_row, start_column),
          original_value,
          (end_row, end_column))
+
+        ``.span()'' is a more powerful version of this combinator, returning a
+        SourceSpan.
         """
 
         @generate
@@ -376,6 +394,24 @@ class Parser:
             body = yield self
             _, *end = yield line_info
             return (tuple(start), body, tuple(end))
+
+        return marked
+
+    def span(self) -> Parser:
+        """
+        Returns a parser that augments the initial parser's result with a
+        SourceSpan capturing where that parser started and stopped.
+        The new value is a tuple:
+
+        (source_span, original_value)
+        """
+
+        @generate
+        def marked():
+            source, *start = yield line_info
+            body = yield self
+            _, *end = yield line_info
+            return (SourceSpan(source, tuple(start), tuple(end)), body)
 
         return marked
 
