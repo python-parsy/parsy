@@ -23,25 +23,25 @@ can be used and manipulated as below.
    The following methods are for actually **using** the parsers that you have
    created:
 
-   .. method:: parse(string_or_list)
+   .. method:: parse(stream)
 
-      Attempts to parse the given string (or list). If the parse is successful
-      and consumes the entire string, the result is returned - otherwise, a
+      Attempts to parse the given :class:`Stream` of data. If the parse is successful
+      and consumes the entire stream, the result is returned - otherwise, a
       ``ParseError`` is raised.
 
-      Instead of passing a string, you can in fact pass a list of tokens. Almost
-      all the examples assume strings for simplicity. Some of the primitives are
+      Most commonly, a stream simply wraps a string, but you could use a list of tokens instead.
+      Almost all the examples assume strings for simplicity. Some of the primitives are
       also clearly string specific, and a few of the combinators (such as
       :meth:`Parser.concat`) are string specific, but most of the rest of the
       library will work with tokens just as well. See :doc:`/howto/lexing` for
       more information.
 
-   .. method:: parse_partial(string_or_list)
+   .. method:: parse_partial(stream)
 
       Similar to ``parse``, except that it does not require the entire
-      string (or list) to be consumed. Returns a tuple of
+      stream to be consumed. Returns a tuple of
       ``(result, remainder)``, where ``remainder`` is the part of
-      the string (or list) that was left over.
+      the stream that was left over.
 
    The following methods are essentially **combinators** that produce new
    parsers from the existing one. They are provided as methods on ``Parser`` for
@@ -594,3 +594,16 @@ Parsy does not try to include every possible combinator - there is no reason why
 you cannot create your own for your needs using the built-in combinators and
 primitives. If you find something that is very generic and would be very useful
 to have as a built-in, please :doc:`submit </contributing>` as a PR!
+
+Auxiliary data structures
+=========================
+
+.. class:: Stream
+
+   Wraps a string, byte sequence, or list, possibly equipping it with a source.
+   If the data is loaded from a file or URL, the source should be that file path or URL.
+   The source name is used in generated parse error messages.
+
+   .. method:: __init__(data, [source=None])
+
+      Wraps the data into a stream, possibly equipping it with a source.
