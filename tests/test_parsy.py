@@ -7,6 +7,7 @@ from datetime import date
 
 from parsy import (
     ParseError,
+    SourceSpan,
     Stream,
     alt,
     any_char,
@@ -208,6 +209,21 @@ class TestParser(unittest.TestCase):
         self.assertEqual(start, (1, 0))
         self.assertEqual(letters, ["q", "w", "e", "r"])
         self.assertEqual(end, (1, 4))
+
+    def test_span(self):
+        parser = (letter.many().span() << string("\n")).many()
+        source = "sample"
+
+        lines = parser.parse(Stream("asdf\nqwer\n", source=source))
+
+        self.assertEqual(len(lines), 2)
+
+        (span, letters) = lines[0]
+        self.assertEqual(span, SourceSpan(source, (0, 0), (0, 4)))
+        self.assertEqual(letters, ["a", "s", "d", "f"])
+
+        (span, letters) = lines[1]
+        self.assertEqual(span, SourceSpan(source, (1, 0), (1, 4)))
 
     def test_tag(self):
         parser = letter.many().concat().tag("word")
