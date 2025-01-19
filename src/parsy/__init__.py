@@ -12,13 +12,33 @@ __version__ = "2.1"
 noop = lambda x: x
 
 
-def line_info_at(stream, index):
+@dataclass
+class Stream:
+    """Data to parse, possibly equipped with a name for the source it's from,
+    e.g. a file path."""
+
+    data: str | bytes | list
+    source: str | None = None
+
+    def __len__(self):
+        return len(self.data)
+
+    def __getitem__(self, i):
+        # Subscripting bytes with `[index]` instead of `[index:index + 1]`
+        # returns an int
+        if isinstance(self.data, bytes) and not isinstance(i, slice):
+            return self.data[i : i + 1]
+        else:
+            return self.data[i]
+
+
+def line_info_at(stream: Stream, index):
     if index > len(stream):
         raise ValueError("invalid index")
-    line = stream.count("\n", 0, index)
-    last_nl = stream.rfind("\n", 0, index)
+    line = stream.data.count("\n", 0, index)
+    last_nl = stream.data.rfind("\n", 0, index)
     col = index - (last_nl + 1)
-    return (line, col)
+    return (stream.source, line, col)
 
 
 class ParseError(RuntimeError):
@@ -29,7 +49,11 @@ class ParseError(RuntimeError):
 
     def line_info(self):
         try:
-            return "{}:{}".format(*line_info_at(self.stream, self.index))
+            source, row, col = line_info_at(self.stream, self.index)
+            if source is None:
+                return "{}:{}".format(row, col)
+            else:
+                return "{}:{}:{}".format(source, row, col)
         except (TypeError, AttributeError):  # not a str
             return str(self.index)
 
@@ -83,22 +107,22 @@ class Parser:
     of the failure.
     """
 
-    def __init__(self, wrapped_fn: Callable[[str | bytes | list, int], Result]):
+    def __init__(self, wrapped_fn: Callable[[Stream, int], Result]):
         """
         Creates a new Parser from a function that takes a stream
         and returns a Result.
         """
         self.wrapped_fn = wrapped_fn
 
-    def __call__(self, stream: str | bytes | list, index: int):
+    def __call__(self, stream: Stream, index: int):
         return self.wrapped_fn(stream, index)
 
-    def parse(self, stream: str | bytes | list) -> Any:
+    def parse(self, stream: Stream) -> Any:
         """Parses a string or list of tokens and returns the result or raise a ParseError."""
         (result, _) = (self << eof).parse_partial(stream)
         return result
 
-    def parse_partial(self, stream: str | bytes | list) -> tuple[Any, str | bytes | list]:
+    def parse_partial(self, stream: Stream) -> tuple[Any, Stream]:
         """
         Parses the longest possible prefix of a given string.
         Returns a tuple of the result and the unparsed remainder,
@@ -343,10 +367,10 @@ class Parser:
 
         @generate
         def marked():
-            start = yield line_info
+            _, *start = yield line_info
             body = yield self
-            end = yield line_info
-            return (start, body, end)
+            _, *end = yield line_info
+            return (tuple(start), body, tuple(end))
 
         return marked
 
@@ -557,7 +581,7 @@ def regex(exp: str, flags=0, group: int | str | tuple = 0) -> Parser:
 
     @Parser
     def regex_parser(stream, index):
-        match = exp.match(stream, index)
+        match = exp.match(stream.data, index)
         if match:
             return Result.success(match.end(), match.group(*group))
         else:
@@ -577,12 +601,7 @@ def test_item(func: Callable[..., bool], description: str) -> Parser:
     @Parser
     def test_item_parser(stream, index):
         if index < len(stream):
-            if isinstance(stream, bytes):
-                # Subscripting bytes with `[index]` instead of
-                # `[index:index + 1]` returns an int
-                item = stream[index : index + 1]
-            else:
-                item = stream[index]
+            item = stream[index]
             if func(item):
                 return Result.success(index + 1, item)
         return Result.failure(index, description)
