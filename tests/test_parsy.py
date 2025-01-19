@@ -606,6 +606,18 @@ class TestParser(unittest.TestCase):
             ],
         )
 
+        source = "aaaaa"
+        self.assertEqual(
+            foo.many().parse(Stream("AB\nCD", source=source)),
+            [
+                ("A", (source, 0, 0)),
+                ("B", (source, 0, 1)),
+                ("\n", (source, 0, 2)),
+                ("C", (source, 1, 0)),
+                ("D", (source, 1, 1)),
+            ],
+        )
+
     def test_should_fail(self):
         not_a_digit = digit.should_fail("not a digit") >> regex(r".*")
 
@@ -700,12 +712,12 @@ class TestParserTokens(unittest.TestCase):
 
 class TestUtils(unittest.TestCase):
     def test_line_info_at(self):
-        text = Stream("abc\ndef")
-        self.assertEqual(line_info_at(text, 0), (None, 0, 0))
-        self.assertEqual(line_info_at(text, 2), (None, 0, 2))
-        self.assertEqual(line_info_at(text, 3), (None, 0, 3))
-        self.assertEqual(line_info_at(text, 4), (None, 1, 0))
-        self.assertEqual(line_info_at(text, 7), (None, 1, 3))
+        text = Stream("abc\ndef", source="aaaa")
+        self.assertEqual(line_info_at(text, 0), ("aaaa", 0, 0))
+        self.assertEqual(line_info_at(text, 2), ("aaaa", 0, 2))
+        self.assertEqual(line_info_at(text, 3), ("aaaa", 0, 3))
+        self.assertEqual(line_info_at(text, 4), ("aaaa", 1, 0))
+        self.assertEqual(line_info_at(text, 7), ("aaaa", 1, 3))
         self.assertRaises(ValueError, lambda: line_info_at(text, 8))
 
 
