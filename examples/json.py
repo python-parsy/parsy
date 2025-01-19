@@ -1,4 +1,4 @@
-from parsy import forward_declaration, regex, seq, string
+from parsy import Stream, forward_declaration, regex, seq, string
 
 # Utilities
 whitespace = regex(r"\s*")
@@ -45,7 +45,8 @@ json_doc = whitespace >> json_value
 def test():
     assert (
         json_doc.parse(
-            r"""
+            Stream(
+                r"""
     {
         "int": 1,
         "string": "hello",
@@ -55,6 +56,7 @@ def test():
         "other": [true, false, null]
     }
 """
+            )
         )
         == {
             "int": 1,

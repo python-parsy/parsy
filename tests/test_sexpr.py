@@ -1,7 +1,7 @@
 import re
 import unittest
 
-from parsy import generate, regex, string
+from parsy import Stream, generate, regex, string
 
 whitespace = regex(r"\s+", re.MULTILINE)
 comment = regex(r";.*")
@@ -40,29 +40,31 @@ program = ignore >> expr.many()
 
 class TestSexpr(unittest.TestCase):
     def test_form(self):
-        result = program.parse("(1 2 3)")
+        result = program.parse(Stream("(1 2 3)"))
         self.assertEqual(result, [[1, 2, 3]])
 
     def test_quote(self):
-        result = program.parse("'foo '(bar baz)")
+        result = program.parse(Stream("'foo '(bar baz)"))
         self.assertEqual(result, [["quote", "foo"], ["quote", ["bar", "baz"]]])
 
     def test_double_quote(self):
-        result = program.parse("''foo")
+        result = program.parse(Stream("''foo"))
         self.assertEqual(result, [["quote", ["quote", "foo"]]])
 
     def test_boolean(self):
-        result = program.parse("#t #f")
+        result = program.parse(Stream("#t #f"))
         self.assertEqual(result, [True, False])
 
     def test_comments(self):
         result = program.parse(
-            """
+            Stream(
+                """
             ; a program with a comment
             (           foo ; that's a foo
             bar )
             ; some comments at the end
             """
+            )
         )
 
         self.assertEqual(result, [["foo", "bar"]])

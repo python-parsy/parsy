@@ -13,7 +13,7 @@ import enum
 from dataclasses import dataclass
 from typing import List, Optional, Union
 
-from parsy import from_enum, regex, seq, string
+from parsy import Stream, from_enum, regex, seq, string
 
 # -- AST nodes:
 
@@ -109,7 +109,7 @@ select = seq(
 
 
 def test_select():
-    assert select.parse("SELECT thing, stuff, 123, 'hello' FROM my_table WHERE id = 1;") == Select(
+    assert select.parse(Stream("SELECT thing, stuff, 123, 'hello' FROM my_table WHERE id = 1;")) == Select(
         columns=[
             Field("thing"),
             Field("stuff"),
@@ -126,7 +126,7 @@ def test_select():
 
 
 def test_optional_where():
-    assert select.parse("SELECT 1 FROM x;") == Select(
+    assert select.parse(Stream("SELECT 1 FROM x;")) == Select(
         columns=[Number(1)],
         table=Table("x"),
         where=None,
