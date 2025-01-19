@@ -401,6 +401,20 @@ can be used and manipulated as below.
       </howto/lexing/>` and want subsequent parsing of the token stream to be
       able to report original positions in error messages etc.
 
+   .. method:: span()
+
+      Returns a parser that augments the initial parser's result with a :class:`SourceSpan`
+      containing information about where that parser started and stopped within the
+      source data. The new value is a tuple:
+
+      .. code:: python
+
+         (source_span, original_value)
+
+      This enables reporting of custom errors involving source locations, such as when
+      using parsy as a :doc:`lexer</howto/lexing/>` or when building a syntax tree that will be
+      further analyzed.
+
 .. _operators:
 
 Parser operators
@@ -607,3 +621,9 @@ Auxiliary data structures
    .. method:: __init__(data, [source=None])
 
       Wraps the data into a stream, possibly equipping it with a source.
+
+.. class:: SourceSpan
+
+   Identifies a span of material from the data being parsed by its start row and column and its end
+   row and column. If the data stream was equipped with a source, that value is also available in
+   this object.
