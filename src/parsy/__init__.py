@@ -50,6 +50,22 @@ def make_stream(data: str | bytes, source: Any):
         "location metadata.",
     )
 
+
+@dataclass
+class SourceSpan:
+    """Identifies a span of material from the data to parse.
+
+    Attributes:
+        source (str | None): the source of the data, e.g. a file path.
+        start ([int, int]): the start row and column of the span.
+        end ([int, int]): the end row and column of the span.
+    """
+
+    source: str | None
+    start: [int, int]
+    end: [int, int]
+
+
 def line_info_at(stream, index):
     if index > len(stream):
         raise ValueError("invalid index")
@@ -391,6 +407,9 @@ class Parser:
         ((start_row, start_column),
          original_value,
          (end_row, end_column))
+
+        ``.span()'' is a more powerful version of this combinator, returning a
+        SourceSpan.
         """
 
         @generate
@@ -404,6 +423,28 @@ class Parser:
             start = start[:2]
             end = end[:2]
             return (start, body, end)
+
+        return marked
+
+    def span(self) -> Parser:
+        """
+        Returns a parser that augments the initial parser's result with a
+        SourceSpan capturing where that parser started and stopped.
+        The new value is a tuple:
+
+        (source_span, original_value)
+        """
+
+        @generate
+        def marked():
+            start = yield line_info
+            body = yield self
+            end = yield line_info
+            try:
+                source = start[2]
+            except IndexError:
+                source = None
+            return (SourceSpan(source, start[:2], end[:2]), body)
 
         return marked
 

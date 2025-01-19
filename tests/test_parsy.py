@@ -7,6 +7,7 @@ from datetime import date
 
 from parsy import (
     ParseError,
+    SourceSpan,
     alt,
     any_char,
     char_from,
@@ -207,6 +208,35 @@ class TestParser(unittest.TestCase):
         self.assertEqual(start, (1, 0))
         self.assertEqual(letters, ["q", "w", "e", "r"])
         self.assertEqual(end, (1, 4))
+
+    def test_span(self):
+        parser = (letter.many().span() << string("\n")).many()
+        source = "sample"
+
+        lines = parser.parse("asdf\nqwer\n", source=source)
+
+        self.assertEqual(len(lines), 2)
+
+        (span, letters) = lines[0]
+        self.assertEqual(span, SourceSpan(source, (0, 0), (0, 4)))
+        self.assertEqual(letters, ["a", "s", "d", "f"])
+
+        (span, letters) = lines[1]
+        self.assertEqual(span, SourceSpan(source, (1, 0), (1, 4)))
+
+    def test_span_no_source(self):
+        parser = (letter.many().span() << string("\n")).many()
+
+        lines = parser.parse("asdf\nqwer\n")
+
+        self.assertEqual(len(lines), 2)
+
+        (span, letters) = lines[0]
+        self.assertEqual(span, SourceSpan(None, (0, 0), (0, 4)))
+        self.assertEqual(letters, ["a", "s", "d", "f"])
+
+        (span, letters) = lines[1]
+        self.assertEqual(span, SourceSpan(None, (1, 0), (1, 4)))
 
     def test_tag(self):
         parser = letter.many().concat().tag("word")
@@ -690,6 +720,7 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(line_info_at(text, 4), (1, 0))
         self.assertEqual(line_info_at(text, 7), (1, 3))
         self.assertRaises(ValueError, lambda: line_info_at(text, 8))
+
 
 
 class TestForwardDeclaration(unittest.TestCase):
