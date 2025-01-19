@@ -20,6 +20,7 @@ from parsy import (
     letter,
     line_info,
     line_info_at,
+    make_stream,
     match_item,
     peek,
     regex,
@@ -619,6 +620,18 @@ class TestParser(unittest.TestCase):
             ],
         )
 
+        source = "aaaaa"
+        self.assertEqual(
+            foo.many().parse("AB\nCD", source=source),
+            [
+                ("A", (0, 0, source)),
+                ("B", (0, 1, source)),
+                ("\n", (0, 2, source)),
+                ("C", (1, 0, source)),
+                ("D", (1, 1, source)),
+            ],
+        )
+
     def test_should_fail(self):
         not_a_digit = digit.should_fail("not a digit") >> regex(r".*")
 
@@ -713,14 +726,24 @@ class TestParserTokens(unittest.TestCase):
 
 class TestUtils(unittest.TestCase):
     def test_line_info_at(self):
+
         text = "abc\ndef"
         self.assertEqual(line_info_at(text, 0), (0, 0))
         self.assertEqual(line_info_at(text, 2), (0, 2))
         self.assertEqual(line_info_at(text, 3), (0, 3))
         self.assertEqual(line_info_at(text, 4), (1, 0))
         self.assertEqual(line_info_at(text, 7), (1, 3))
+
         self.assertRaises(ValueError, lambda: line_info_at(text, 8))
 
+        text = make_stream("abc\ndef", source="aaaa")
+        self.assertEqual(line_info_at(text, 0), (0, 0, "aaaa"))
+        self.assertEqual(line_info_at(text, 2), (0, 2, "aaaa"))
+        self.assertEqual(line_info_at(text, 3), (0, 3, "aaaa"))
+        self.assertEqual(line_info_at(text, 4), (1, 0, "aaaa"))
+        self.assertEqual(line_info_at(text, 7), (1, 3, "aaaa"))
+
+        self.assertRaises(ValueError, lambda: line_info_at(text, 8))
 
 
 class TestForwardDeclaration(unittest.TestCase):
