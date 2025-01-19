@@ -23,7 +23,7 @@ can be used and manipulated as below.
    The following methods are for actually **using** the parsers that you have
    created:
 
-   .. method:: parse(string_or_list)
+   .. method:: parse(string_or_list[, source=None])
 
       Attempts to parse the given string (or list). If the parse is successful
       and consumes the entire string, the result is returned - otherwise, a
@@ -36,7 +36,11 @@ can be used and manipulated as below.
       library will work with tokens just as well. See :doc:`/howto/lexing` for
       more information.
 
-   .. method:: parse_partial(string_or_list)
+      When a non-None ``source`` is given, this name is reported automatically
+      in parse errors. Typically, this is the file path or URL where the data
+      to parse originates from.
+
+   .. method:: parse_partial(string_or_list[, source=None])
 
       Similar to ``parse``, except that it does not require the entire
       string (or list) to be consumed. Returns a tuple of
@@ -401,6 +405,20 @@ can be used and manipulated as below.
       </howto/lexing/>` and want subsequent parsing of the token stream to be
       able to report original positions in error messages etc.
 
+   .. method:: span()
+
+      Returns a parser that augments the initial parser's result with a :class:`SourceSpan`
+      containing information about where that parser started and stopped within the
+      source data. The new value is a tuple:
+
+      .. code:: python
+
+         (source_span, original_value)
+
+      This enables reporting of custom errors involving source locations, such as when
+      using parsy as a :doc:`lexer</howto/lexing/>` or when building a syntax tree that will be
+      further analyzed.
+
 .. _operators:
 
 Parser operators
@@ -594,3 +612,26 @@ Parsy does not try to include every possible combinator - there is no reason why
 you cannot create your own for your needs using the built-in combinators and
 primitives. If you find something that is very generic and would be very useful
 to have as a built-in, please :doc:`submit </contributing>` as a PR!
+
+Auxiliary data structures
+=========================
+
+.. class:: SourceSpan
+
+   Identifies a span of material from the data being parsed by its start row and column and its end
+   row and column. If the data stream was equipped with a source, that value is also available in
+   this object.
+
+   .. attribute:: start
+
+      The starting position of this span as a tuple (row, col)
+
+   .. attribute:: end
+
+      The stopping position of this span as a tuple (row, col)
+
+   .. attribute:: source
+
+      The name of the source the data was parsed from. This is the same value
+      that was passed to :meth:`Parser.parse` or :meth:`Parser.parse_partial`,
+      or `None` if no value was given.
