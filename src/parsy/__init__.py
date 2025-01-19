@@ -12,13 +12,54 @@ __version__ = "2.1"
 noop = lambda x: x
 
 
+class StrStream(str):
+    """String data to parse, possibly equipped with a name for the source it's
+    from, e.g. a file path."""
+
+    def __new__(cls, string, source):
+        instance = super().__new__(cls, string)
+        instance.source = source
+        return instance
+
+
+class ByteStream(str):
+    """String data to parse, possibly equipped with a name for the source it's
+    from, e.g. a file path."""
+
+    def __new__(cls, bs, source):
+        instance = super().__new__(cls, bs)
+        instance.source = source
+        return instance
+
+
+def make_stream(data: str | bytes, source: Any):
+    """Constructs an appropriate stream type for `data` when it's one of the
+    three core supported datatypes of parsy (viz. str, bytes, list). Otherwise,
+    the data is assumed to just support a minimum of __getitem__ and
+    __len__."""
+    if isinstance(data, str):
+        return StrStream(data, source)
+
+    if isinstance(data, bytes):
+        return ByteStream(data, source)
+
+    raise RuntimeError(
+        "A Parsy stream can be formed only on str and bytes, but the given "
+        f"data has type {type(data)}. If you are separately tokenizing the "
+        "data to parse, consider instead equipping the tokens with source "
+        "location metadata.",
+    )
+
 def line_info_at(stream, index):
     if index > len(stream):
         raise ValueError("invalid index")
     line = stream.count("\n", 0, index)
     last_nl = stream.rfind("\n", 0, index)
     col = index - (last_nl + 1)
-    return (line, col)
+    if hasattr(stream, "source"):
+        return (line, col, stream.source)
+    else:
+        return (line, col)
 
 
 class ParseError(RuntimeError):
@@ -29,7 +70,15 @@ class ParseError(RuntimeError):
 
     def line_info(self):
         try:
-            return "{}:{}".format(*line_info_at(self.stream, self.index))
+            info = line_info_at(self.stream, self.index)
+            if len(info) == 2:
+                row, col = info
+                return f"{row}:{col}"
+            elif len(info) == 3:
+                source, row, col = info
+                return f"{source}:{row}:{col}"
+            else:
+                raise RuntimeError("Internal line_info_at violates length expectation.")
         except (TypeError, AttributeError):  # not a str
             return str(self.index)
 
@@ -90,20 +139,23 @@ class Parser:
         """
         self.wrapped_fn = wrapped_fn
 
-    def __call__(self, stream: str | bytes | list, index: int):
+    def __call__(self, stream, index: int):
         return self.wrapped_fn(stream, index)
 
-    def parse(self, stream: str | bytes | list) -> Any:
+    def parse(self, stream, source=None) -> Any:
         """Parses a string or list of tokens and returns the result or raise a ParseError."""
-        (result, _) = (self << eof).parse_partial(stream)
+        (result, _) = (self << eof).parse_partial(stream, source)
         return result
 
-    def parse_partial(self, stream: str | bytes | list) -> tuple[Any, str | bytes | list]:
+    def parse_partial(self, stream, source=None) -> tuple[Any, str | bytes | list]:
         """
         Parses the longest possible prefix of a given string.
         Returns a tuple of the result and the unparsed remainder,
         or raises ParseError
         """
+        if source is not None:
+            stream = make_stream(stream, source)
+
         result = self(stream, 0)
 
         if result.status:
@@ -346,6 +398,11 @@ class Parser:
             start = yield line_info
             body = yield self
             end = yield line_info
+            # line_info returns a 3-tuple including the source when a source
+            # was given to `parse`, but older programs expect these tuples to
+            # have length 2, consisting of just row and col
+            start = start[:2]
+            end = end[:2]
             return (start, body, end)
 
         return marked
@@ -578,8 +635,7 @@ def test_item(func: Callable[..., bool], description: str) -> Parser:
     def test_item_parser(stream, index):
         if index < len(stream):
             if isinstance(stream, bytes):
-                # Subscripting bytes with `[index]` instead of
-                # `[index:index + 1]` returns an int
+                # Otherwise directly indexing a bytes gives `int`
                 item = stream[index : index + 1]
             else:
                 item = stream[index]
