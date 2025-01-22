@@ -43,31 +43,17 @@ jobs:
 
   linters:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Python ${{ matrix.python-version }} with uv
+      - name: Set up Python 3.10 with uv
         uses: drivendataorg/setup-python-uv-action@v1.0.0
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: "3.10"
           cache: 'packages'
 
       - name: Install dependencies
         run: |
           uv sync
-      - name: Install linter deps
+      - name: Run pre-commit checks
         run: |
-          uv pip install -r tests/requirements-linters.txt
-      - name: Run isort
-        run: |
-          uv run isort --version
-          uv run isort -c .
-      - name: Run flake8
-        if: failure() || success()
-        run: |
-          uv run flake8 --version
-          uv run flake8
-      - uses: psf/black@stable
-        with:
-          version: "22.3.0"
-        if: failure() || success()
+          uv run pre-commit run --all --all-files

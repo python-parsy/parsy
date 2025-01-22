@@ -48,6 +48,7 @@ dev = [
     "tox-uv>=1.20.1",
     "tox>=4.24.1",
     "pytest-cov>=6.0.0",
+    "pre-commit-uv>=4.1.4",
 ]
 
 [tool.setuptools]
