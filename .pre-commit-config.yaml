@@ -8,37 +8,36 @@ repos:
     rev: 3.8.4
     hooks:
       - id: flake8
-        language_version: python3.9
+        language_version: python3.10
   - repo: https://github.com/pre-commit/mirrors-isort
     rev: v5.6.4
     hooks:
       - id: isort
-        language_version: python3.9
+        language_version: python3.10
   - repo: https://github.com/ikamensh/flynt/
     rev: '0.69'
     hooks:
       - id: flynt
-        language_version: python3.9
+        language_version: python3.10
   - repo: https://github.com/asottile/pyupgrade
     rev: v2.26.0
     hooks:
       - id: pyupgrade
         entry: pyupgrade --py3-plus --py36-plus --py37-plus --keep-runtime-typing
-        language_version: python3.9
+        language_version: python3.10
   - repo: https://github.com/myint/autoflake
     rev: 'v1.4'
     hooks:
       - id: autoflake
         args: ['--remove-all-unused-imports', '-i']
-        language_version: python3.9
+        language_version: python3.10
   - repo: https://github.com/pre-commit/mirrors-autopep8
     rev: 'v1.5.7'
     hooks:
       - id: autopep8
-        language_version: python3.9
+        language_version: python3.10
   - repo: https://github.com/psf/black
     rev: 22.3.0
     hooks:
       - id: black
-        language_version: python3
-        language_version: python3.9
+        language_version: python3.10
