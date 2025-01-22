@@ -4,6 +4,10 @@ History and release notes
 
 .. currentmodule:: parsy
 
+2.2 - unreleased
+----------------
+* Dropped support for Python 3.7, 3.8 which are past EOL
+
 2.1 - 2023-02-22
 ----------------
 
