@@ -1,11 +1,75 @@
+[project]
+name = "parsy"
+description = "Easy-to-use parser combinators, for parsing in pure Python"
+license = {text = "MIT"}
+authors = [
+  { name = "Jeanine Adkisson", email = "jneen@jneen.net" }
+]
+maintainers = [
+  { name = "Luke Plant", email = "luke@lukeplant.me.uk" }
+]
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Intended Audience :: Developers",
+  "Topic :: Software Development :: Compilers",
+  "Topic :: Software Development :: Interpreters",
+  "Topic :: Text Processing",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+]
+keywords = ["parser", "parsers", "parsing", "monad", "combinators"]
+urls = {Homepage = "https://github.com/python-parsy/parsy"}
+
+requires-python = ">=3.9"
+dependencies = []
+
+dynamic = ["version"]
+
+[project.readme]
+file = "README.rst"
+content-type = "text/x-rst"
+
+[tool.setuptools.dynamic]
+version = {attr = "parsy.__version__"}
+
+[build-system]
+requires = ["setuptools>=61.2"]
+build-backend = "setuptools.build_meta"
+
+[dependency-groups]
+dev = [
+    "pre-commit>=4.1.0",
+    "pytest>=8.3.4",
+    "tox-uv>=1.20.1",
+    "tox>=4.24.1",
+    "pytest-cov>=6.0.0",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+include-package-data = false
+
+[tool.setuptools.packages.find]
+where = ["src"]
+namespaces = false
+
 [tool.black]
 line-length = 119
-# required-version = '22.1.0' # see https://github.com/psf/black/issues/2493
 target-version = ['py310']
 
 [tool.isort]
 line_length = 119
 profile = "black"
 default_section = "THIRDPARTY"
-skip = [".tox", ".git", "docs", "dist", "build" , "todo"]
+skip = [".tox", ".git", "docs", "dist", "build" , "todo", ".venv"]
 known_first_party = "parsy"
+
+[tool.flake8]
+exclude = [".tox", ".git", "docs", "dist", "build", "todo"]
+ignore = ["E731", "E221", "W503", "E741", "E203" ]
+max-line-length = 119

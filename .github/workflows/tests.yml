@@ -71,10 +71,6 @@ jobs:
         run: |
           flake8 --version
           flake8
-      - name: Run check-manifest
-        if: failure() || success()
-        run: |
-          check-manifest
       - uses: psf/black@stable
         with:
           version: "22.3.0"
