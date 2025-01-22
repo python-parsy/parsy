@@ -7,6 +7,7 @@ from datetime import date
 
 from parsy import (
     ParseError,
+    Position,
     alt,
     any_char,
     char_from,
@@ -18,7 +19,6 @@ from parsy import (
     index,
     letter,
     line_info,
-    line_info_at,
     match_item,
     peek,
     regex,
@@ -231,7 +231,7 @@ class TestParser(unittest.TestCase):
 
         self.assertEqual(ex.expected, frozenset(["a thing"]))
         self.assertEqual(ex.stream, "x")
-        self.assertEqual(ex.index, 0)
+        self.assertEqual(ex.index, Position(0, 0, 0))
 
     def test_generate_default_desc(self):
         # We shouldn't give a default desc, the messages from the internal
@@ -248,7 +248,7 @@ class TestParser(unittest.TestCase):
 
         self.assertEqual(ex.expected, frozenset(["b"]))
         self.assertEqual(ex.stream, "ax")
-        self.assertEqual(ex.index, 1)
+        self.assertEqual(ex.index, Position(1, 0, 1))
 
         self.assertIn("expected 'b' at 0:1", str(ex))
 
@@ -351,7 +351,6 @@ class TestParser(unittest.TestCase):
         self.assertRaises(ParseError, ab.at_most(2).parse, "ababab")
 
     def test_until(self):
-
         until = string("s").until(string("x"))
 
         s = "ssssx"
@@ -373,7 +372,6 @@ class TestParser(unittest.TestCase):
         self.assertEqual(until.parse_partial("xxxx"), ([], "xxxx"))
 
     def test_until_with_consume_other(self):
-
         until = string("s").until(string("x"), consume_other=True)
 
         self.assertEqual(until.parse("ssssx"), 4 * ["s"] + ["x"])
@@ -385,7 +383,6 @@ class TestParser(unittest.TestCase):
         self.assertRaises(ParseError, until.parse, "xssssxy")
 
     def test_until_with_min(self):
-
         until = string("s").until(string("x"), min=3)
 
         self.assertEqual(until.parse_partial("sssx"), (3 * ["s"], "x"))
@@ -394,7 +391,6 @@ class TestParser(unittest.TestCase):
         self.assertRaises(ParseError, until.parse_partial, "ssx")
 
     def test_until_with_max(self):
-
         # until with max
         until = string("s").until(string("x"), max=3)
 
@@ -404,7 +400,6 @@ class TestParser(unittest.TestCase):
         self.assertRaises(ParseError, until.parse_partial, "ssssx")
 
     def test_until_with_min_max(self):
-
         until = string("s").until(string("x"), min=3, max=5)
 
         self.assertEqual(until.parse_partial("sssx"), (3 * ["s"], "x"))
@@ -653,7 +648,7 @@ class TestParserTokens(unittest.TestCase):
         ex = err.exception
         self.assertEqual(str(ex), "expected one of 'EOF', 'START/STOP' at 1")
         self.assertEqual(ex.expected, {"EOF", "START/STOP"})
-        self.assertEqual(ex.index, 1)
+        self.assertEqual(ex.index, Position(1, -1, -1))
 
     def test_match_item(self):
         self.assertEqual(match_item(self.START).parse([self.START]), self.START)
@@ -679,17 +674,6 @@ class TestParserTokens(unittest.TestCase):
             return (l, i)
 
         self.assertEqual(foo.many().parse(["A", "B"]), [("A", 0), ("B", 1)])
-
-
-class TestUtils(unittest.TestCase):
-    def test_line_info_at(self):
-        text = "abc\ndef"
-        self.assertEqual(line_info_at(text, 0), (0, 0))
-        self.assertEqual(line_info_at(text, 2), (0, 2))
-        self.assertEqual(line_info_at(text, 3), (0, 3))
-        self.assertEqual(line_info_at(text, 4), (1, 0))
-        self.assertEqual(line_info_at(text, 7), (1, 3))
-        self.assertRaises(ValueError, lambda: line_info_at(text, 8))
 
 
 class TestForwardDeclaration(unittest.TestCase):
