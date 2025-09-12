@@ -392,8 +392,8 @@ can be used and manipulated as below.
 
       Also, the methods :meth:`~Parser.map`, :meth:`~Parser.combine` and
       :meth:`~Parser.combine_dict`, which all use ``bind`` internally, are often
-      more convenient ways to chain output where you are doing transformations
-      but not further consuming of input.
+      more convenient ways to chain functions where you are doing transformations
+      but not consuming more input.
 
    .. method:: sep_by(sep, min=0, max=inf)
 
