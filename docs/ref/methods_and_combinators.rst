@@ -366,10 +366,34 @@ can be used and manipulated as below.
 
       Returns a parser which, if the initial parser is successful, passes the
       result to ``fn``, and continues with the parser returned from ``fn``. This
-      is the monadic binding operation. However, since we don't have Haskell's
-      ``do`` notation in Python, using this is very awkward. Instead, you should
-      look at :doc:`/ref/generating/` which provides a much nicer syntax for that
-      cases where you would have needed ``do`` notation in Parsec.
+      is the monadic binding operation.
+
+      Here is an example that implements `Hollerith constants
+      <https://en.wikipedia.org/wiki/Hollerith_constant>`_:
+
+      .. code-block:: python
+
+
+         from parsy import regex, string, any_char
+
+         hollerith = (regex(r'[0-9]+').map(int) << string('H')).bind(
+             lambda num: any_char.times(num).concat()
+         )
+
+      The first parser ``(regex(r'[0-9]+').map(int) << string('H'))`` will
+      consume something like ``"8H"`` and produce the integer ``8``. Via
+      ``bind``, we then pass that value as ``num`` into the lambda, which can
+      use it to consume more input.
+
+      However, since we don't have Haskell's ``do`` notation in Python, for
+      longer examples this is quite awkward. Instead, you should look at
+      :doc:`/ref/generating/` which provides a much nicer syntax for that cases
+      where you would have needed ``do`` notation in Parsec.
+
+      Also, the methods :meth:`~Parser.map`, :meth:`~Parser.combine` and
+      :meth:`~Parser.combine_dict`, which all use ``bind`` internally, are often
+      more convenient ways to chain output where you are doing transformations
+      but not further consuming of input.
 
    .. method:: sep_by(sep, min=0, max=inf)
 

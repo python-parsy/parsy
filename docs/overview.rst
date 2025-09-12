@@ -32,7 +32,8 @@ Parsy differentiates itself from other solutions with the following:
   English:
 
   * we can easily handle cases where later parsing depends on the value of
-    something parsed earlier e.g. Hollerith constants.
+    something parsed earlier e.g. `Hollerith constants
+    <https://en.wikipedia.org/wiki/Hollerith_constant>`_.
   * it's easy to build up complex result objects, rather than returning lists of
     lists etc. which then need to be further processed.
 

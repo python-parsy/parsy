@@ -80,10 +80,11 @@ Using values already parsed
 ---------------------------
 
 The third example shows how we can use an earlier parsed value to influence the
-subsequent parsing. This example parses Hollerith constants. Hollerith constants
-are a way of specifying an arbitrary set of characters by first writing the
-integer that specifies the length, followed by the character H, followed by the
-set of characters. For example, ``pancakes`` would be written ``8Hpancakes``.
+subsequent parsing. This example parses `Hollerith constants
+<https://en.wikipedia.org/wiki/Hollerith_constant>`_. These are a
+way of specifying an arbitrary set of characters by first writing the integer
+that specifies the length, followed by the character H, followed by the set of
+characters. For example, ``pancakes`` would be written ``8Hpancakes``.
 
 .. code:: python
 
@@ -94,6 +95,9 @@ set of characters. For example, ``pancakes`` would be written ``8Hpancakes``.
        num = yield regex(r'[0-9]+').map(int)
        yield string('H')
        return any_char.times(num).concat()
+
+We could also write the same thing, more tersely, using the :meth:`Parser.bind`
+method.
 
 (You may want to compare this with an `implementation of Hollerith constants
 <https://gist.github.com/spookylukey/591aa8a6a9af7cf0f1e22129b29288d6>`_ that
