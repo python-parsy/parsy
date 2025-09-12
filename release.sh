@@ -1,5 +1,6 @@
 #!/bin/sh
 
+uv sync
 pytest || exit 1
 pre-commit run --all --all-files || exit 1
 
