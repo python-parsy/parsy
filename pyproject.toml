@@ -49,6 +49,8 @@ dev = [
     "tox>=4.24.1",
     "pytest-cov>=6.0.0",
     "pre-commit-uv>=4.1.4",
+    "sphinx>=7.4.7",
+    "sphinx-rtd-theme>=3.0.2",
 ]
 
 [tool.setuptools]
