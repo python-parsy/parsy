@@ -27,7 +27,7 @@ class ParseError(RuntimeError):
         self.stream = stream
         self.index = index
 
-    def line_info(self):
+    def line_info(self) -> str:
         try:
             return "{}:{}".format(*line_info_at(self.stream, self.index))
         except (TypeError, AttributeError):  # not a str
@@ -51,15 +51,15 @@ class Result:
     expected: FrozenSet[str]
 
     @staticmethod
-    def success(index, value):
+    def success(index, value) -> Result:
         return Result(True, index, value, -1, frozenset())
 
     @staticmethod
-    def failure(index, expected):
+    def failure(index, expected) -> Result:
         return Result(False, -1, None, index, frozenset([expected]))
 
     # collect the furthest failure from self and other
-    def aggregate(self, other):
+    def aggregate(self, other) -> Result:
         if not other:
             return self
 
@@ -70,6 +70,12 @@ class Result:
             return Result(self.status, self.index, self.value, self.furthest, self.expected | other.expected)
         else:
             return Result(self.status, self.index, self.value, other.furthest, other.expected)
+
+
+# Roughly, a stream is str|bytes|list, but in practice we are duck-typed
+# and could accept other things.
+# We should switch to this alias when all supported Python versions allow it:
+# type Stream = str | bytes | list
 
 
 class Parser:
@@ -90,7 +96,7 @@ class Parser:
         """
         self.wrapped_fn = wrapped_fn
 
-    def __call__(self, stream: str | bytes | list, index: int):
+    def __call__(self, stream: str | bytes | list, index: int) -> Any:
         return self.wrapped_fn(stream, index)
 
     def parse(self, stream: str | bytes | list) -> Any:
@@ -111,9 +117,9 @@ class Parser:
         else:
             raise ParseError(result.expected, stream, result.furthest)
 
-    def bind(self, bind_fn):
+    def bind(self, bind_fn: Callable[[Any], Parser]) -> Parser:
         @Parser
-        def bound_parser(stream, index):
+        def bound_parser(stream: str | bytes | list, index: int) -> Result:
             result = self(stream, index)
 
             if result.status:
@@ -212,7 +218,7 @@ class Parser:
             max = min
 
         @Parser
-        def times_parser(stream, index):
+        def times_parser(stream: str | bytes | list, index: int) -> Result:
             values = []
             times = 0
             result = None
@@ -264,7 +270,7 @@ class Parser:
         """
 
         @Parser
-        def until_parser(stream, index):
+        def until_parser(stream: str | bytes | list, index: int) -> Result:
             values = []
             times = 0
             while True:
@@ -321,7 +327,7 @@ class Parser:
         """
 
         @Parser
-        def desc_parser(stream, index):
+        def desc_parser(stream: str | bytes | list, index: int) -> Result:
             result = self(stream, index)
             if result.status:
                 return result
@@ -368,7 +374,7 @@ class Parser:
         """
 
         @Parser
-        def fail_parser(stream, index):
+        def fail_parser(stream: str | bytes | list, index: int) -> Result:
             res = self(stream, index)
             if res.status:
                 return Result.failure(index, description)
@@ -379,7 +385,7 @@ class Parser:
     def __add__(self, other: Parser) -> Parser:
         return seq(self, other).combine(operator.add)
 
-    def __mul__(self, other: Parser) -> Parser:
+    def __mul__(self, other: int | range) -> Parser:
         if isinstance(other, range):
             return self.times(other.start, other.stop - 1)
         return self.times(other)
@@ -408,7 +414,7 @@ def alt(*parsers: Parser) -> Parser:
         return fail("<empty alt>")
 
     @Parser
-    def alt_parser(stream, index):
+    def alt_parser(stream: str | bytes | list, index: int) -> Result:
         result = None
         for parser in parsers:
             result = parser(stream, index).aggregate(result)
@@ -435,7 +441,7 @@ def seq(*parsers: Parser, **kw_parsers: Parser) -> Parser:
     if parsers:
 
         @Parser
-        def seq_parser(stream, index):
+        def seq_parser(stream: str | bytes | list, index: int) -> Result:
             result = None
             values = []
             for parser in parsers:
@@ -450,7 +456,7 @@ def seq(*parsers: Parser, **kw_parsers: Parser) -> Parser:
     else:
 
         @Parser
-        def seq_kwarg_parser(stream, index):
+        def seq_kwarg_parser(stream: str | bytes | list, index: int) -> Result:
             result = None
             values = {}
             for name, parser in kw_parsers.items():
@@ -473,7 +479,7 @@ def generate(fn) -> Parser:
 
     @Parser
     @wraps(fn)
-    def generated(stream, index):
+    def generated(stream: str | bytes | list, index: int) -> Result:
         # start up the generator
         iterator = fn()
 
@@ -529,7 +535,7 @@ def string(expected_string: str, transform: Callable[[str], str] = noop) -> Pars
     transformed_s = transform(expected_string)
 
     @Parser
-    def string_parser(stream, index):
+    def string_parser(stream: str, index: int) -> Result:
         if transform(stream[index : index + slen]) == transformed_s:
             return Result.success(index + slen, expected_string)
         else:
@@ -556,7 +562,7 @@ def regex(exp: str, flags=0, group: int | str | tuple = 0) -> Parser:
         group = (group,)
 
     @Parser
-    def regex_parser(stream, index):
+    def regex_parser(stream: str | bytes | list, index: int) -> Result:
         match = exp.match(stream, index)
         if match:
             return Result.success(match.end(), match.group(*group))
@@ -575,7 +581,7 @@ def test_item(func: Callable[..., bool], description: str) -> Parser:
     """
 
     @Parser
-    def test_item_parser(stream, index):
+    def test_item_parser(stream: str | bytes | list, index: int) -> Result:
         if index < len(stream):
             if isinstance(stream, bytes):
                 # Subscripting bytes with `[index]` instead of
@@ -623,7 +629,7 @@ def string_from(*strings: str, transform: Callable[[str], str] = noop):
     return alt(*(string(s, transform) for s in sorted(strings, key=len, reverse=True)))
 
 
-def char_from(string: str | bytes):
+def char_from(string: str | bytes) -> Parser:
     """
     Accepts a string and returns a parser that matches and returns one character
     from the string.
@@ -641,7 +647,7 @@ def peek(parser: Parser) -> Parser:
     """
 
     @Parser
-    def peek_parser(stream, index):
+    def peek_parser(stream: str | bytes | list, index: int) -> Result:
         result = parser(stream, index)
         if result.status:
             return Result.success(index, result.value)
@@ -663,7 +669,7 @@ decimal_digit = char_from("0123456789")
 
 
 @Parser
-def eof(stream, index):
+def eof(stream: str | bytes | list, index: int) -> Result:
     """
     A parser that only succeeds if the end of the stream has been reached.
     """

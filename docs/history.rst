@@ -7,6 +7,7 @@ History and release notes
 2.2 - unreleased
 ----------------
 * Dropped support for Python 3.7, 3.8 which are past EOL
+* Various docs and type hint updates
 
 2.1 - 2023-02-22
 ----------------
