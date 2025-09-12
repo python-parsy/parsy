@@ -5,8 +5,19 @@ Contributions to parsy, whether code or docs, are very welcome. Please
 contribute by making a fork, and submitting a PR on `GitHub
 <https://github.com/python-parsy/parsy>`_.
 
-We have a high standard in terms of quality. All contributions will need to be
-fully covered by unit tests and documentation.
+Some notes on the culture/philosophy and coding style:
+
+- We have a high standard in terms of quality. All contributions will need to be
+  fully covered by unit tests and documentation.
+
+- We have extremely high standards in terms of backwards compatibility – close
+  to zero-tolerance for any breaking changes.
+
+- This project predates extensive type hints, and there are serious difficulties
+  in making them useful. We take a pragmatic approach, using them essentially
+  for documentation and to help with auto-complete for the user, but not strict
+  type-checking. See `issue #64
+  <https://github.com/python-parsy/parsy/issues/64>`__ for more info.
 
 To get started you’ll need to:
 
