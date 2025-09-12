@@ -40,6 +40,10 @@ Parsy differentiates itself from other solutions with the following:
 * it has a minimalist philosophy. It doesn't include built-in helpers for any
   specific grammars or languages, but provides building blocks for making these.
 
+* it is highly mature and stable, with no rewrites planned and an excellent
+  reputation for backwards compatibility, while modernising and keeping up with
+  latest Python idioms everywhere that is possible.
+
 Basic usage looks like this:
 
 Example 1 - parsing a set of alternatives:

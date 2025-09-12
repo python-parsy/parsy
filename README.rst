@@ -11,13 +11,21 @@ monadic parser combinator library for LL(infinity) grammars in the spirit of
 <https://github.com/jneen/parsimmon>`_. But don't worry, it has really good
 documentation and it doesn't say things like that!
 
-Parsy requires Python 3.7 or greater.
-
 For a good example of the kind of clear, declarative code you can create using
 parsy, see the `SQL SELECT statement example
 <https://parsy.readthedocs.io/en/latest/howto/other_examples.html#sql-select-statement-parser>`_
 or `JSON parser
 <https://parsy.readthedocs.io/en/latest/howto/other_examples.html#json-parser>`_.
+
+The project:
+
+- has **zero dependencies** outside stdlib.
+- is **highly mature and stable**, with few-to-none backwards incompatibilities
+  over the past 10 years.
+- is **essentially complete**, with no rewrites planned. Widely useful
+  improvements that don’t break compatibility will still be considered, however.
+- is implemented in a single module with less than 800LOC, which you could
+  vendor easily if required.
 
 Links:
 
