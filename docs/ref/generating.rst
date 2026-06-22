@@ -114,7 +114,7 @@ where there is logic that is conditional upon earlier parsed values.
 Implementing recursive definitions
 ----------------------------------
 
-A fourth examples shows how you can use this syntax for grammars that you would
+A fourth example shows how you can use this syntax for grammars that you would
 like to define recursively (or mutually recursively).
 
 Say we want to be able to parse an s-expression like syntax which uses
