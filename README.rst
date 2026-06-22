@@ -41,7 +41,7 @@ docs. Thanks!
 If you like parsy and think it should be better known, you could:
 
 * Star this project on GitHub.
-* `Vote <https://github.com/vinta/awesome-python/pull/993>`_ for it being included on awesome-python.
+* `Vote <https://github.com/vinta/awesome-python/pull/3212>`_ for it being included on awesome-python.
 
 Parsy was originally written by `Jeanine Adkisson <https://github.com/jneen>`_,
 with contributions by other people as can be found in the git commit history.
