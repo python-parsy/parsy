@@ -332,7 +332,7 @@ class Parser:
             if result.status:
                 return result
             else:
-                return Result.failure(index, description)
+                return Result.failure(index, description).aggregate(result)
 
         return desc_parser
 

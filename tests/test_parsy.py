@@ -229,7 +229,7 @@ class TestParser(unittest.TestCase):
 
         ex = err.exception
 
-        self.assertEqual(ex.expected, frozenset(["a thing"]))
+        self.assertEqual(ex.expected, frozenset(["t", "a thing"]))
         self.assertEqual(ex.stream, "x")
         self.assertEqual(ex.index, 0)
 
