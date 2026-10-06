@@ -4,6 +4,10 @@ History and release notes
 
 .. currentmodule:: parsy
 
+Unreleased
+----------
+* Fixed various type hints
+
 2.2 - 2025-09-12
 ----------------
 * Dropped support for Python 3.7, 3.8 which are past EOL
