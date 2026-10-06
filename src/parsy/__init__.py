@@ -208,7 +208,7 @@ class Parser:
         """
         return self.times(0, float("inf"))
 
-    def times(self, min: int, max: int = None) -> Parser:
+    def times(self, min: int, max: float | None = None) -> Parser:
         """
         Returns a parser that expects the initial parser at least ``min`` times,
         and at most ``max`` times, and produces a list of the results. If only one
@@ -260,7 +260,7 @@ class Parser:
         """
         return self.times(0, 1).map(lambda v: v[0] if v else default)
 
-    def until(self, other: Parser, min: int = 0, max: int = float("inf"), consume_other: bool = False) -> Parser:
+    def until(self, other: Parser, min: int = 0, max: float = float("inf"), consume_other: bool = False) -> Parser:
         """
         Returns a parser that expects the initial parser followed by ``other``.
         The initial parser is expected at least ``min`` times and at most ``max`` times.
@@ -305,7 +305,7 @@ class Parser:
 
         return until_parser
 
-    def sep_by(self, sep: Parser, *, min: int = 0, max: int = float("inf")) -> Parser:
+    def sep_by(self, sep: Parser, *, min: int = 0, max: float = float("inf")) -> Parser:
         """
         Returns a new parser that repeats the initial parser and
         collects the results in a list. Between each item, the ``sep`` parser
@@ -544,7 +544,11 @@ def string(expected_string: str, transform: Callable[[str], str] = noop) -> Pars
     return string_parser
 
 
-def regex(exp: str, flags=0, group: int | str | tuple = 0) -> Parser:
+def regex(
+    exp: str | bytes | re.Pattern[str] | re.Pattern[bytes],
+    flags: int = 0,
+    group: int | str | tuple[int | str, ...] = 0,
+) -> Parser:
     """
     Returns a parser that expects the given ``exp``, and produces the
     matched string. ``exp`` can be a compiled regular expression, or a
@@ -606,7 +610,7 @@ def test_char(func: Callable[..., bool], description: str) -> Parser:
     return test_item(func, description)
 
 
-def match_item(item: Any, description: str = None) -> Parser:
+def match_item(item: Any, description: str | None = None) -> Parser:
     """
     Returns a parser that tests the next item (or character) from the stream (or
     string) for equality against the provided item. Optionally a string
@@ -618,7 +622,7 @@ def match_item(item: Any, description: str = None) -> Parser:
     return test_item(lambda i: item == i, description)
 
 
-def string_from(*strings: str, transform: Callable[[str], str] = noop):
+def string_from(*strings: str, transform: Callable[[str], str] = noop) -> Parser:
     """
     Accepts a sequence of strings as positional arguments, and returns a parser
     that matches and returns one string from the list. The list is first sorted
@@ -680,7 +684,7 @@ def eof(stream: str | bytes | list, index: int) -> Result:
         return Result.failure(index, "EOF")
 
 
-def from_enum(enum_cls: type[enum.Enum], transform=noop) -> Parser:
+def from_enum(enum_cls: type[enum.Enum], transform: Callable[[str], str] = noop) -> Parser:
     """
     Given a class that is an enum.Enum class
     https://docs.python.org/3/library/enum.html , returns a parser that
@@ -711,7 +715,7 @@ class forward_declaration(Parser):
     parse = _raise_error
     parse_partial = _raise_error
 
-    def become(self, other: Parser):
+    def become(self, other: Parser) -> None:
         """
         Take on the behavior of the given parser.
         """
