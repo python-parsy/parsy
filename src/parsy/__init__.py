@@ -323,7 +323,7 @@ class Parser:
     def desc(self, description: str) -> Parser:
         """
         Returns a new parser with a description added, which is used in the error message
-        if parsing fails.
+        if parsing fails. The furthest failure position is preserved.
         """
 
         @Parser
@@ -332,7 +332,7 @@ class Parser:
             if result.status:
                 return result
             else:
-                return Result.failure(index, description)
+                return Result.failure(result.furthest, description)
 
         return desc_parser
 

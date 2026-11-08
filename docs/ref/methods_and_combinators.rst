@@ -56,6 +56,16 @@ can be used and manipulated as below.
       >>> year.parse('123')
       ParseError: expected 4 digit year at 0:0
 
+      For a combined parser, the description replaces the expected text while
+      retaining the furthest failure position of its component parsers.
+
+      >>> pair = (string('a') >> string('b')).desc('a pair')
+      >>> pair.parse('ax')
+      ParseError: expected 'a pair' at 0:1
+
+      Successful results, including failure information retained from
+      backtracking, are unchanged.
+
    .. method:: then(other_parser)
 
       Returns a parser which, if the initial parser succeeds, will continue parsing

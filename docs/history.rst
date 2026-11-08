@@ -7,6 +7,7 @@ History and release notes
 Unreleased
 ----------
 * Fixed various type hints
+* Fixed :meth:`Parser.desc` resetting the failure position of combined parsers.
 
 2.2 - 2025-09-12
 ----------------

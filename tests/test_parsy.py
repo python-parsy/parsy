@@ -233,6 +233,80 @@ class TestParser(unittest.TestCase):
         self.assertEqual(ex.stream, "x")
         self.assertEqual(ex.index, 0)
 
+    def test_desc_preserves_failure_location(self):
+        parser = (string("a") >> string("b")).desc("a pair")
+        with self.assertRaises(ParseError) as err:
+            parser.parse("ax")
+
+        self.assertEqual(err.exception.index, 1)
+        self.assertEqual(err.exception.expected, frozenset(["a pair"]))
+        self.assertEqual(str(err.exception), "expected 'a pair' at 0:1")
+
+    def test_desc_preserves_furthest_alternative(self):
+        parser = ((string("ab") >> string("c")) | string("z")).desc("a choice")
+        with self.assertRaises(ParseError) as err:
+            parser.parse("abx")
+
+        self.assertEqual(err.exception.index, 2)
+        self.assertEqual(err.exception.expected, frozenset(["a choice"]))
+
+    def test_desc_combines_alternatives_at_same_location(self):
+        parser = (string("a") >> string("b")).desc("a pair") | (string("a") >> string("c"))
+        with self.assertRaises(ParseError) as err:
+            parser.parse("ax")
+
+        self.assertEqual(err.exception.index, 1)
+        self.assertEqual(err.exception.expected, frozenset(["a pair", "c"]))
+
+    def test_desc_in_generate_preserves_line_and_column(self):
+        @generate
+        def document():
+            yield string("heading\n")
+            yield (string("a") >> string("b")).desc("a pair")
+
+        with self.assertRaises(ParseError) as err:
+            document.parse("heading\nax")
+
+        self.assertEqual(err.exception.index, 9)
+        self.assertEqual(str(err.exception), "expected 'a pair' at 1:1")
+
+    def test_generate_desc_preserves_failure_location(self):
+        @generate("a pair")
+        def pair():
+            yield string("a")
+            yield string("b")
+
+        with self.assertRaises(ParseError) as err:
+            pair.parse("ax")
+
+        self.assertEqual(err.exception.index, 1)
+        self.assertEqual(err.exception.expected, frozenset(["a pair"]))
+
+    def test_desc_preserves_bytes_and_token_locations(self):
+        cases = [
+            (string(b"a") >> string(b"b"), b"ax"),
+            (match_item("a") >> match_item("b"), ["a", "x"]),
+        ]
+        for parser, stream in cases:
+            with self.subTest(stream=stream):
+                with self.assertRaises(ParseError) as err:
+                    parser.desc("a pair").parse(stream)
+                self.assertEqual(err.exception.index, 1)
+                self.assertEqual(err.exception.expected, frozenset(["a pair"]))
+
+    def test_desc_preserves_success_and_backtracking(self):
+        parser = (string("a") >> string("b")) | string("a")
+        described = parser.desc("a pair or a")
+        for stream in ["ab", "ax", "a"]:
+            with self.subTest(stream=stream):
+                self.assertEqual(described(stream, 0), parser(stream, 0))
+                self.assertEqual(described.parse_partial(stream), parser.parse_partial(stream))
+
+        with self.assertRaises(ParseError) as err:
+            described.parse("ax")
+        self.assertEqual(err.exception.index, 1)
+        self.assertEqual(err.exception.expected, frozenset(["b", "EOF"]))
+
     def test_generate_default_desc(self):
         # We shouldn't give a default desc, the messages from the internal
         # parsers should bubble up.
