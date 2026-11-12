@@ -16,16 +16,15 @@ classifiers = [
   "Topic :: Text Processing",
   "License :: OSI Approved :: MIT License",
   "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.9",
-  "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
 ]
 keywords = ["parser", "parsers", "parsing", "monad", "combinators"]
 urls = {Homepage = "https://github.com/python-parsy/parsy"}
 
-requires-python = ">=3.9"
+requires-python = ">=3.11"
 dependencies = []
 
 dynamic = ["version"]
@@ -51,6 +50,7 @@ dev = [
     "pre-commit-uv>=4.1.4",
     "sphinx>=7.4.7",
     "sphinx-rtd-theme>=3.0.2",
+    "pyupgrade>=3.21.0",
 ]
 
 [tool.setuptools]
