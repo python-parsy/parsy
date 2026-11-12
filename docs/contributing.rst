@@ -31,15 +31,16 @@ To get started you’ll need to:
   This will use your default Python version. If you want to use a different
   Python version, instead of the above do this e.g.::
 
-    uv python install 3.10
-    uv venv --python 3.10
+    uv python install 3.13
+    uv venv --python 3.13
     uv sync
 
 - Activate the venv::
 
     source .venv/bin/activate
 
-  (Alternatively, you can add ``uv run`` before most of the commands below)
+  (Alternatively, you can add ``uv run`` before most of the commands below,
+  or use `direnv <https://direnv.net/>`_ to activate automatically)
 
 - Get test suite running::
 
@@ -54,10 +55,8 @@ To get started you’ll need to:
     cd docs
     make html
 
-We now have several linters and code formatters that we require use of,
-including `flake8 <http://flake8.pycqa.org/en/latest/>`_, `isort
-<https://github.com/timothycrosley/isort#readme>`_ and `black
-<https://github.com/psf/black>`_. These are most easily add by using `pre-commit
+We have linters and code formatters that we require use of, especially `ruff
+<https://docs.astral.sh/ruff/>`_. These are most easily add by using `pre-commit
 <https://pre-commit.com/>`_:
 
 - Install `pre-commit <https://pre-commit.com/>`_ in the repo::
