@@ -61,7 +61,7 @@ def simple_eval(expr):
     return eval_tokens(lexer(expr))
 
 
-import pytest  # noqa  isort:skip
+import pytest
 
 test_item = pytest.mark.skip(test_item)  # This is not a test
 
