@@ -25,10 +25,14 @@ from parsy import (
     seq,
     string,
     string_from,
+    whitespace,
 )
-from parsy import test_char as parsy_test_char  # to stop pytest thinking this function is a test
-from parsy import test_item as parsy_test_item  # to stop pytest thinking this function is a test
-from parsy import whitespace
+from parsy import (
+    test_char as parsy_test_char,  # to stop pytest thinking this function is a test
+)
+from parsy import (
+    test_item as parsy_test_item,  # to stop pytest thinking this function is a test
+)
 
 
 class TestParser(unittest.TestCase):

@@ -11,7 +11,6 @@
 
 import enum
 from dataclasses import dataclass
-from typing import List, Optional, Union
 
 from parsy import from_enum, regex, seq, string
 
@@ -46,7 +45,7 @@ class Table:
     name: str
 
 
-ColumnExpression = Union[Field, String, Number]
+ColumnExpression = Field | String | Number
 
 
 @dataclass
@@ -58,9 +57,9 @@ class Comparison:
 
 @dataclass
 class Select:
-    columns: List[ColumnExpression]
+    columns: list[ColumnExpression]
     table: Table
-    where: Optional[Comparison]
+    where: Comparison | None
 
 
 # -- Parsers:

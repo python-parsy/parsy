@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-#
 # parsy documentation build configuration file, created by
 # sphinx-quickstart on Mon Sep 25 22:24:17 2017.
 #
@@ -145,5 +143,13 @@ man_pages = [(master_doc, "parsy", "parsy Documentation", [author], 1)]
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, "parsy", "parsy Documentation", author, "parsy", "One line description of project.", "Miscellaneous"),
+    (
+        master_doc,
+        "parsy",
+        "parsy Documentation",
+        author,
+        "parsy",
+        "One line description of project.",
+        "Miscellaneous",
+    ),
 ]

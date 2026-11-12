@@ -8,6 +8,9 @@ Stripped down logo lexer, for tokenizing Turtle Logo programs like:
 etc.
 """
 
+import functools
+import operator
+
 from parsy import eof, regex, seq, string, string_from, whitespace
 
 command = string_from("fd", "bk", "rt", "lt")
@@ -19,5 +22,5 @@ line = seq(
     whitespace >> number,
     (eof | eol | (whitespace >> eol)).result("\n"),
 )
-flatten_list = lambda ls: sum(ls, [])
+flatten_list = lambda ls: functools.reduce(operator.iadd, ls, [])
 lexer = line.many().map(flatten_list)

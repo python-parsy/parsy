@@ -3,9 +3,10 @@ from __future__ import annotations
 import enum
 import operator
 import re
+from collections.abc import Callable
 from dataclasses import dataclass
 from functools import wraps
-from typing import Any, Callable, FrozenSet
+from typing import Any
 
 __version__ = "2.2"
 
@@ -48,7 +49,7 @@ class Result:
     index: int
     value: Any
     furthest: int
-    expected: FrozenSet[str]
+    expected: frozenset[str]
 
     @staticmethod
     def success(index, value) -> Result:
@@ -67,7 +68,13 @@ class Result:
             return self
         elif self.furthest == other.furthest:
             # if we both have the same failure index, we combine the expected messages.
-            return Result(self.status, self.index, self.value, self.furthest, self.expected | other.expected)
+            return Result(
+                self.status,
+                self.index,
+                self.value,
+                self.furthest,
+                self.expected | other.expected,
+            )
         else:
             return Result(self.status, self.index, self.value, other.furthest, other.expected)
 
@@ -260,7 +267,13 @@ class Parser:
         """
         return self.times(0, 1).map(lambda v: v[0] if v else default)
 
-    def until(self, other: Parser, min: int = 0, max: float = float("inf"), consume_other: bool = False) -> Parser:
+    def until(
+        self,
+        other: Parser,
+        min: int = 0,
+        max: float = float("inf"),
+        consume_other: bool = False,
+    ) -> Parser:
         """
         Returns a parser that expects the initial parser followed by ``other``.
         The initial parser is expected at least ``min`` times and at most ``max`` times.
@@ -274,7 +287,6 @@ class Parser:
             values = []
             times = 0
             while True:
-
                 # try parser first
                 res = other(stream, index)
                 if res.status and times >= min:
@@ -587,12 +599,9 @@ def test_item(func: Callable[..., bool], description: str) -> Parser:
     @Parser
     def test_item_parser(stream: str | bytes | list, index: int) -> Result:
         if index < len(stream):
-            if isinstance(stream, bytes):
-                # Subscripting bytes with `[index]` instead of
-                # `[index:index + 1]` returns an int
-                item = stream[index : index + 1]
-            else:
-                item = stream[index]
+            # Subscripting bytes with `[index]` instead of
+            # `[index:index + 1]` returns an int
+            item = stream[index : index + 1] if isinstance(stream, bytes) else stream[index]
             if func(item):
                 return Result.success(index + 1, item)
         return Result.failure(index, description)
@@ -693,7 +702,9 @@ def from_enum(enum_cls: type[enum.Enum], transform: Callable[[str], str] = noop)
     """
 
     items = sorted(
-        ((str(enum_item.value), enum_item) for enum_item in enum_cls), key=lambda t: len(t[0]), reverse=True
+        ((str(enum_item.value), enum_item) for enum_item in enum_cls),
+        key=lambda t: len(t[0]),
+        reverse=True,
     )
     return alt(*(string(value, transform=transform).result(enum_item) for value, enum_item in items))
 

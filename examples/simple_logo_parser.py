@@ -35,7 +35,7 @@ commands = {
 
 @generate
 def statement():
-    cmd_name = yield test_item(lambda i: i in commands.keys(), "command")
+    cmd_name = yield test_item(lambda i: i in commands, "command")
     parameter = yield test_item(lambda i: isinstance(i, int), "number")
     yield match_item("\n")
     return commands[cmd_name](int(parameter))
@@ -44,6 +44,6 @@ def statement():
 program = statement.many()
 
 
-import pytest  # noqa  isort:skip
+import pytest
 
 test_item = pytest.mark.skip(test_item)  # This is not a test
