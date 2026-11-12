@@ -33,13 +33,7 @@ jobs:
           uv sync
       - name: Run tests
         run: |
-          uv run pytest --cov=./ --cov-report=xml
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v1
-        with:
-          file: ./coverage.xml
-          env_vars: PYTHON
-          fail_ci_if_error: false
+          uv run pytest
 
   linters:
     runs-on: ubuntu-latest
