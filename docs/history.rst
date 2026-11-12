@@ -8,6 +8,7 @@ Unreleased
 ----------
 * Fixed various type hints
 * Dropped support for Python 3.9 and 3.10 which are past EOL
+* Run tests on Python 3.14
 
 2.2 - 2025-09-12
 ----------------
